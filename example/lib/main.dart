@@ -35,6 +35,7 @@ class PlaygroundPage extends StatefulWidget {
 
 class _PlaygroundPageState extends State<PlaygroundPage> {
   final _passwordController = TextEditingController();
+  final _passwordFocusNode = FocusNode();
 
   // Theme - Size options
   double _width = 300;
@@ -88,6 +89,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   @override
   void dispose() {
     _passwordController.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -117,8 +119,26 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       ),
                     ),
                     const SizedBox(height: 32),
+                    // IP TextField for testing IME switching
+                    SizedBox(
+                      width: _width,
+                      height: _height,
+                      child: TextField(
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (_) => _passwordFocusNode.requestFocus(),
+                        decoration: InputDecoration(
+                          labelText: 'IP Address (한글 테스트)',
+                          hintText: '여기에 한글 입력 후 아래로 이동',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(_borderRadius),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     PasswordTextField(
                       controller: _passwordController,
+                      focusNode: _passwordFocusNode,
                       theme: _theme,
                       labelText: _labelText,
                       hintText: _hintText,
@@ -195,11 +215,12 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
           // Controls panel - provides sliders, switches, and color pickers
           Expanded(
             flex: 2,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(left: BorderSide(color: Colors.grey.shade300)),
-              ),
-              child: SingleChildScrollView(
+            child: ExcludeFocus(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(left: BorderSide(color: Colors.grey.shade300)),
+                ),
+                child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,6 +351,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                     ),
                   ],
                 ),
+              ),
               ),
             ),
           ),

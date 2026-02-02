@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ime/flutter_ime.dart';
@@ -56,6 +57,7 @@ class PasswordTextField extends StatefulWidget {
     this.onChange,
     this.onSubmitted,
     this.onCapsLockStateChanged,
+    this.forceEnglishInput = true,
   });
 
   /// Controls the text being edited.
@@ -172,6 +174,16 @@ class PasswordTextField extends StatefulWidget {
   /// and false when it is disabled or when the field loses focus.
   final ValueChanged<bool>? onCapsLockStateChanged;
 
+  /// Whether to force English keyboard input when focused.
+  ///
+  /// When true:
+  /// - On Windows: Disables IME when focused, re-enables when unfocused.
+  /// - On macOS: Switches to English keyboard when focused and automatically
+  ///   switches back to English if the user changes the input source.
+  ///
+  /// Defaults to true.
+  final bool forceEnglishInput;
+
   @override
   State<PasswordTextField> createState() => _PasswordTextFieldState();
 }
@@ -182,6 +194,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   bool _isCapsLockOn = false;
   bool _hasFocus = false;
   StreamSubscription<bool>? _capsLockSubscription;
+  StreamSubscription<bool>? _inputSourceSubscription;
 
   PasswordTextFieldTheme get _theme =>
       (widget.theme ?? const PasswordTextFieldTheme())
@@ -221,6 +234,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       _focusNode.dispose();
     }
     _capsLockSubscription?.cancel();
+    _inputSourceSubscription?.cancel();
     super.dispose();
   }
 
@@ -235,6 +249,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       if (hasFocus) {
         // Check Caps Lock state when focus is gained
         _checkCapsLockState();
+        // Handle English input enforcement
+        _handleEnglishInputOnFocus();
         widget.onFocus?.call();
       } else {
         // Hide Caps Lock warning when focus is lost
@@ -244,8 +260,48 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           });
           widget.onCapsLockStateChanged?.call(false);
         }
+        // Restore IME on focus lost
+        _handleEnglishInputOnUnfocus();
         widget.onLostFocus?.call();
       }
+    }
+  }
+
+  /// Handles English input enforcement when focus is gained.
+  void _handleEnglishInputOnFocus() {
+    if (!widget.forceEnglishInput) return;
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.windows:
+        disableIME();
+        break;
+      case TargetPlatform.macOS:
+        setEnglishKeyboard();
+        _inputSourceSubscription = onInputSourceChanged().listen((isEnglish) {
+          if (!isEnglish && _hasFocus) {
+            setEnglishKeyboard();
+          }
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  /// Restores IME when focus is lost.
+  void _handleEnglishInputOnUnfocus() {
+    if (!widget.forceEnglishInput) return;
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.windows:
+        enableIME();
+        break;
+      case TargetPlatform.macOS:
+        _inputSourceSubscription?.cancel();
+        _inputSourceSubscription = null;
+        break;
+      default:
+        break;
     }
   }
 
@@ -295,21 +351,23 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     }
 
     final visibilityButton = hasVisibilityToggle
-        ? IconButton(
-            onPressed: _toggleObscure,
-            icon: _isObscured
-                ? (widget.visibilityOffIcon ??
-                    Icon(
-                      Icons.visibility_off,
-                      color: theme.visibilityIconColor ?? appTheme.hintColor,
-                      size: theme.visibilityIconSize,
-                    ))
-                : (widget.visibilityOnIcon ??
-                    Icon(
-                      Icons.visibility,
-                      color: theme.visibilityIconColor ?? appTheme.hintColor,
-                      size: theme.visibilityIconSize,
-                    )),
+        ? ExcludeFocus(
+            child: IconButton(
+              onPressed: _toggleObscure,
+              icon: _isObscured
+                  ? (widget.visibilityOffIcon ??
+                      Icon(
+                        Icons.visibility_off,
+                        color: theme.visibilityIconColor ?? appTheme.hintColor,
+                        size: theme.visibilityIconSize,
+                      ))
+                  : (widget.visibilityOnIcon ??
+                      Icon(
+                        Icons.visibility,
+                        color: theme.visibilityIconColor ?? appTheme.hintColor,
+                        size: theme.visibilityIconSize,
+                      )),
+            ),
           )
         : null;
 
