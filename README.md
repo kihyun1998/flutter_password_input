@@ -6,6 +6,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 - Caps Lock warning when focused
 - Password visibility toggle
+- Force English input mode (disables IME on Windows, switches to English keyboard on macOS)
 - Prefix/suffix widget support
 - Theming via `PasswordTextFieldTheme`
 
@@ -13,7 +14,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.1.0
+  flutter_password_input: ^0.1.1
 ```
 
 ## Usage

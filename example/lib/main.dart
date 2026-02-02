@@ -127,8 +127,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                         textInputAction: TextInputAction.next,
                         onSubmitted: (_) => _passwordFocusNode.requestFocus(),
                         decoration: InputDecoration(
-                          labelText: 'IP Address (한글 테스트)',
-                          hintText: '여기에 한글 입력 후 아래로 이동',
+                          labelText: 'IP Address (non-English test)',
+                          hintText: 'Type non-English here, then move below',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(_borderRadius),
                           ),
