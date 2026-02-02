@@ -221,137 +221,147 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                   border: Border(left: BorderSide(color: Colors.grey.shade300)),
                 ),
                 child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Controls',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Controls',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const Divider(),
+                      const Divider(),
 
-                    // Theme size controls
-                    _buildSectionTitle('Theme - Size'),
-                    _buildSlider('Width', _width, 150, 500, (v) {
-                      setState(() => _width = v);
-                    }),
-                    _buildSlider('Height', _height, 36, 80, (v) {
-                      setState(() => _height = v);
-                    }),
-                    _buildSlider('Border Radius', _borderRadius, 0, 24, (v) {
-                      setState(() => _borderRadius = v);
-                    }),
-                    _buildSlider('Border Width', _borderWidth, 0, 4, (v) {
-                      setState(() => _borderWidth = v);
-                    }),
-                    _buildSlider('Padding H', _contentPaddingH, 0, 24, (v) {
-                      setState(() => _contentPaddingH = v);
-                    }),
-                    _buildSlider('Padding V', _contentPaddingV, 0, 24, (v) {
-                      setState(() => _contentPaddingV = v);
-                    }),
+                      // Theme size controls
+                      _buildSectionTitle('Theme - Size'),
+                      _buildSlider('Width', _width, 150, 500, (v) {
+                        setState(() => _width = v);
+                      }),
+                      _buildSlider('Height', _height, 36, 80, (v) {
+                        setState(() => _height = v);
+                      }),
+                      _buildSlider('Border Radius', _borderRadius, 0, 24, (v) {
+                        setState(() => _borderRadius = v);
+                      }),
+                      _buildSlider('Border Width', _borderWidth, 0, 4, (v) {
+                        setState(() => _borderWidth = v);
+                      }),
+                      _buildSlider('Padding H', _contentPaddingH, 0, 24, (v) {
+                        setState(() => _contentPaddingH = v);
+                      }),
+                      _buildSlider('Padding V', _contentPaddingV, 0, 24, (v) {
+                        setState(() => _contentPaddingV = v);
+                      }),
 
-                    const SizedBox(height: 16),
-                    // Theme color controls
-                    _buildSectionTitle('Theme - Colors'),
-                    _buildNullableColorPicker('Background', _backgroundColor, (
-                      c,
-                    ) {
-                      setState(() => _backgroundColor = c);
-                    }),
-                    _buildNullableColorPicker('Border', _borderColor, (c) {
-                      setState(() => _borderColor = c);
-                    }),
-                    _buildColorPicker('Focus Border', _focusBorderColor, (c) {
-                      setState(() => _focusBorderColor = c);
-                    }),
-                    _buildColorPicker('Error Border', _errorBorderColor, (c) {
-                      setState(() => _errorBorderColor = c);
-                    }),
-                    _buildNullableColorPicker(
-                      'Visibility Icon',
-                      _visibilityIconColor,
-                      (c) {
-                        setState(() => _visibilityIconColor = c);
-                      },
-                    ),
-                    _buildSlider(
-                      'Visibility Icon Size',
-                      _visibilityIconSize,
-                      12,
-                      32,
-                      (v) {
-                        setState(() => _visibilityIconSize = v);
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-                    // Widget text controls
-                    _buildSectionTitle('Widget - Text'),
-                    _buildTextField('Label', _labelText, (v) {
-                      setState(() => _labelText = v);
-                    }),
-                    _buildTextField('Hint', _hintText, (v) {
-                      setState(() => _hintText = v);
-                    }),
-                    _buildTextField('Caps Lock Warning', _capsLockWarningText, (
-                      v,
-                    ) {
-                      setState(() => _capsLockWarningText = v);
-                    }),
-
-                    const SizedBox(height: 16),
-                    // Widget behavior toggles
-                    _buildSectionTitle('Widget - Toggles'),
-                    _buildSwitch(
-                      'Show Visibility Toggle',
-                      _showVisibilityToggle,
-                      (v) {
-                        setState(() => _showVisibilityToggle = v);
-                      },
-                    ),
-                    _buildSwitch(
-                      'Show Caps Lock Warning',
-                      _showCapsLockWarning,
-                      (v) {
-                        setState(() => _showCapsLockWarning = v);
-                      },
-                    ),
-                    _buildSwitch('Use Floating Label', _useFloatingLabel, (v) {
-                      setState(() => _useFloatingLabel = v);
-                    }),
-                    _buildSwitch('Enabled', _enabled, (v) {
-                      setState(() => _enabled = v);
-                    }),
-
-                    const SizedBox(height: 16),
-                    // Prefix/suffix widget toggles
-                    _buildSectionTitle('Widget - Prefix/Suffix'),
-                    _buildSwitch('Show Prefix Widget', _showPrefixWidget, (v) {
-                      setState(() => _showPrefixWidget = v);
-                    }),
-                    _buildSwitch('Show Suffix Widget', _showSuffixWidget, (v) {
-                      setState(() => _showSuffixWidget = v);
-                    }),
-
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _passwordController.clear();
-                          setState(() => _currentValue = '');
+                      const SizedBox(height: 16),
+                      // Theme color controls
+                      _buildSectionTitle('Theme - Colors'),
+                      _buildNullableColorPicker(
+                        'Background',
+                        _backgroundColor,
+                        (c) {
+                          setState(() => _backgroundColor = c);
                         },
-                        child: const Text('Clear Password'),
                       ),
-                    ),
-                  ],
+                      _buildNullableColorPicker('Border', _borderColor, (c) {
+                        setState(() => _borderColor = c);
+                      }),
+                      _buildColorPicker('Focus Border', _focusBorderColor, (c) {
+                        setState(() => _focusBorderColor = c);
+                      }),
+                      _buildColorPicker('Error Border', _errorBorderColor, (c) {
+                        setState(() => _errorBorderColor = c);
+                      }),
+                      _buildNullableColorPicker(
+                        'Visibility Icon',
+                        _visibilityIconColor,
+                        (c) {
+                          setState(() => _visibilityIconColor = c);
+                        },
+                      ),
+                      _buildSlider(
+                        'Visibility Icon Size',
+                        _visibilityIconSize,
+                        12,
+                        32,
+                        (v) {
+                          setState(() => _visibilityIconSize = v);
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+                      // Widget text controls
+                      _buildSectionTitle('Widget - Text'),
+                      _buildTextField('Label', _labelText, (v) {
+                        setState(() => _labelText = v);
+                      }),
+                      _buildTextField('Hint', _hintText, (v) {
+                        setState(() => _hintText = v);
+                      }),
+                      _buildTextField(
+                        'Caps Lock Warning',
+                        _capsLockWarningText,
+                        (v) {
+                          setState(() => _capsLockWarningText = v);
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+                      // Widget behavior toggles
+                      _buildSectionTitle('Widget - Toggles'),
+                      _buildSwitch(
+                        'Show Visibility Toggle',
+                        _showVisibilityToggle,
+                        (v) {
+                          setState(() => _showVisibilityToggle = v);
+                        },
+                      ),
+                      _buildSwitch(
+                        'Show Caps Lock Warning',
+                        _showCapsLockWarning,
+                        (v) {
+                          setState(() => _showCapsLockWarning = v);
+                        },
+                      ),
+                      _buildSwitch('Use Floating Label', _useFloatingLabel, (
+                        v,
+                      ) {
+                        setState(() => _useFloatingLabel = v);
+                      }),
+                      _buildSwitch('Enabled', _enabled, (v) {
+                        setState(() => _enabled = v);
+                      }),
+
+                      const SizedBox(height: 16),
+                      // Prefix/suffix widget toggles
+                      _buildSectionTitle('Widget - Prefix/Suffix'),
+                      _buildSwitch('Show Prefix Widget', _showPrefixWidget, (
+                        v,
+                      ) {
+                        setState(() => _showPrefixWidget = v);
+                      }),
+                      _buildSwitch('Show Suffix Widget', _showSuffixWidget, (
+                        v,
+                      ) {
+                        setState(() => _showSuffixWidget = v);
+                      }),
+
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _passwordController.clear();
+                            setState(() => _currentValue = '');
+                          },
+                          child: const Text('Clear Password'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               ),
             ),
           ),
