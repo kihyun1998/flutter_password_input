@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ime/flutter_ime.dart';
 
 import 'password_text_field_theme.dart';
 
@@ -178,6 +181,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   bool _isObscured = true;
   bool _isCapsLockOn = false;
   bool _hasFocus = false;
+  StreamSubscription<bool>? _capsLockSubscription;
 
   PasswordTextFieldTheme get _theme =>
       (widget.theme ?? const PasswordTextFieldTheme())
@@ -189,8 +193,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChange);
 
-    // Register keyboard event listener for Caps Lock detection
-    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
+    // Subscribe to Caps Lock state changes using flutter_ime
+    _capsLockSubscription = onCapsLockChanged().listen(_onCapsLockChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -216,7 +220,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }
-    HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
+    _capsLockSubscription?.cancel();
     super.dispose();
   }
 
@@ -245,30 +249,34 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     }
   }
 
-  /// Checks the current Caps Lock state using [HardwareKeyboard].
+  /// Checks the current Caps Lock state using flutter_ime.
   ///
   /// Updates the internal state and notifies listeners if the state has changed.
-  void _checkCapsLockState() {
-    final isCapsLockOn = HardwareKeyboard.instance.lockModesEnabled
-        .contains(KeyboardLockMode.capsLock);
+  Future<void> _checkCapsLockState() async {
+    final capsLockOn = await isCapsLockOn();
 
-    if (isCapsLockOn != _isCapsLockOn) {
+    if (!mounted) return;
+
+    if (capsLockOn != _isCapsLockOn) {
       setState(() {
-        _isCapsLockOn = isCapsLockOn;
+        _isCapsLockOn = capsLockOn;
       });
-      widget.onCapsLockStateChanged?.call(isCapsLockOn);
+      widget.onCapsLockStateChanged?.call(capsLockOn);
     }
   }
 
-  /// Handles keyboard events to detect Caps Lock state changes.
+  /// Handles Caps Lock state changes from flutter_ime stream.
   ///
-  /// Only checks Caps Lock state when the field has focus.
-  /// Returns false to allow the event to propagate to other handlers.
-  bool _handleKeyEvent(KeyEvent event) {
-    if (_hasFocus) {
-      _checkCapsLockState();
+  /// Only updates state when the field has focus.
+  void _onCapsLockChanged(bool isOn) {
+    if (!mounted) return;
+
+    if (_hasFocus && isOn != _isCapsLockOn) {
+      setState(() {
+        _isCapsLockOn = isOn;
+      });
+      widget.onCapsLockStateChanged?.call(isOn);
     }
-    return false;
   }
 
   void _toggleObscure() {

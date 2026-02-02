@@ -54,6 +54,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_ime:
+    dependency: transitive
+    description:
+      name: flutter_ime
+      sha256: "97b80c834f43ecb07151f449fe5a524385ffcf68e33f698121a399b8f042f5e0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -68,7 +76,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.1.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -138,6 +146,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  plugin_platform_interface:
+    dependency: transitive
+    description:
+      name: plugin_platform_interface
+      sha256: "4820fbfdb9478b1ebae27888254d445073732dae3d6ea81f0b7e06d5dedc3f02"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.8"
   sky_engine:
     dependency: transitive
     description: flutter

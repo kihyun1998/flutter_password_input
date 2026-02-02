@@ -2,7 +2,7 @@
 
 **feat**
 - Add `PasswordTextField` widget with obscured text input
-- Add Caps Lock detection with customizable warning message
+- Add Caps Lock detection using `flutter_ime` package (Windows, macOS supported)
 - Add password visibility toggle button
 - Add `prefixWidget` and `suffixWidget` support
 - Add `PasswordTextFieldTheme` for comprehensive styling customization

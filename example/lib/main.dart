@@ -69,21 +69,21 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   String _currentValue = '';
 
   PasswordTextFieldTheme get _theme => PasswordTextFieldTheme(
-        width: _width,
-        height: _height,
-        borderRadius: _borderRadius,
-        borderWidth: _borderWidth,
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: _contentPaddingH,
-          vertical: _contentPaddingV,
-        ),
-        backgroundColor: _backgroundColor,
-        borderColor: _borderColor,
-        focusBorderColor: _focusBorderColor,
-        errorBorderColor: _errorBorderColor,
-        visibilityIconColor: _visibilityIconColor,
-        visibilityIconSize: _visibilityIconSize,
-      );
+    width: _width,
+    height: _height,
+    borderRadius: _borderRadius,
+    borderWidth: _borderWidth,
+    contentPadding: EdgeInsets.symmetric(
+      horizontal: _contentPaddingH,
+      vertical: _contentPaddingV,
+    ),
+    backgroundColor: _backgroundColor,
+    borderColor: _borderColor,
+    focusBorderColor: _focusBorderColor,
+    errorBorderColor: _errorBorderColor,
+    visibilityIconColor: _visibilityIconColor,
+    visibilityIconSize: _visibilityIconSize,
+  );
 
   @override
   void dispose() {
@@ -197,9 +197,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
             flex: 2,
             child: Container(
               decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(color: Colors.grey.shade300),
-                ),
+                border: Border(left: BorderSide(color: Colors.grey.shade300)),
               ),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -239,8 +237,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                     const SizedBox(height: 16),
                     // Theme color controls
                     _buildSectionTitle('Theme - Colors'),
-                    _buildNullableColorPicker(
-                        'Background', _backgroundColor, (c) {
+                    _buildNullableColorPicker('Background', _backgroundColor, (
+                      c,
+                    ) {
                       setState(() => _backgroundColor = c);
                     }),
                     _buildNullableColorPicker('Border', _borderColor, (c) {
@@ -253,14 +252,21 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       setState(() => _errorBorderColor = c);
                     }),
                     _buildNullableColorPicker(
-                        'Visibility Icon', _visibilityIconColor, (c) {
-                      setState(() => _visibilityIconColor = c);
-                    }),
+                      'Visibility Icon',
+                      _visibilityIconColor,
+                      (c) {
+                        setState(() => _visibilityIconColor = c);
+                      },
+                    ),
                     _buildSlider(
-                        'Visibility Icon Size', _visibilityIconSize, 12, 32,
-                        (v) {
-                      setState(() => _visibilityIconSize = v);
-                    }),
+                      'Visibility Icon Size',
+                      _visibilityIconSize,
+                      12,
+                      32,
+                      (v) {
+                        setState(() => _visibilityIconSize = v);
+                      },
+                    ),
 
                     const SizedBox(height: 16),
                     // Widget text controls
@@ -271,8 +277,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                     _buildTextField('Hint', _hintText, (v) {
                       setState(() => _hintText = v);
                     }),
-                    _buildTextField('Caps Lock Warning', _capsLockWarningText,
-                        (v) {
+                    _buildTextField('Caps Lock Warning', _capsLockWarningText, (
+                      v,
+                    ) {
                       setState(() => _capsLockWarningText = v);
                     }),
 
@@ -280,13 +287,19 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                     // Widget behavior toggles
                     _buildSectionTitle('Widget - Toggles'),
                     _buildSwitch(
-                        'Show Visibility Toggle', _showVisibilityToggle, (v) {
-                      setState(() => _showVisibilityToggle = v);
-                    }),
+                      'Show Visibility Toggle',
+                      _showVisibilityToggle,
+                      (v) {
+                        setState(() => _showVisibilityToggle = v);
+                      },
+                    ),
                     _buildSwitch(
-                        'Show Caps Lock Warning', _showCapsLockWarning, (v) {
-                      setState(() => _showCapsLockWarning = v);
-                    }),
+                      'Show Caps Lock Warning',
+                      _showCapsLockWarning,
+                      (v) {
+                        setState(() => _showCapsLockWarning = v);
+                      },
+                    ),
                     _buildSwitch('Use Floating Label', _useFloatingLabel, (v) {
                       setState(() => _useFloatingLabel = v);
                     }),
@@ -377,14 +390,11 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('$label: ${value.toStringAsFixed(0)}',
-            style: const TextStyle(fontSize: 12)),
-        Slider(
-          value: value,
-          min: min,
-          max: max,
-          onChanged: onChanged,
+        Text(
+          '$label: ${value.toStringAsFixed(0)}',
+          style: const TextStyle(fontSize: 12),
         ),
+        Slider(value: value, min: min, max: max, onChanged: onChanged),
       ],
     );
   }
@@ -491,8 +501,10 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('$label: ${value == null ? "None" : "Custom"}',
-            style: const TextStyle(fontSize: 12)),
+        Text(
+          '$label: ${value == null ? "None" : "Custom"}',
+          style: const TextStyle(fontSize: 12),
+        ),
         const SizedBox(height: 4),
         Wrap(
           spacing: 6,
@@ -514,8 +526,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                 child: color == null
                     ? Icon(Icons.block, color: Colors.grey.shade400, size: 16)
                     : isSelected
-                        ? const Icon(Icons.check, color: Colors.black, size: 16)
-                        : null,
+                    ? const Icon(Icons.check, color: Colors.black, size: 16)
+                    : null,
               ),
             );
           }).toList(),
