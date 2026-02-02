@@ -1,3 +1,13 @@
-## 0.0.1
+## 0.1.0
 
-* TODO: Describe initial release.
+**feat**
+- Add `PasswordTextField` widget with obscured text input
+- Add Caps Lock detection with customizable warning message
+- Add password visibility toggle button
+- Add `prefixWidget` and `suffixWidget` support
+- Add `PasswordTextFieldTheme` for comprehensive styling customization
+- Add `merge()` and `copyWith()` methods for theme manipulation
+- Add interactive playground example app
+
+**docs**
+- Add detailed English documentation for all public APIs
