@@ -488,7 +488,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTextField(appTheme, theme, showCapsLockWarning, errorColor, focusColor),
+          _buildTextField(
+              appTheme, theme, showCapsLockWarning, errorColor, focusColor),
           // Caps Lock warning message
           if (showCapsLockWarning)
             Padding(
