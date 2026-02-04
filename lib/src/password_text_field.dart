@@ -58,6 +58,7 @@ class PasswordTextField extends StatefulWidget {
     this.onSubmitted,
     this.onCapsLockStateChanged,
     this.forceEnglishInput = true,
+    this.disablePaste = false,
   });
 
   /// Controls the text being edited.
@@ -183,6 +184,13 @@ class PasswordTextField extends StatefulWidget {
   ///
   /// Defaults to true.
   final bool forceEnglishInput;
+
+  /// Whether to disable paste functionality in the text field.
+  ///
+  /// When true, both keyboard shortcuts (Ctrl+V/Cmd+V) and context menu
+  /// paste operations will be blocked.
+  /// Defaults to false.
+  final bool disablePaste;
 
   @override
   State<PasswordTextField> createState() => _PasswordTextFieldState();
@@ -384,6 +392,86 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     return hasSuffixWidget ? widget.suffixWidget : visibilityButton;
   }
 
+  Widget _buildTextField(ThemeData appTheme, PasswordTextFieldTheme theme,
+      bool showCapsLockWarning, Color errorColor, Color focusColor) {
+    final textField = SizedBox(
+      width: theme.width,
+      height: theme.height,
+      child: TextField(
+        controller: widget.controller,
+        focusNode: _focusNode,
+        autofocus: widget.autofocus,
+        obscureText: _isObscured,
+        enabled: widget.enabled,
+        maxLength: widget.maxLength,
+        inputFormatters: widget.inputFormatters,
+        style: theme.textStyle ?? appTheme.textTheme.bodyMedium,
+        onChanged: widget.onChange,
+        onSubmitted: widget.onSubmitted,
+        decoration: InputDecoration(
+          counterText: '',
+          contentPadding: theme.contentPadding,
+          labelText: widget.useFloatingLabel ? widget.labelText : null,
+          labelStyle: theme.labelStyle,
+          floatingLabelStyle: theme.floatingLabelStyle ??
+              TextStyle(
+                color: showCapsLockWarning ? errorColor : focusColor,
+              ),
+          floatingLabelBehavior: widget.useFloatingLabel
+              ? FloatingLabelBehavior.auto
+              : FloatingLabelBehavior.never,
+          hintText: widget.hintText ?? widget.labelText,
+          hintStyle: theme.hintStyle,
+          fillColor: theme.backgroundColor,
+          filled: theme.backgroundColor != null,
+          prefixIcon: widget.prefixWidget,
+          suffixIcon: _buildSuffixIcon(appTheme),
+          focusedBorder: OutlineInputBorder(
+            borderSide: theme.borderWidth == 0
+                ? BorderSide.none
+                : BorderSide(
+                    color: showCapsLockWarning ? errorColor : focusColor,
+                    width: theme.borderWidth!,
+                  ),
+            borderRadius: BorderRadius.circular(theme.borderRadius!),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: theme.borderWidth == 0
+                ? BorderSide.none
+                : BorderSide(
+                    color: theme.borderColor ?? appTheme.dividerColor,
+                    width: theme.borderWidth!,
+                  ),
+            borderRadius: BorderRadius.circular(theme.borderRadius!),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderSide: theme.borderWidth == 0
+                ? BorderSide.none
+                : BorderSide(
+                    color: (theme.borderColor ?? appTheme.dividerColor)
+                        .withValues(alpha: 0.5),
+                    width: theme.borderWidth!,
+                  ),
+            borderRadius: BorderRadius.circular(theme.borderRadius!),
+          ),
+        ),
+      ),
+    );
+
+    if (widget.disablePaste) {
+      return Actions(
+        actions: {
+          PasteTextIntent: CallbackAction<PasteTextIntent>(
+            onInvoke: (intent) => null,
+          ),
+        },
+        child: textField,
+      );
+    }
+
+    return textField;
+  }
+
   @override
   Widget build(BuildContext context) {
     final appTheme = Theme.of(context);
@@ -400,69 +488,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: theme.width,
-            height: theme.height,
-            child: TextField(
-              controller: widget.controller,
-              focusNode: _focusNode,
-              autofocus: widget.autofocus,
-              obscureText: _isObscured,
-              enabled: widget.enabled,
-              maxLength: widget.maxLength,
-              inputFormatters: widget.inputFormatters,
-              style: theme.textStyle ?? appTheme.textTheme.bodyMedium,
-              onChanged: widget.onChange,
-              onSubmitted: widget.onSubmitted,
-              decoration: InputDecoration(
-                counterText: '',
-                contentPadding: theme.contentPadding,
-                labelText: widget.useFloatingLabel ? widget.labelText : null,
-                labelStyle: theme.labelStyle,
-                floatingLabelStyle: theme.floatingLabelStyle ??
-                    TextStyle(
-                      color: showCapsLockWarning ? errorColor : focusColor,
-                    ),
-                floatingLabelBehavior: widget.useFloatingLabel
-                    ? FloatingLabelBehavior.auto
-                    : FloatingLabelBehavior.never,
-                hintText: widget.hintText ?? widget.labelText,
-                hintStyle: theme.hintStyle,
-                fillColor: theme.backgroundColor,
-                filled: theme.backgroundColor != null,
-                prefixIcon: widget.prefixWidget,
-                suffixIcon: _buildSuffixIcon(appTheme),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: theme.borderWidth == 0
-                      ? BorderSide.none
-                      : BorderSide(
-                          color: showCapsLockWarning ? errorColor : focusColor,
-                          width: theme.borderWidth!,
-                        ),
-                  borderRadius: BorderRadius.circular(theme.borderRadius!),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: theme.borderWidth == 0
-                      ? BorderSide.none
-                      : BorderSide(
-                          color: theme.borderColor ?? appTheme.dividerColor,
-                          width: theme.borderWidth!,
-                        ),
-                  borderRadius: BorderRadius.circular(theme.borderRadius!),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderSide: theme.borderWidth == 0
-                      ? BorderSide.none
-                      : BorderSide(
-                          color: (theme.borderColor ?? appTheme.dividerColor)
-                              .withValues(alpha: 0.5),
-                          width: theme.borderWidth!,
-                        ),
-                  borderRadius: BorderRadius.circular(theme.borderRadius!),
-                ),
-              ),
-            ),
-          ),
+          _buildTextField(appTheme, theme, showCapsLockWarning, errorColor, focusColor),
           // Caps Lock warning message
           if (showCapsLockWarning)
             Padding(

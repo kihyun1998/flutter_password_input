@@ -1,3 +1,11 @@
+## 0.1.2
+
+**feat**
+- Add `disablePaste` option to block paste functionality (default: false)
+  - Blocks both keyboard shortcuts (Ctrl+V/Cmd+V) and context menu paste
+
+---
+
 ## 0.1.1
 
 **feat**
