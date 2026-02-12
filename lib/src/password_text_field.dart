@@ -445,8 +445,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     return hasSuffixWidget ? widget.suffixWidget : visibilityButton;
   }
 
-  Widget _buildTextField(ThemeData appTheme, PasswordTextFieldTheme theme,
-      bool showCapsLockWarning, Color errorColor, Color focusColor) {
+  Widget _buildTextField(
+      ThemeData appTheme,
+      PasswordTextFieldTheme theme,
+      bool showCapsLockWarning,
+      Color errorColor,
+      Color pasteWarningColor,
+      Color focusColor) {
     final textField = SizedBox(
       width: theme.width,
       height: theme.height,
@@ -471,7 +476,11 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           labelStyle: theme.labelStyle,
           floatingLabelStyle: theme.floatingLabelStyle ??
               TextStyle(
-                color: showCapsLockWarning ? errorColor : focusColor,
+                color: showCapsLockWarning
+                    ? errorColor
+                    : _showPasteWarning
+                        ? pasteWarningColor
+                        : focusColor,
               ),
           floatingLabelBehavior: widget.useFloatingLabel
               ? FloatingLabelBehavior.auto
@@ -486,7 +495,11 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
             borderSide: theme.borderWidth == 0
                 ? BorderSide.none
                 : BorderSide(
-                    color: showCapsLockWarning ? errorColor : focusColor,
+                    color: showCapsLockWarning
+                        ? errorColor
+                        : _showPasteWarning
+                            ? pasteWarningColor
+                            : focusColor,
                     width: theme.borderWidth!,
                   ),
             borderRadius: BorderRadius.circular(theme.borderRadius!),
@@ -539,16 +552,19 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         widget.showCapsLockWarning && _isCapsLockOn && _hasFocus;
 
     final errorColor = theme.errorBorderColor ?? Colors.orange;
+    final pasteWarningColor =
+        theme.pasteWarningBorderColor ?? errorColor;
     final focusColor = theme.focusBorderColor ?? appTheme.primaryColor;
 
     return Container(
       margin: widget.margin,
+      width: theme.width,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTextField(
-              appTheme, theme, showCapsLockWarning, errorColor, focusColor),
+          _buildTextField(appTheme, theme, showCapsLockWarning, errorColor,
+              pasteWarningColor, focusColor),
           // Caps Lock warning message
           if (showCapsLockWarning)
             Padding(
@@ -570,7 +586,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
                 widget.pasteWarningText ?? 'Paste is disabled',
                 style: theme.pasteWarningStyle ??
                     TextStyle(
-                      color: errorColor,
+                      color: pasteWarningColor,
                       fontSize: 12,
                     ),
               ),

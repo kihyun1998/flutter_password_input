@@ -50,6 +50,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   Color? _borderColor;
   Color _focusBorderColor = Colors.deepPurple;
   Color _errorBorderColor = Colors.orange;
+  Color? _pasteWarningBorderColor;
   Color? _visibilityIconColor;
   double _visibilityIconSize = 20;
 
@@ -85,6 +86,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     borderColor: _borderColor,
     focusBorderColor: _focusBorderColor,
     errorBorderColor: _errorBorderColor,
+    pasteWarningBorderColor: _pasteWarningBorderColor,
     visibilityIconColor: _visibilityIconColor,
     visibilityIconSize: _visibilityIconSize,
   );
@@ -221,15 +223,15 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
           // Controls panel - provides sliders, switches, and color pickers
           Expanded(
             flex: 2,
-            child: ExcludeFocus(
+            child: FocusTraversalGroup(
               child: Container(
-                decoration: BoxDecoration(
-                  border: Border(left: BorderSide(color: Colors.grey.shade300)),
-                ),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              decoration: BoxDecoration(
+                border: Border(left: BorderSide(color: Colors.grey.shade300)),
+              ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'Controls',
@@ -280,6 +282,13 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       _buildColorPicker('Error Border', _errorBorderColor, (c) {
                         setState(() => _errorBorderColor = c);
                       }),
+                      _buildNullableColorPicker(
+                        'Paste Warning Border',
+                        _pasteWarningBorderColor,
+                        (c) {
+                          setState(() => _pasteWarningBorderColor = c);
+                        },
+                      ),
                       _buildNullableColorPicker(
                         'Visibility Icon',
                         _visibilityIconColor,
@@ -382,7 +391,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
               ),
             ),
           ),
-        ],
+          ],
       ),
     );
   }

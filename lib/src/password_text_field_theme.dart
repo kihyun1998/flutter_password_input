@@ -31,6 +31,7 @@ class PasswordTextFieldTheme {
     this.borderColor,
     this.focusBorderColor,
     this.errorBorderColor,
+    this.pasteWarningBorderColor,
     this.textStyle,
     this.labelStyle,
     this.hintStyle,
@@ -87,6 +88,13 @@ class PasswordTextFieldTheme {
   /// Also used for the Caps Lock warning message text color.
   /// Defaults to Colors.orange if not specified.
   final Color? errorBorderColor;
+
+  /// The border color when a paste attempt is blocked.
+  ///
+  /// Also used as the default paste warning message text color
+  /// when [pasteWarningStyle] is not specified.
+  /// If null, falls back to [errorBorderColor].
+  final Color? pasteWarningBorderColor;
 
   /// The text style for the input text.
   ///
@@ -160,6 +168,8 @@ class PasswordTextFieldTheme {
       borderColor: borderColor ?? other.borderColor,
       focusBorderColor: focusBorderColor ?? other.focusBorderColor,
       errorBorderColor: errorBorderColor ?? other.errorBorderColor,
+      pasteWarningBorderColor:
+          pasteWarningBorderColor ?? other.pasteWarningBorderColor,
       textStyle: textStyle ?? other.textStyle,
       labelStyle: labelStyle ?? other.labelStyle,
       hintStyle: hintStyle ?? other.hintStyle,
@@ -184,6 +194,7 @@ class PasswordTextFieldTheme {
     Color? borderColor,
     Color? focusBorderColor,
     Color? errorBorderColor,
+    Color? pasteWarningBorderColor,
     TextStyle? textStyle,
     TextStyle? labelStyle,
     TextStyle? hintStyle,
@@ -203,6 +214,8 @@ class PasswordTextFieldTheme {
       borderColor: borderColor ?? this.borderColor,
       focusBorderColor: focusBorderColor ?? this.focusBorderColor,
       errorBorderColor: errorBorderColor ?? this.errorBorderColor,
+      pasteWarningBorderColor:
+          pasteWarningBorderColor ?? this.pasteWarningBorderColor,
       textStyle: textStyle ?? this.textStyle,
       labelStyle: labelStyle ?? this.labelStyle,
       hintStyle: hintStyle ?? this.hintStyle,
