@@ -61,7 +61,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   bool _showPrefixWidget = false;
   bool _showSuffixWidget = false;
   bool _disablePaste = false;
+  bool _showPasteWarning = true;
   String _capsLockWarningText = 'Caps Lock is on!';
+  String _pasteWarningText = 'Paste is disabled!';
   String _labelText = 'Password';
   String _hintText = 'Enter your password';
 
@@ -168,6 +170,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                             )
                           : null,
                       disablePaste: _disablePaste,
+                      showPasteWarning: _showPasteWarning,
+                      pasteWarningText: _pasteWarningText,
                       onCapsLockStateChanged: (isCapsLockOn) {
                         setState(() => _isCapsLockOn = isCapsLockOn);
                       },
@@ -309,6 +313,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                           setState(() => _capsLockWarningText = v);
                         },
                       ),
+                      _buildTextField('Paste Warning', _pasteWarningText, (v) {
+                        setState(() => _pasteWarningText = v);
+                      }),
 
                       const SizedBox(height: 16),
                       // Widget behavior toggles
@@ -337,6 +344,11 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       }),
                       _buildSwitch('Disable Paste', _disablePaste, (v) {
                         setState(() => _disablePaste = v);
+                      }),
+                      _buildSwitch('Show Paste Warning', _showPasteWarning, (
+                        v,
+                      ) {
+                        setState(() => _showPasteWarning = v);
                       }),
 
                       const SizedBox(height: 16),

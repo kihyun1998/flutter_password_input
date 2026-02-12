@@ -1,3 +1,16 @@
+## 0.1.3
+
+**feat**
+- Add paste warning message when paste is blocked (`disablePaste: true`)
+  - `showPasteWarning`: Whether to show warning (default: true)
+  - `pasteWarningText`: Custom warning message (default: 'Paste is disabled')
+  - `pasteWarningDuration`: Auto-hide duration (default: 3 seconds)
+  - `onPasteBlocked`: Callback when paste attempt is blocked
+  - Warning auto-hides when user starts typing
+- Add `pasteWarningStyle` to `PasswordTextFieldTheme`
+
+---
+
 ## 0.1.2
 
 **feat**

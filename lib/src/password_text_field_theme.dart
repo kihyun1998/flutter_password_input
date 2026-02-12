@@ -36,6 +36,7 @@ class PasswordTextFieldTheme {
     this.hintStyle,
     this.floatingLabelStyle,
     this.capsLockWarningStyle,
+    this.pasteWarningStyle,
     this.visibilityIconColor,
     this.visibilityIconSize,
   });
@@ -108,6 +109,11 @@ class PasswordTextFieldTheme {
   /// If null, uses [errorBorderColor] with font size 12.
   final TextStyle? capsLockWarningStyle;
 
+  /// The text style for the paste warning message.
+  ///
+  /// If null, uses [errorBorderColor] with font size 12.
+  final TextStyle? pasteWarningStyle;
+
   /// The color of the visibility toggle icon.
   ///
   /// If null, uses the theme's hint color.
@@ -159,6 +165,7 @@ class PasswordTextFieldTheme {
       hintStyle: hintStyle ?? other.hintStyle,
       floatingLabelStyle: floatingLabelStyle ?? other.floatingLabelStyle,
       capsLockWarningStyle: capsLockWarningStyle ?? other.capsLockWarningStyle,
+      pasteWarningStyle: pasteWarningStyle ?? other.pasteWarningStyle,
       visibilityIconColor: visibilityIconColor ?? other.visibilityIconColor,
       visibilityIconSize: visibilityIconSize ?? other.visibilityIconSize,
     );
@@ -182,6 +189,7 @@ class PasswordTextFieldTheme {
     TextStyle? hintStyle,
     TextStyle? floatingLabelStyle,
     TextStyle? capsLockWarningStyle,
+    TextStyle? pasteWarningStyle,
     Color? visibilityIconColor,
     double? visibilityIconSize,
   }) {
@@ -200,6 +208,7 @@ class PasswordTextFieldTheme {
       hintStyle: hintStyle ?? this.hintStyle,
       floatingLabelStyle: floatingLabelStyle ?? this.floatingLabelStyle,
       capsLockWarningStyle: capsLockWarningStyle ?? this.capsLockWarningStyle,
+      pasteWarningStyle: pasteWarningStyle ?? this.pasteWarningStyle,
       visibilityIconColor: visibilityIconColor ?? this.visibilityIconColor,
       visibilityIconSize: visibilityIconSize ?? this.visibilityIconSize,
     );

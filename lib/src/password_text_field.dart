@@ -59,6 +59,10 @@ class PasswordTextField extends StatefulWidget {
     this.onCapsLockStateChanged,
     this.forceEnglishInput = true,
     this.disablePaste = false,
+    this.showPasteWarning = true,
+    this.pasteWarningText,
+    this.pasteWarningDuration = const Duration(seconds: 3),
+    this.onPasteBlocked,
   });
 
   /// Controls the text being edited.
@@ -192,6 +196,27 @@ class PasswordTextField extends StatefulWidget {
   /// Defaults to false.
   final bool disablePaste;
 
+  /// Whether to show a warning message when a paste attempt is blocked.
+  ///
+  /// Only effective when [disablePaste] is true.
+  /// Defaults to true.
+  final bool showPasteWarning;
+
+  /// The warning message to display when a paste attempt is blocked.
+  ///
+  /// If null, defaults to 'Paste is disabled'.
+  final String? pasteWarningText;
+
+  /// The duration to display the paste warning message before auto-hiding.
+  ///
+  /// Defaults to 3 seconds.
+  final Duration pasteWarningDuration;
+
+  /// Called when a paste attempt is blocked.
+  ///
+  /// Only called when [disablePaste] is true.
+  final VoidCallback? onPasteBlocked;
+
   @override
   State<PasswordTextField> createState() => _PasswordTextFieldState();
 }
@@ -201,6 +226,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   bool _isObscured = true;
   bool _isCapsLockOn = false;
   bool _hasFocus = false;
+  bool _showPasteWarning = false;
+  Timer? _pasteWarningTimer;
   StreamSubscription<bool>? _capsLockSubscription;
   StreamSubscription<bool>? _inputSourceSubscription;
 
@@ -241,6 +268,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }
+    _pasteWarningTimer?.cancel();
     _capsLockSubscription?.cancel();
     _inputSourceSubscription?.cancel();
     super.dispose();
@@ -349,6 +377,31 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     });
   }
 
+  void _onPasteBlocked() {
+    widget.onPasteBlocked?.call();
+
+    if (!widget.showPasteWarning) return;
+
+    _pasteWarningTimer?.cancel();
+    setState(() {
+      _showPasteWarning = true;
+    });
+    _pasteWarningTimer = Timer(widget.pasteWarningDuration, () {
+      if (!mounted) return;
+      setState(() {
+        _showPasteWarning = false;
+      });
+    });
+  }
+
+  void _hidePasteWarning() {
+    if (!_showPasteWarning) return;
+    _pasteWarningTimer?.cancel();
+    setState(() {
+      _showPasteWarning = false;
+    });
+  }
+
   Widget? _buildSuffixIcon(ThemeData appTheme) {
     final theme = _theme;
     final hasVisibilityToggle = widget.showVisibilityToggle;
@@ -406,7 +459,10 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         maxLength: widget.maxLength,
         inputFormatters: widget.inputFormatters,
         style: theme.textStyle ?? appTheme.textTheme.bodyMedium,
-        onChanged: widget.onChange,
+        onChanged: (value) {
+          _hidePasteWarning();
+          widget.onChange?.call(value);
+        },
         onSubmitted: widget.onSubmitted,
         decoration: InputDecoration(
           counterText: '',
@@ -462,7 +518,10 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       return Actions(
         actions: {
           PasteTextIntent: CallbackAction<PasteTextIntent>(
-            onInvoke: (intent) => null,
+            onInvoke: (intent) {
+              _onPasteBlocked();
+              return null;
+            },
           ),
         },
         child: textField,
@@ -497,6 +556,19 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
               child: Text(
                 widget.capsLockWarningText ?? 'Caps Lock is on',
                 style: theme.capsLockWarningStyle ??
+                    TextStyle(
+                      color: errorColor,
+                      fontSize: 12,
+                    ),
+              ),
+            ),
+          // Paste warning message
+          if (_showPasteWarning)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 4),
+              child: Text(
+                widget.pasteWarningText ?? 'Paste is disabled',
+                style: theme.pasteWarningStyle ??
                     TextStyle(
                       color: errorColor,
                       fontSize: 12,
