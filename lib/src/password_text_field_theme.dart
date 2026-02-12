@@ -1,5 +1,183 @@
 import 'package:flutter/material.dart';
 
+/// A theme class that defines the visual styling for warning tooltips.
+///
+/// Used when [WarningDisplayMode.tooltip] is active. All properties
+/// map directly to [JustTooltip] widget parameters.
+///
+/// Example usage:
+/// ```dart
+/// const tooltipTheme = WarningTooltipTheme(
+///   backgroundColor: Colors.black87,
+///   borderRadius: BorderRadius.all(Radius.circular(8)),
+///   textStyle: TextStyle(color: Colors.white, fontSize: 13),
+/// );
+/// ```
+class WarningTooltipTheme {
+  const WarningTooltipTheme({
+    this.backgroundColor,
+    this.borderRadius,
+    this.padding,
+    this.elevation,
+    this.boxShadow,
+    this.borderColor,
+    this.borderWidth,
+    this.textStyle,
+    this.offset,
+    this.crossAxisOffset,
+    this.screenMargin,
+    this.animationDuration,
+    this.showArrow,
+    this.arrowBaseWidth,
+    this.arrowLength,
+    this.arrowPositionRatio,
+  });
+
+  /// The background color of the tooltip.
+  ///
+  /// If null, defaults to Color(0xFF616161).
+  final Color? backgroundColor;
+
+  /// The border radius of the tooltip.
+  ///
+  /// If null, defaults to BorderRadius.circular(6).
+  final BorderRadius? borderRadius;
+
+  /// The padding inside the tooltip.
+  ///
+  /// If null, defaults to EdgeInsets.symmetric(horizontal: 12, vertical: 8).
+  final EdgeInsets? padding;
+
+  /// The shadow elevation of the tooltip.
+  ///
+  /// If null, defaults to 4.0.
+  final double? elevation;
+
+  /// Custom box shadows for the tooltip.
+  ///
+  /// When provided, overrides the default elevation-based shadow.
+  final List<BoxShadow>? boxShadow;
+
+  /// The border color drawn along the tooltip outline.
+  ///
+  /// When [showArrow] is true, the border follows the unified shape
+  /// including the arrow. If null or [borderWidth] is 0, no border is drawn.
+  final Color? borderColor;
+
+  /// The border stroke width.
+  ///
+  /// If null, defaults to 0.0 (no border).
+  final double? borderWidth;
+
+  /// The default text style for tooltip content.
+  ///
+  /// If null, individual warning styles
+  /// ([capsLockWarningStyle], [pasteWarningStyle]) are used instead.
+  final TextStyle? textStyle;
+
+  /// The gap between the tooltip and the target widget.
+  ///
+  /// If null, defaults to 8.0.
+  final double? offset;
+
+  /// The cross-axis offset of the tooltip.
+  ///
+  /// If null, defaults to 0.0.
+  final double? crossAxisOffset;
+
+  /// Minimum distance between the tooltip and the viewport edges.
+  ///
+  /// If null, defaults to 8.0.
+  final double? screenMargin;
+
+  /// The duration of the tooltip fade animation.
+  ///
+  /// If null, defaults to 150ms.
+  final Duration? animationDuration;
+
+  /// Whether to show an arrow pointing from the tooltip to the target widget.
+  ///
+  /// If null, defaults to false.
+  final bool? showArrow;
+
+  /// The base width of the tooltip arrow.
+  ///
+  /// Only used when [showArrow] is true.
+  final double? arrowBaseWidth;
+
+  /// The length of the tooltip arrow.
+  ///
+  /// Only used when [showArrow] is true.
+  final double? arrowLength;
+
+  /// The position ratio of the arrow along the tooltip edge.
+  ///
+  /// A value between 0.0 and 1.0. Only used when [showArrow] is true.
+  final double? arrowPositionRatio;
+
+  /// Merges this theme with another, with this theme's values taking priority.
+  WarningTooltipTheme merge(WarningTooltipTheme? other) {
+    if (other == null) return this;
+    return WarningTooltipTheme(
+      backgroundColor: backgroundColor ?? other.backgroundColor,
+      borderRadius: borderRadius ?? other.borderRadius,
+      padding: padding ?? other.padding,
+      elevation: elevation ?? other.elevation,
+      boxShadow: boxShadow ?? other.boxShadow,
+      borderColor: borderColor ?? other.borderColor,
+      borderWidth: borderWidth ?? other.borderWidth,
+      textStyle: textStyle ?? other.textStyle,
+      offset: offset ?? other.offset,
+      crossAxisOffset: crossAxisOffset ?? other.crossAxisOffset,
+      screenMargin: screenMargin ?? other.screenMargin,
+      animationDuration: animationDuration ?? other.animationDuration,
+      showArrow: showArrow ?? other.showArrow,
+      arrowBaseWidth: arrowBaseWidth ?? other.arrowBaseWidth,
+      arrowLength: arrowLength ?? other.arrowLength,
+      arrowPositionRatio: arrowPositionRatio ?? other.arrowPositionRatio,
+    );
+  }
+
+  /// Creates a copy with the given properties overridden.
+  WarningTooltipTheme copyWith({
+    Color? backgroundColor,
+    BorderRadius? borderRadius,
+    EdgeInsets? padding,
+    double? elevation,
+    List<BoxShadow>? boxShadow,
+    Color? borderColor,
+    double? borderWidth,
+    TextStyle? textStyle,
+    double? offset,
+    double? crossAxisOffset,
+    double? screenMargin,
+    Duration? animationDuration,
+    bool? showArrow,
+    double? arrowBaseWidth,
+    double? arrowLength,
+    double? arrowPositionRatio,
+  }) {
+    return WarningTooltipTheme(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      borderRadius: borderRadius ?? this.borderRadius,
+      padding: padding ?? this.padding,
+      elevation: elevation ?? this.elevation,
+      boxShadow: boxShadow ?? this.boxShadow,
+      borderColor: borderColor ?? this.borderColor,
+      borderWidth: borderWidth ?? this.borderWidth,
+      textStyle: textStyle ?? this.textStyle,
+      offset: offset ?? this.offset,
+      crossAxisOffset: crossAxisOffset ?? this.crossAxisOffset,
+      screenMargin: screenMargin ?? this.screenMargin,
+      animationDuration: animationDuration ?? this.animationDuration,
+      showArrow: showArrow ?? this.showArrow,
+      arrowBaseWidth: arrowBaseWidth ?? this.arrowBaseWidth,
+      arrowLength: arrowLength ?? this.arrowLength,
+      arrowPositionRatio: arrowPositionRatio ?? this.arrowPositionRatio,
+    );
+  }
+}
+
 /// A theme class that defines the visual styling for [PasswordTextField].
 ///
 /// This class encapsulates all style-related properties, allowing for
@@ -40,6 +218,7 @@ class PasswordTextFieldTheme {
     this.pasteWarningStyle,
     this.visibilityIconColor,
     this.visibilityIconSize,
+    this.tooltipTheme,
   });
 
   /// The width of the text field.
@@ -132,6 +311,12 @@ class PasswordTextFieldTheme {
   /// Defaults to 20 if not specified.
   final double? visibilityIconSize;
 
+  /// The theme for warning tooltips.
+  ///
+  /// Only used when [WarningDisplayMode.tooltip] is active.
+  /// See [WarningTooltipTheme] for available customization options.
+  final WarningTooltipTheme? tooltipTheme;
+
   /// The default theme values used when properties are not specified.
   ///
   /// Contains the following defaults:
@@ -178,6 +363,8 @@ class PasswordTextFieldTheme {
       pasteWarningStyle: pasteWarningStyle ?? other.pasteWarningStyle,
       visibilityIconColor: visibilityIconColor ?? other.visibilityIconColor,
       visibilityIconSize: visibilityIconSize ?? other.visibilityIconSize,
+      tooltipTheme:
+          tooltipTheme?.merge(other.tooltipTheme) ?? other.tooltipTheme,
     );
   }
 
@@ -203,6 +390,7 @@ class PasswordTextFieldTheme {
     TextStyle? pasteWarningStyle,
     Color? visibilityIconColor,
     double? visibilityIconSize,
+    WarningTooltipTheme? tooltipTheme,
   }) {
     return PasswordTextFieldTheme(
       width: width ?? this.width,
@@ -224,6 +412,7 @@ class PasswordTextFieldTheme {
       pasteWarningStyle: pasteWarningStyle ?? this.pasteWarningStyle,
       visibilityIconColor: visibilityIconColor ?? this.visibilityIconColor,
       visibilityIconSize: visibilityIconSize ?? this.visibilityIconSize,
+      tooltipTheme: tooltipTheme ?? this.tooltipTheme,
     );
   }
 }

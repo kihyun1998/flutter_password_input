@@ -1,3 +1,23 @@
+## 0.1.5
+
+**feat**
+- Add `WarningDisplayMode` enum (`message`, `tooltip`) to switch warning display between inline text and tooltip
+- Add `warningDisplayMode` to `PasswordTextField` (default: `message`)
+- Tooltip mode uses `just_tooltip` package with per-warning independent positioning via `capsLockWarningAlignment` and `pasteWarningAlignment`
+- Add `WarningTooltipTheme` class for full tooltip styling customization:
+  - `backgroundColor`, `borderRadius`, `padding`, `elevation`, `boxShadow`
+  - `borderColor`, `borderWidth`
+  - `textStyle`, `offset`, `crossAxisOffset`, `screenMargin`
+  - `animationDuration`
+  - `showArrow`, `arrowBaseWidth`, `arrowLength`, `arrowPositionRatio`
+- Add `tooltipTheme` to `PasswordTextFieldTheme`
+- Paste warning now hides when focus is lost (consistent with Caps Lock warning behavior)
+
+**deps**
+- Add `just_tooltip: ^0.1.7`
+
+---
+
 ## 0.1.4
 
 **feat**

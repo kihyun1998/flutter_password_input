@@ -65,6 +65,21 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   bool _showPasteWarning = true;
   WarningAlignment _capsLockWarningAlignment = WarningAlignment.bottomLeft;
   WarningAlignment _pasteWarningAlignment = WarningAlignment.bottomLeft;
+  WarningDisplayMode _warningDisplayMode = WarningDisplayMode.message;
+
+  // Tooltip theme options
+  Color _tooltipBgColor = const Color(0xFF616161);
+  double _tooltipBorderRadius = 6;
+  double _tooltipPaddingH = 12;
+  double _tooltipPaddingV = 8;
+  double _tooltipElevation = 4;
+  double _tooltipOffset = 8;
+  double _tooltipCrossAxisOffset = 0;
+  bool _tooltipShowArrow = false;
+  double _tooltipArrowBaseWidth = 16;
+  double _tooltipArrowLength = 8;
+  double _tooltipArrowPositionRatio = 0.5;
+
   String _capsLockWarningText = 'Caps Lock is on!';
   String _pasteWarningText = 'Paste is disabled!';
   String _labelText = 'Password';
@@ -91,6 +106,21 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     pasteWarningBorderColor: _pasteWarningBorderColor,
     visibilityIconColor: _visibilityIconColor,
     visibilityIconSize: _visibilityIconSize,
+    tooltipTheme: WarningTooltipTheme(
+      backgroundColor: _tooltipBgColor,
+      borderRadius: BorderRadius.circular(_tooltipBorderRadius),
+      padding: EdgeInsets.symmetric(
+        horizontal: _tooltipPaddingH,
+        vertical: _tooltipPaddingV,
+      ),
+      elevation: _tooltipElevation,
+      offset: _tooltipOffset,
+      crossAxisOffset: _tooltipCrossAxisOffset,
+      showArrow: _tooltipShowArrow,
+      arrowBaseWidth: _tooltipArrowBaseWidth,
+      arrowLength: _tooltipArrowLength,
+      arrowPositionRatio: _tooltipArrowPositionRatio,
+    ),
   );
 
   @override
@@ -178,6 +208,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       showPasteWarning: _showPasteWarning,
                       pasteWarningText: _pasteWarningText,
                       pasteWarningAlignment: _pasteWarningAlignment,
+                      warningDisplayMode: _warningDisplayMode,
                       onCapsLockStateChanged: (isCapsLockOn) {
                         setState(() => _isCapsLockOn = isCapsLockOn);
                       },
@@ -341,6 +372,12 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       ),
 
                       const SizedBox(height: 16),
+                      _buildSectionTitle('Warning Display Mode'),
+                      _buildWarningDisplayModePicker(),
+                      if (_warningDisplayMode == WarningDisplayMode.tooltip)
+                        ..._buildTooltipThemeControls(),
+
+                      const SizedBox(height: 16),
                       // Widget behavior toggles
                       _buildSectionTitle('Widget - Toggles'),
                       _buildSwitch(
@@ -436,6 +473,53 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     );
   }
 
+  /// Builds tooltip theme controls shown when tooltip mode is active.
+  List<Widget> _buildTooltipThemeControls() {
+    return [
+      const SizedBox(height: 8),
+      _buildSectionTitle('Tooltip Theme'),
+      _buildColorPicker('Tooltip Background', _tooltipBgColor, (c) {
+        setState(() => _tooltipBgColor = c);
+      }),
+      _buildSlider('Tooltip Border Radius', _tooltipBorderRadius, 0, 20, (v) {
+        setState(() => _tooltipBorderRadius = v);
+      }),
+      _buildSlider('Tooltip Padding H', _tooltipPaddingH, 0, 24, (v) {
+        setState(() => _tooltipPaddingH = v);
+      }),
+      _buildSlider('Tooltip Padding V', _tooltipPaddingV, 0, 24, (v) {
+        setState(() => _tooltipPaddingV = v);
+      }),
+      _buildSlider('Tooltip Elevation', _tooltipElevation, 0, 16, (v) {
+        setState(() => _tooltipElevation = v);
+      }),
+      _buildSlider('Tooltip Offset', _tooltipOffset, 0, 24, (v) {
+        setState(() => _tooltipOffset = v);
+      }),
+      _buildSlider('Tooltip Cross Offset', _tooltipCrossAxisOffset, -20, 20, (
+        v,
+      ) {
+        setState(() => _tooltipCrossAxisOffset = v);
+      }),
+      _buildSwitch('Show Arrow', _tooltipShowArrow, (v) {
+        setState(() => _tooltipShowArrow = v);
+      }),
+      if (_tooltipShowArrow) ...[
+        _buildSlider('Arrow Base Width', _tooltipArrowBaseWidth, 4, 32, (v) {
+          setState(() => _tooltipArrowBaseWidth = v);
+        }),
+        _buildSlider('Arrow Length', _tooltipArrowLength, 2, 20, (v) {
+          setState(() => _tooltipArrowLength = v);
+        }),
+        _buildSlider('Arrow Position Ratio', _tooltipArrowPositionRatio, 0, 1, (
+          v,
+        ) {
+          setState(() => _tooltipArrowPositionRatio = v);
+        }),
+      ],
+    ];
+  }
+
   /// Builds a section title with consistent styling.
   Widget _buildSectionTitle(String title) {
     return Padding(
@@ -499,6 +583,30 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
         ),
         style: const TextStyle(fontSize: 13),
         onChanged: onChanged,
+      ),
+    );
+  }
+
+  /// Builds a toggle for [WarningDisplayMode].
+  Widget _buildWarningDisplayModePicker() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: WarningDisplayMode.values.map((mode) {
+          final isSelected = _warningDisplayMode == mode;
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: ChoiceChip(
+                label: Text(mode.name),
+                selected: isSelected,
+                onSelected: (_) {
+                  setState(() => _warningDisplayMode = mode);
+                },
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
