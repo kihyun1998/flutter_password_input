@@ -63,6 +63,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   bool _showSuffixWidget = false;
   bool _disablePaste = false;
   bool _showPasteWarning = true;
+  WarningAlignment _capsLockWarningAlignment = WarningAlignment.bottomLeft;
+  WarningAlignment _pasteWarningAlignment = WarningAlignment.bottomLeft;
   String _capsLockWarningText = 'Caps Lock is on!';
   String _pasteWarningText = 'Paste is disabled!';
   String _labelText = 'Password';
@@ -152,6 +154,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       useFloatingLabel: _useFloatingLabel,
                       enabled: _enabled,
                       capsLockWarningText: _capsLockWarningText,
+                      capsLockWarningAlignment: _capsLockWarningAlignment,
                       prefixWidget: _showPrefixWidget
                           ? const Padding(
                               padding: EdgeInsets.only(left: 12),
@@ -174,6 +177,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       disablePaste: _disablePaste,
                       showPasteWarning: _showPasteWarning,
                       pasteWarningText: _pasteWarningText,
+                      pasteWarningAlignment: _pasteWarningAlignment,
                       onCapsLockStateChanged: (isCapsLockOn) {
                         setState(() => _isCapsLockOn = isCapsLockOn);
                       },
@@ -325,6 +329,16 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       _buildTextField('Paste Warning', _pasteWarningText, (v) {
                         setState(() => _pasteWarningText = v);
                       }),
+                      _buildWarningAlignmentPicker(
+                        'Caps Lock Warning Alignment',
+                        _capsLockWarningAlignment,
+                        (v) => setState(() => _capsLockWarningAlignment = v),
+                      ),
+                      _buildWarningAlignmentPicker(
+                        'Paste Warning Alignment',
+                        _pasteWarningAlignment,
+                        (v) => setState(() => _pasteWarningAlignment = v),
+                      ),
 
                       const SizedBox(height: 16),
                       // Widget behavior toggles
@@ -485,6 +499,40 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
         ),
         style: const TextStyle(fontSize: 13),
         onChanged: onChanged,
+      ),
+    );
+  }
+
+  /// Builds a dropdown picker for [WarningAlignment].
+  Widget _buildWarningAlignmentPicker(
+    String label,
+    WarningAlignment value,
+    ValueChanged<WarningAlignment> onChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Text(label, style: const TextStyle(fontSize: 12)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: DropdownButton<WarningAlignment>(
+              value: value,
+              isExpanded: true,
+              isDense: true,
+              style: const TextStyle(fontSize: 12, color: Colors.black),
+              items: WarningAlignment.values
+                  .map((a) => DropdownMenuItem(
+                        value: a,
+                        child: Text(a.name),
+                      ))
+                  .toList(),
+              onChanged: (v) {
+                if (v != null) onChanged(v);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

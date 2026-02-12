@@ -7,6 +7,16 @@ import 'package:flutter_ime/flutter_ime.dart';
 
 import 'password_text_field_theme.dart';
 
+/// Alignment options for warning messages displayed around the text field.
+enum WarningAlignment {
+  topLeft,
+  topCenter,
+  topRight,
+  bottomLeft,
+  bottomCenter,
+  bottomRight,
+}
+
 /// A password text field widget that detects Caps Lock state and displays
 /// a customizable warning message when Caps Lock is enabled.
 ///
@@ -46,6 +56,7 @@ class PasswordTextField extends StatefulWidget {
     this.margin,
     this.inputFormatters,
     this.capsLockWarningText,
+    this.capsLockWarningAlignment = WarningAlignment.bottomLeft,
     this.showCapsLockWarning = true,
     this.showVisibilityToggle = true,
     this.visibilityOnIcon,
@@ -62,6 +73,7 @@ class PasswordTextField extends StatefulWidget {
     this.showPasteWarning = true,
     this.pasteWarningText,
     this.pasteWarningDuration = const Duration(seconds: 3),
+    this.pasteWarningAlignment = WarningAlignment.bottomLeft,
     this.onPasteBlocked,
   });
 
@@ -127,6 +139,11 @@ class PasswordTextField extends StatefulWidget {
   ///
   /// If null, defaults to 'Caps Lock is on'.
   final String? capsLockWarningText;
+
+  /// The alignment of the Caps Lock warning message.
+  ///
+  /// Defaults to [WarningAlignment.bottomLeft].
+  final WarningAlignment capsLockWarningAlignment;
 
   /// Whether to show the Caps Lock warning message when Caps Lock is enabled.
   ///
@@ -211,6 +228,11 @@ class PasswordTextField extends StatefulWidget {
   ///
   /// Defaults to 3 seconds.
   final Duration pasteWarningDuration;
+
+  /// The alignment of the paste warning message.
+  ///
+  /// Defaults to [WarningAlignment.bottomLeft].
+  final WarningAlignment pasteWarningAlignment;
 
   /// Called when a paste attempt is blocked.
   ///
@@ -402,6 +424,41 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     });
   }
 
+  bool _isTopAlignment(WarningAlignment alignment) {
+    return alignment == WarningAlignment.topLeft ||
+        alignment == WarningAlignment.topCenter ||
+        alignment == WarningAlignment.topRight;
+  }
+
+  Alignment _toAlignment(WarningAlignment alignment) {
+    switch (alignment) {
+      case WarningAlignment.topLeft:
+      case WarningAlignment.bottomLeft:
+        return Alignment.centerLeft;
+      case WarningAlignment.topCenter:
+      case WarningAlignment.bottomCenter:
+        return Alignment.center;
+      case WarningAlignment.topRight:
+      case WarningAlignment.bottomRight:
+        return Alignment.centerRight;
+    }
+  }
+
+  Widget _buildWarning(
+      String text, TextStyle style, WarningAlignment alignment) {
+    final isTop = _isTopAlignment(alignment);
+    return Padding(
+      padding: EdgeInsets.only(
+        top: isTop ? 0 : 4,
+        bottom: isTop ? 4 : 0,
+      ),
+      child: Align(
+        alignment: _toAlignment(alignment),
+        child: Text(text, style: style),
+      ),
+    );
+  }
+
   Widget? _buildSuffixIcon(ThemeData appTheme) {
     final theme = _theme;
     final hasVisibilityToggle = widget.showVisibilityToggle;
@@ -556,41 +613,49 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         theme.pasteWarningBorderColor ?? errorColor;
     final focusColor = theme.focusBorderColor ?? appTheme.primaryColor;
 
+    Widget? capsLockWarning;
+    if (showCapsLockWarning) {
+      capsLockWarning = _buildWarning(
+        widget.capsLockWarningText ?? 'Caps Lock is on',
+        theme.capsLockWarningStyle ??
+            TextStyle(color: errorColor, fontSize: 12),
+        widget.capsLockWarningAlignment,
+      );
+    }
+
+    Widget? pasteWarning;
+    if (_showPasteWarning) {
+      pasteWarning = _buildWarning(
+        widget.pasteWarningText ?? 'Paste is disabled',
+        theme.pasteWarningStyle ??
+            TextStyle(color: pasteWarningColor, fontSize: 12),
+        widget.pasteWarningAlignment,
+      );
+    }
+
     return Container(
       margin: widget.margin,
       width: theme.width,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Top warnings
+          if (capsLockWarning != null &&
+              _isTopAlignment(widget.capsLockWarningAlignment))
+            capsLockWarning,
+          if (pasteWarning != null &&
+              _isTopAlignment(widget.pasteWarningAlignment))
+            pasteWarning,
+          // TextField
           _buildTextField(appTheme, theme, showCapsLockWarning, errorColor,
               pasteWarningColor, focusColor),
-          // Caps Lock warning message
-          if (showCapsLockWarning)
-            Padding(
-              padding: const EdgeInsets.only(top: 4, left: 4),
-              child: Text(
-                widget.capsLockWarningText ?? 'Caps Lock is on',
-                style: theme.capsLockWarningStyle ??
-                    TextStyle(
-                      color: errorColor,
-                      fontSize: 12,
-                    ),
-              ),
-            ),
-          // Paste warning message
-          if (_showPasteWarning)
-            Padding(
-              padding: const EdgeInsets.only(top: 4, left: 4),
-              child: Text(
-                widget.pasteWarningText ?? 'Paste is disabled',
-                style: theme.pasteWarningStyle ??
-                    TextStyle(
-                      color: pasteWarningColor,
-                      fontSize: 12,
-                    ),
-              ),
-            ),
+          // Bottom warnings
+          if (capsLockWarning != null &&
+              !_isTopAlignment(widget.capsLockWarningAlignment))
+            capsLockWarning,
+          if (pasteWarning != null &&
+              !_isTopAlignment(widget.pasteWarningAlignment))
+            pasteWarning,
         ],
       ),
     );
