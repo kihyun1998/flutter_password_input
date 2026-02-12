@@ -609,8 +609,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         widget.showCapsLockWarning && _isCapsLockOn && _hasFocus;
 
     final errorColor = theme.errorBorderColor ?? Colors.orange;
-    final pasteWarningColor =
-        theme.pasteWarningBorderColor ?? errorColor;
+    final pasteWarningColor = theme.pasteWarningBorderColor ?? errorColor;
     final focusColor = theme.focusBorderColor ?? appTheme.primaryColor;
 
     Widget? capsLockWarning;

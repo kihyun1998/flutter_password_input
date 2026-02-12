@@ -229,13 +229,13 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
             flex: 2,
             child: FocusTraversalGroup(
               child: Container(
-              decoration: BoxDecoration(
-                border: Border(left: BorderSide(color: Colors.grey.shade300)),
-              ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                decoration: BoxDecoration(
+                  border: Border(left: BorderSide(color: Colors.grey.shade300)),
+                ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'Controls',
@@ -405,7 +405,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
               ),
             ),
           ),
-          ],
+        ],
       ),
     );
   }
@@ -522,10 +522,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
               isDense: true,
               style: const TextStyle(fontSize: 12, color: Colors.black),
               items: WarningAlignment.values
-                  .map((a) => DropdownMenuItem(
-                        value: a,
-                        child: Text(a.name),
-                      ))
+                  .map((a) => DropdownMenuItem(value: a, child: Text(a.name)))
                   .toList(),
               onChanged: (v) {
                 if (v != null) onChanged(v);

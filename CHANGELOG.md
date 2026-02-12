@@ -1,3 +1,13 @@
+## 0.1.4
+
+**feat**
+- Add `WarningAlignment` enum with 6 positions (`topLeft`, `topCenter`, `topRight`, `bottomLeft`, `bottomCenter`, `bottomRight`)
+- Add `capsLockWarningAlignment` and `pasteWarningAlignment` to `PasswordTextField` (default: `bottomLeft`)
+- Add `pasteWarningBorderColor` to `PasswordTextFieldTheme` for independent paste warning border/text color (falls back to `errorBorderColor`)
+- Paste warning now changes border color and floating label color
+
+---
+
 ## 0.1.3
 
 **feat**
