@@ -31,6 +31,7 @@ class WarningTooltipTheme {
     this.arrowBaseWidth,
     this.arrowLength,
     this.arrowPositionRatio,
+    this.interactive,
   });
 
   /// The background color of the tooltip.
@@ -115,6 +116,12 @@ class WarningTooltipTheme {
   /// A value between 0.0 and 1.0. Only used when [showArrow] is true.
   final double? arrowPositionRatio;
 
+  /// Whether the tooltip content is interactive.
+  ///
+  /// When true, hovering over the tooltip keeps it visible.
+  /// If null, defaults to true.
+  final bool? interactive;
+
   /// Merges this theme with another, with this theme's values taking priority.
   WarningTooltipTheme merge(WarningTooltipTheme? other) {
     if (other == null) return this;
@@ -135,6 +142,7 @@ class WarningTooltipTheme {
       arrowBaseWidth: arrowBaseWidth ?? other.arrowBaseWidth,
       arrowLength: arrowLength ?? other.arrowLength,
       arrowPositionRatio: arrowPositionRatio ?? other.arrowPositionRatio,
+      interactive: interactive ?? other.interactive,
     );
   }
 
@@ -156,6 +164,7 @@ class WarningTooltipTheme {
     double? arrowBaseWidth,
     double? arrowLength,
     double? arrowPositionRatio,
+    bool? interactive,
   }) {
     return WarningTooltipTheme(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -174,6 +183,7 @@ class WarningTooltipTheme {
       arrowBaseWidth: arrowBaseWidth ?? this.arrowBaseWidth,
       arrowLength: arrowLength ?? this.arrowLength,
       arrowPositionRatio: arrowPositionRatio ?? this.arrowPositionRatio,
+      interactive: interactive ?? this.interactive,
     );
   }
 }

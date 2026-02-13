@@ -1,3 +1,14 @@
+## 0.1.6
+
+**feat**
+- Add `interactive` option to `WarningTooltipTheme` to control whether tooltip stays visible on hover (default: true)
+
+**deps**
+- Upgrade `just_tooltip` from `^0.1.7` to `^0.2.0`
+- Migrate tooltip styling parameters to new `JustTooltipTheme` API (breaking change in just_tooltip 0.2.0)
+
+---
+
 ## 0.1.5
 
 **feat**

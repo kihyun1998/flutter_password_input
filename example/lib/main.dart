@@ -79,6 +79,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   double _tooltipArrowBaseWidth = 16;
   double _tooltipArrowLength = 8;
   double _tooltipArrowPositionRatio = 0.5;
+  bool _tooltipInteractive = true;
 
   String _capsLockWarningText = 'Caps Lock is on!';
   String _pasteWarningText = 'Paste is disabled!';
@@ -120,6 +121,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       arrowBaseWidth: _tooltipArrowBaseWidth,
       arrowLength: _tooltipArrowLength,
       arrowPositionRatio: _tooltipArrowPositionRatio,
+      interactive: _tooltipInteractive,
     ),
   );
 
@@ -500,6 +502,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
         v,
       ) {
         setState(() => _tooltipCrossAxisOffset = v);
+      }),
+      _buildSwitch('Interactive', _tooltipInteractive, (v) {
+        setState(() => _tooltipInteractive = v);
       }),
       _buildSwitch('Show Arrow', _tooltipShowArrow, (v) {
         setState(() => _tooltipShowArrow = v);

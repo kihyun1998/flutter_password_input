@@ -15,7 +15,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.1.5
+  flutter_password_input: ^0.1.6
 ```
 
 ## Usage
@@ -54,6 +54,93 @@ PasswordTextField(
   ),
 )
 ```
+
+## Properties
+
+### PasswordTextField
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `controller` | `TextEditingController?` | `null` | Controls the text being edited |
+| `focusNode` | `FocusNode?` | `null` | Defines the keyboard focus |
+| `theme` | `PasswordTextFieldTheme?` | `null` | Theme for styling |
+| `labelText` | `String?` | `null` | Label text above the field |
+| `hintText` | `String?` | `null` | Hint text when empty (falls back to `labelText`) |
+| `maxLength` | `int?` | `null` | Maximum character count |
+| `enabled` | `bool?` | `null` | Whether the field is enabled |
+| `autofocus` | `bool` | `false` | Auto-focus on build |
+| `useFloatingLabel` | `bool` | `true` | Floating label animation |
+| `margin` | `EdgeInsetsGeometry?` | `null` | Margin around the widget |
+| `inputFormatters` | `List<TextInputFormatter>?` | `null` | Input formatters |
+| `forceEnglishInput` | `bool` | `true` | Force English keyboard input |
+| `showVisibilityToggle` | `bool` | `true` | Show password visibility toggle |
+| `visibilityOnIcon` | `Widget?` | `null` | Custom icon when password visible |
+| `visibilityOffIcon` | `Widget?` | `null` | Custom icon when password hidden |
+| `prefixWidget` | `Widget?` | `null` | Widget before the input area |
+| `suffixWidget` | `Widget?` | `null` | Widget after the input area |
+| `showCapsLockWarning` | `bool` | `true` | Show Caps Lock warning |
+| `capsLockWarningText` | `String?` | `'Caps Lock is on'` | Caps Lock warning message |
+| `capsLockWarningAlignment` | `WarningAlignment` | `bottomLeft` | Caps Lock warning position |
+| `disablePaste` | `bool` | `false` | Block paste functionality |
+| `showPasteWarning` | `bool` | `true` | Show paste blocked warning |
+| `pasteWarningText` | `String?` | `'Paste is disabled'` | Paste warning message |
+| `pasteWarningDuration` | `Duration` | `3 seconds` | Auto-hide duration for paste warning |
+| `pasteWarningAlignment` | `WarningAlignment` | `bottomLeft` | Paste warning position |
+| `warningDisplayMode` | `WarningDisplayMode` | `message` | `message` (inline text) or `tooltip` |
+| `onFocus` | `VoidCallback?` | `null` | Called on focus gained |
+| `onLostFocus` | `VoidCallback?` | `null` | Called on focus lost |
+| `onChange` | `ValueChanged<String>?` | `null` | Called on text change |
+| `onSubmitted` | `ValueChanged<String>?` | `null` | Called on submit (Enter) |
+| `onCapsLockStateChanged` | `ValueChanged<bool>?` | `null` | Called on Caps Lock state change |
+| `onPasteBlocked` | `VoidCallback?` | `null` | Called when paste is blocked |
+
+### PasswordTextFieldTheme
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `width` | `double?` | `250` | Field width |
+| `height` | `double?` | `48` | Field height |
+| `borderWidth` | `double?` | `1` | Border width (0 to remove) |
+| `borderRadius` | `double?` | `8` | Corner radius |
+| `contentPadding` | `EdgeInsetsGeometry?` | `h:12, v:14` | Internal padding |
+| `backgroundColor` | `Color?` | `null` | Fill color |
+| `borderColor` | `Color?` | `null` | Border color (unfocused) |
+| `focusBorderColor` | `Color?` | `null` | Border color (focused) |
+| `errorBorderColor` | `Color?` | `Colors.orange` | Border color (Caps Lock on) |
+| `pasteWarningBorderColor` | `Color?` | `null` | Border color (paste blocked, falls back to `errorBorderColor`) |
+| `textStyle` | `TextStyle?` | `null` | Input text style |
+| `labelStyle` | `TextStyle?` | `null` | Label text style |
+| `hintStyle` | `TextStyle?` | `null` | Hint text style |
+| `floatingLabelStyle` | `TextStyle?` | `null` | Floating label style |
+| `capsLockWarningStyle` | `TextStyle?` | `null` | Caps Lock warning style |
+| `pasteWarningStyle` | `TextStyle?` | `null` | Paste warning style |
+| `visibilityIconColor` | `Color?` | `null` | Visibility icon color |
+| `visibilityIconSize` | `double?` | `20` | Visibility icon size |
+| `tooltipTheme` | `WarningTooltipTheme?` | `null` | Tooltip styling (tooltip mode only) |
+
+### WarningTooltipTheme
+
+Used when `warningDisplayMode` is `WarningDisplayMode.tooltip`.
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `backgroundColor` | `Color?` | `Color(0xFF616161)` | Tooltip background color |
+| `borderRadius` | `BorderRadius?` | `circular(6)` | Tooltip corner radius |
+| `padding` | `EdgeInsets?` | `h:12, v:8` | Tooltip internal padding |
+| `elevation` | `double?` | `4.0` | Shadow elevation |
+| `boxShadow` | `List<BoxShadow>?` | `null` | Custom box shadows |
+| `borderColor` | `Color?` | `null` | Tooltip border color |
+| `borderWidth` | `double?` | `0.0` | Tooltip border width |
+| `textStyle` | `TextStyle?` | `null` | Tooltip text style |
+| `offset` | `double?` | `8.0` | Gap between tooltip and target |
+| `crossAxisOffset` | `double?` | `0.0` | Cross-axis offset |
+| `screenMargin` | `double?` | `8.0` | Minimum distance from viewport edges |
+| `animationDuration` | `Duration?` | `150ms` | Fade animation duration |
+| `showArrow` | `bool?` | `false` | Show arrow pointer |
+| `arrowBaseWidth` | `double?` | `12.0` | Arrow base width |
+| `arrowLength` | `double?` | `6.0` | Arrow length |
+| `arrowPositionRatio` | `double?` | `0.25` | Arrow position (0.0-1.0) |
+| `interactive` | `bool?` | `true` | Keep tooltip visible on hover |
 
 ## License
 

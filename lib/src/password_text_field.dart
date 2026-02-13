@@ -718,23 +718,30 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           _mapWarningAlignmentToTooltip(widget.pasteWarningAlignment);
 
       final tt = theme.tooltipTheme;
-      final tooltipBg = tt?.backgroundColor ?? const Color(0xFF616161);
-      final tooltipRadius = tt?.borderRadius ?? BorderRadius.circular(6);
-      final tooltipPadding = tt?.padding ??
-          const EdgeInsets.symmetric(horizontal: 12, vertical: 8);
-      final tooltipElevation = tt?.elevation ?? 4.0;
-      final tooltipBoxShadow = tt?.boxShadow;
       final tooltipOffset = tt?.offset ?? 8.0;
       final tooltipCrossAxisOffset = tt?.crossAxisOffset ?? 0.0;
       final tooltipAnimationDuration =
           tt?.animationDuration ?? const Duration(milliseconds: 150);
-      final tooltipBorderColor = tt?.borderColor;
-      final tooltipBorderWidth = tt?.borderWidth ?? 0.0;
       final tooltipScreenMargin = tt?.screenMargin ?? 8.0;
-      final tooltipShowArrow = tt?.showArrow ?? false;
-      final tooltipArrowBaseWidth = tt?.arrowBaseWidth ?? 12.0;
-      final tooltipArrowLength = tt?.arrowLength ?? 6.0;
-      final tooltipArrowPositionRatio = tt?.arrowPositionRatio ?? 0.25;
+      final tooltipInteractive = tt?.interactive ?? true;
+
+      jt.JustTooltipTheme buildTooltipTheme(TextStyle textStyle) {
+        return jt.JustTooltipTheme(
+          backgroundColor: tt?.backgroundColor ?? const Color(0xFF616161),
+          borderRadius: tt?.borderRadius ?? BorderRadius.circular(6),
+          padding: tt?.padding ??
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          elevation: tt?.elevation ?? 4.0,
+          boxShadow: tt?.boxShadow,
+          borderColor: tt?.borderColor,
+          borderWidth: tt?.borderWidth ?? 0.0,
+          textStyle: textStyle,
+          showArrow: tt?.showArrow ?? false,
+          arrowBaseWidth: tt?.arrowBaseWidth ?? 12.0,
+          arrowLength: tt?.arrowLength ?? 6.0,
+          arrowPositionRatio: tt?.arrowPositionRatio ?? 0.25,
+        );
+      }
 
       Widget child = textField;
 
@@ -742,27 +749,19 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         controller: _pasteTooltipController,
         enableTap: false,
         enableHover: false,
+        interactive: tooltipInteractive,
         direction: pasteMapping.direction,
         alignment: pasteMapping.alignment,
-        backgroundColor: tooltipBg,
-        borderRadius: tooltipRadius,
-        padding: tooltipPadding,
-        elevation: tooltipElevation,
-        boxShadow: tooltipBoxShadow,
-        borderColor: tooltipBorderColor,
-        borderWidth: tooltipBorderWidth,
         offset: tooltipOffset,
         crossAxisOffset: tooltipCrossAxisOffset,
         screenMargin: tooltipScreenMargin,
         animationDuration: tooltipAnimationDuration,
-        showArrow: tooltipShowArrow,
-        arrowBaseWidth: tooltipArrowBaseWidth,
-        arrowLength: tooltipArrowLength,
-        arrowPositionRatio: tooltipArrowPositionRatio,
+        theme: buildTooltipTheme(
+          tt?.textStyle ??
+              theme.pasteWarningStyle ??
+              TextStyle(color: pasteWarningColor, fontSize: 12),
+        ),
         message: widget.pasteWarningText ?? 'Paste is disabled',
-        textStyle: tt?.textStyle ??
-            theme.pasteWarningStyle ??
-            TextStyle(color: pasteWarningColor, fontSize: 12),
         child: child,
       );
 
@@ -770,27 +769,19 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         controller: _capsLockTooltipController,
         enableTap: false,
         enableHover: false,
+        interactive: tooltipInteractive,
         direction: capsLockMapping.direction,
         alignment: capsLockMapping.alignment,
-        backgroundColor: tooltipBg,
-        borderRadius: tooltipRadius,
-        padding: tooltipPadding,
-        elevation: tooltipElevation,
-        boxShadow: tooltipBoxShadow,
-        borderColor: tooltipBorderColor,
-        borderWidth: tooltipBorderWidth,
         offset: tooltipOffset,
         crossAxisOffset: tooltipCrossAxisOffset,
         screenMargin: tooltipScreenMargin,
         animationDuration: tooltipAnimationDuration,
-        showArrow: tooltipShowArrow,
-        arrowBaseWidth: tooltipArrowBaseWidth,
-        arrowLength: tooltipArrowLength,
-        arrowPositionRatio: tooltipArrowPositionRatio,
+        theme: buildTooltipTheme(
+          tt?.textStyle ??
+              theme.capsLockWarningStyle ??
+              TextStyle(color: errorColor, fontSize: 12),
+        ),
         message: widget.capsLockWarningText ?? 'Caps Lock is on',
-        textStyle: tt?.textStyle ??
-            theme.capsLockWarningStyle ??
-            TextStyle(color: errorColor, fontSize: 12),
         child: child,
       );
 
