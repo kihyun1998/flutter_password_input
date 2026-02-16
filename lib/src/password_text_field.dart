@@ -272,10 +272,12 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   bool _hasFocus = false;
   bool _showPasteWarning = false;
   Timer? _pasteWarningTimer;
+  bool _pasteKeyHeld = false;
   StreamSubscription<bool>? _capsLockSubscription;
   StreamSubscription<bool>? _inputSourceSubscription;
   jt.JustTooltipController? _capsLockTooltipController;
   jt.JustTooltipController? _pasteTooltipController;
+  int _pasteTooltipKey = 0;
 
   PasswordTextFieldTheme get _theme =>
       (widget.theme ?? const PasswordTextFieldTheme())
@@ -289,6 +291,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
 
     // Subscribe to Caps Lock state changes using flutter_ime
     _capsLockSubscription = onCapsLockChanged().listen(_onCapsLockChanged);
+    HardwareKeyboard.instance.addHandler(_onHardwareKey);
 
     if (widget.warningDisplayMode == WarningDisplayMode.tooltip) {
       _capsLockTooltipController = jt.JustTooltipController();
@@ -333,6 +336,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     _pasteWarningTimer?.cancel();
     _capsLockSubscription?.cancel();
     _inputSourceSubscription?.cancel();
+    HardwareKeyboard.instance.removeHandler(_onHardwareKey);
     _capsLockTooltipController = null;
     _pasteTooltipController = null;
     super.dispose();
@@ -443,12 +447,28 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     });
   }
 
+  bool _onHardwareKey(KeyEvent event) {
+    if (event is KeyUpEvent &&
+        event.logicalKey == LogicalKeyboardKey.keyV) {
+      _pasteKeyHeld = false;
+    }
+    return false;
+  }
+
   void _onPasteBlocked() {
+    if (_pasteKeyHeld) return;
+    _pasteKeyHeld = true;
+
     widget.onPasteBlocked?.call();
 
     if (!widget.showPasteWarning) return;
 
     _pasteWarningTimer?.cancel();
+    if (_showPasteWarning &&
+        widget.warningDisplayMode == WarningDisplayMode.tooltip) {
+      _pasteTooltipKey++;
+      _pasteTooltipController = jt.JustTooltipController();
+    }
     setState(() {
       _showPasteWarning = true;
     });
@@ -709,7 +729,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
 
     // Tooltip mode
     if (widget.warningDisplayMode == WarningDisplayMode.tooltip) {
-      _updateTooltipVisibility(_capsLockTooltipController, showCapsLockWarning);
+      _updateTooltipVisibility(
+          _capsLockTooltipController, showCapsLockWarning && !_showPasteWarning);
       _updateTooltipVisibility(_pasteTooltipController, _showPasteWarning);
 
       final capsLockMapping =
@@ -752,6 +773,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       Widget child = textField;
 
       child = jt.JustTooltip(
+        key: ValueKey(_pasteTooltipKey),
         controller: _pasteTooltipController,
         enableTap: false,
         enableHover: false,

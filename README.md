@@ -15,7 +15,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.1.7
+  flutter_password_input: ^0.1.8
 ```
 
 ## Usage

@@ -1,3 +1,15 @@
+## 0.1.8
+
+**fix**
+- Fix tooltip alternating issue when both CapsLock and paste warnings are active at the same position
+- Paste tooltip now takes priority over CapsLock tooltip; CapsLock tooltip restores after paste warning expires
+
+**feat**
+- Paste tooltip animation replays on repeated Ctrl+V press
+- Ignore key repeat events when holding Ctrl+V (only triggers once per key press)
+
+---
+
 ## 0.1.7
 
 **feat**
