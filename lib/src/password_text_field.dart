@@ -724,6 +724,12 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           tt?.animationDuration ?? const Duration(milliseconds: 150);
       final tooltipScreenMargin = tt?.screenMargin ?? 8.0;
       final tooltipInteractive = tt?.interactive ?? true;
+      final tooltipAnimation = tt?.animation;
+      final tooltipAnimationCurve = tt?.animationCurve;
+      final tooltipFadeBegin = tt?.fadeBegin;
+      final tooltipScaleBegin = tt?.scaleBegin;
+      final tooltipSlideOffset = tt?.slideOffset;
+      final tooltipRotationBegin = tt?.rotationBegin;
 
       jt.JustTooltipTheme buildTooltipTheme(TextStyle textStyle) {
         return jt.JustTooltipTheme(
@@ -756,6 +762,12 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         crossAxisOffset: tooltipCrossAxisOffset,
         screenMargin: tooltipScreenMargin,
         animationDuration: tooltipAnimationDuration,
+        animation: tooltipAnimation ?? jt.TooltipAnimation.fade,
+        animationCurve: tooltipAnimationCurve,
+        fadeBegin: tooltipFadeBegin ?? 0.0,
+        scaleBegin: tooltipScaleBegin ?? 0.0,
+        slideOffset: tooltipSlideOffset ?? 0.3,
+        rotationBegin: tooltipRotationBegin ?? -0.05,
         theme: buildTooltipTheme(
           tt?.textStyle ??
               theme.pasteWarningStyle ??
@@ -776,6 +788,12 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         crossAxisOffset: tooltipCrossAxisOffset,
         screenMargin: tooltipScreenMargin,
         animationDuration: tooltipAnimationDuration,
+        animation: tooltipAnimation ?? jt.TooltipAnimation.fade,
+        animationCurve: tooltipAnimationCurve,
+        fadeBegin: tooltipFadeBegin ?? 0.0,
+        scaleBegin: tooltipScaleBegin ?? 0.0,
+        slideOffset: tooltipSlideOffset ?? 0.3,
+        rotationBegin: tooltipRotationBegin ?? -0.05,
         theme: buildTooltipTheme(
           tt?.textStyle ??
               theme.capsLockWarningStyle ??

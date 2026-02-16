@@ -80,6 +80,11 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   double _tooltipArrowLength = 8;
   double _tooltipArrowPositionRatio = 0.5;
   bool _tooltipInteractive = true;
+  TooltipAnimation _tooltipAnimation = TooltipAnimation.fade;
+  double _tooltipFadeBegin = 0.0;
+  double _tooltipScaleBegin = 0.0;
+  double _tooltipSlideOffset = 0.3;
+  double _tooltipRotationBegin = -0.05;
 
   String _capsLockWarningText = 'Caps Lock is on!';
   String _pasteWarningText = 'Paste is disabled!';
@@ -122,6 +127,11 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       arrowLength: _tooltipArrowLength,
       arrowPositionRatio: _tooltipArrowPositionRatio,
       interactive: _tooltipInteractive,
+      animation: _tooltipAnimation,
+      fadeBegin: _tooltipFadeBegin,
+      scaleBegin: _tooltipScaleBegin,
+      slideOffset: _tooltipSlideOffset,
+      rotationBegin: _tooltipRotationBegin,
     ),
   );
 
@@ -506,6 +516,27 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       _buildSwitch('Interactive', _tooltipInteractive, (v) {
         setState(() => _tooltipInteractive = v);
       }),
+      _buildTooltipAnimationPicker(),
+      if (_tooltipAnimation == TooltipAnimation.fade ||
+          _tooltipAnimation == TooltipAnimation.fadeScale ||
+          _tooltipAnimation == TooltipAnimation.fadeSlide)
+        _buildSlider('Fade Begin', _tooltipFadeBegin, 0, 1, (v) {
+          setState(() => _tooltipFadeBegin = v);
+        }),
+      if (_tooltipAnimation == TooltipAnimation.scale ||
+          _tooltipAnimation == TooltipAnimation.fadeScale)
+        _buildSlider('Scale Begin', _tooltipScaleBegin, 0, 1, (v) {
+          setState(() => _tooltipScaleBegin = v);
+        }),
+      if (_tooltipAnimation == TooltipAnimation.slide ||
+          _tooltipAnimation == TooltipAnimation.fadeSlide)
+        _buildSlider('Slide Offset', _tooltipSlideOffset, 0, 1, (v) {
+          setState(() => _tooltipSlideOffset = v);
+        }),
+      if (_tooltipAnimation == TooltipAnimation.rotation)
+        _buildSlider('Rotation Begin', _tooltipRotationBegin, -0.25, 0.25, (v) {
+          setState(() => _tooltipRotationBegin = v);
+        }),
       _buildSwitch('Show Arrow', _tooltipShowArrow, (v) {
         setState(() => _tooltipShowArrow = v);
       }),
@@ -588,6 +619,33 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
         ),
         style: const TextStyle(fontSize: 13),
         onChanged: onChanged,
+      ),
+    );
+  }
+
+  /// Builds a dropdown picker for [TooltipAnimation].
+  Widget _buildTooltipAnimationPicker() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          const Text('Animation', style: TextStyle(fontSize: 12)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: DropdownButton<TooltipAnimation>(
+              value: _tooltipAnimation,
+              isExpanded: true,
+              isDense: true,
+              style: const TextStyle(fontSize: 12, color: Colors.black),
+              items: TooltipAnimation.values
+                  .map((a) => DropdownMenuItem(value: a, child: Text(a.name)))
+                  .toList(),
+              onChanged: (v) {
+                if (v != null) setState(() => _tooltipAnimation = v);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:just_tooltip/just_tooltip.dart' show TooltipAnimation;
 
 /// A theme class that defines the visual styling for warning tooltips.
 ///
@@ -32,6 +33,12 @@ class WarningTooltipTheme {
     this.arrowLength,
     this.arrowPositionRatio,
     this.interactive,
+    this.animation,
+    this.animationCurve,
+    this.fadeBegin,
+    this.scaleBegin,
+    this.slideOffset,
+    this.rotationBegin,
   });
 
   /// The background color of the tooltip.
@@ -122,6 +129,36 @@ class WarningTooltipTheme {
   /// If null, defaults to true.
   final bool? interactive;
 
+  /// The animation style for the tooltip.
+  ///
+  /// If null, defaults to [TooltipAnimation.fade].
+  final TooltipAnimation? animation;
+
+  /// Custom easing curve for the tooltip animation.
+  ///
+  /// If null, uses the default curve for the selected animation.
+  final Curve? animationCurve;
+
+  /// The starting opacity for fade animations.
+  ///
+  /// If null, defaults to 0.0.
+  final double? fadeBegin;
+
+  /// The starting scale for scale animations.
+  ///
+  /// If null, defaults to 0.0.
+  final double? scaleBegin;
+
+  /// The slide distance ratio for slide animations.
+  ///
+  /// If null, defaults to 0.3.
+  final double? slideOffset;
+
+  /// The starting rotation (in turns) for rotation animations.
+  ///
+  /// If null, defaults to -0.05.
+  final double? rotationBegin;
+
   /// Merges this theme with another, with this theme's values taking priority.
   WarningTooltipTheme merge(WarningTooltipTheme? other) {
     if (other == null) return this;
@@ -143,6 +180,12 @@ class WarningTooltipTheme {
       arrowLength: arrowLength ?? other.arrowLength,
       arrowPositionRatio: arrowPositionRatio ?? other.arrowPositionRatio,
       interactive: interactive ?? other.interactive,
+      animation: animation ?? other.animation,
+      animationCurve: animationCurve ?? other.animationCurve,
+      fadeBegin: fadeBegin ?? other.fadeBegin,
+      scaleBegin: scaleBegin ?? other.scaleBegin,
+      slideOffset: slideOffset ?? other.slideOffset,
+      rotationBegin: rotationBegin ?? other.rotationBegin,
     );
   }
 
@@ -165,6 +208,12 @@ class WarningTooltipTheme {
     double? arrowLength,
     double? arrowPositionRatio,
     bool? interactive,
+    TooltipAnimation? animation,
+    Curve? animationCurve,
+    double? fadeBegin,
+    double? scaleBegin,
+    double? slideOffset,
+    double? rotationBegin,
   }) {
     return WarningTooltipTheme(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -184,6 +233,12 @@ class WarningTooltipTheme {
       arrowLength: arrowLength ?? this.arrowLength,
       arrowPositionRatio: arrowPositionRatio ?? this.arrowPositionRatio,
       interactive: interactive ?? this.interactive,
+      animation: animation ?? this.animation,
+      animationCurve: animationCurve ?? this.animationCurve,
+      fadeBegin: fadeBegin ?? this.fadeBegin,
+      scaleBegin: scaleBegin ?? this.scaleBegin,
+      slideOffset: slideOffset ?? this.slideOffset,
+      rotationBegin: rotationBegin ?? this.rotationBegin,
     );
   }
 }

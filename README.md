@@ -15,7 +15,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.1.6
+  flutter_password_input: ^0.1.7
 ```
 
 ## Usage
@@ -135,7 +135,13 @@ Used when `warningDisplayMode` is `WarningDisplayMode.tooltip`.
 | `offset` | `double?` | `8.0` | Gap between tooltip and target |
 | `crossAxisOffset` | `double?` | `0.0` | Cross-axis offset |
 | `screenMargin` | `double?` | `8.0` | Minimum distance from viewport edges |
-| `animationDuration` | `Duration?` | `150ms` | Fade animation duration |
+| `animationDuration` | `Duration?` | `150ms` | Animation duration |
+| `animation` | `TooltipAnimation?` | `fade` | Animation style (`none`, `fade`, `scale`, `slide`, `fadeScale`, `fadeSlide`, `rotation`) |
+| `animationCurve` | `Curve?` | `null` | Custom easing curve |
+| `fadeBegin` | `double?` | `0.0` | Starting opacity for fade animations |
+| `scaleBegin` | `double?` | `0.0` | Starting scale for scale animations |
+| `slideOffset` | `double?` | `0.3` | Slide distance ratio for slide animations |
+| `rotationBegin` | `double?` | `-0.05` | Starting rotation (turns) for rotation animations |
 | `showArrow` | `bool?` | `false` | Show arrow pointer |
 | `arrowBaseWidth` | `double?` | `12.0` | Arrow base width |
 | `arrowLength` | `double?` | `6.0` | Arrow length |

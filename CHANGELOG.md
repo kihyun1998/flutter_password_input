@@ -1,3 +1,20 @@
+## 0.1.7
+
+**feat**
+- Add tooltip animation parameters to `WarningTooltipTheme`:
+  - `animation`: Animation style (`none`, `fade`, `scale`, `slide`, `fadeScale`, `fadeSlide`, `rotation`)
+  - `animationCurve`: Custom easing curve
+  - `fadeBegin`: Starting opacity for fade animations
+  - `scaleBegin`: Starting scale for scale animations
+  - `slideOffset`: Slide distance ratio for slide animations
+  - `rotationBegin`: Starting rotation for rotation animations
+- Re-export `TooltipAnimation` enum for direct use
+
+**deps**
+- Upgrade `just_tooltip` from `^0.2.0` to `^0.2.1`
+
+---
+
 ## 0.1.6
 
 **feat**
