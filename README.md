@@ -16,7 +16,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.3.3
+  flutter_password_input: ^0.3.4
 ```
 
 ## Usage
@@ -46,7 +46,7 @@ PasswordTextField(
 ### With Prefix/Suffix Builders
 
 Builders receive the current `PasswordFieldWarning` state, so icons can
-change color when Caps Lock is on, paste is blocked, or a custom error is active.
+change color when Caps Lock is on, paste is blocked, a custom error is active, or the field is disabled.
 
 ```dart
 PasswordTextField(
@@ -122,7 +122,9 @@ PasswordTextField(
 | `errorBorderColor` | `Color?` | `Colors.orange` | Border color (Caps Lock on) |
 | `pasteWarningBorderColor` | `Color?` | `null` | Border color (paste blocked, falls back to `errorBorderColor`) |
 | `customErrorBorderColor` | `Color?` | `null` | Border color (custom error, falls back to `errorBorderColor`) |
+| `disabledBorderColor` | `Color?` | `null` | Border color (disabled, falls back to `borderColor` with 50% opacity) |
 | `textStyle` | `TextStyle?` | `null` | Input text style |
+| `disabledTextStyle` | `TextStyle?` | `null` | Text style when disabled (falls back to `textStyle`) |
 | `labelStyle` | `TextStyle?` | `null` | Label text style |
 | `hintStyle` | `TextStyle?` | `null` | Hint text style |
 | `floatingLabelStyle` | `TextStyle?` | `null` | Floating label style |

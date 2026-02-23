@@ -319,7 +319,9 @@ class PasswordTextFieldTheme {
     this.errorBorderColor,
     this.pasteWarningBorderColor,
     this.customErrorBorderColor,
+    this.disabledBorderColor,
     this.textStyle,
+    this.disabledTextStyle,
     this.labelStyle,
     this.hintStyle,
     this.floatingLabelStyle,
@@ -389,10 +391,20 @@ class PasswordTextFieldTheme {
   /// If null, falls back to [errorBorderColor].
   final Color? customErrorBorderColor;
 
+  /// The border color when the text field is disabled.
+  ///
+  /// If null, falls back to [borderColor] with 50% opacity.
+  final Color? disabledBorderColor;
+
   /// The text style for the input text.
   ///
   /// If null, uses the theme's bodyMedium text style.
   final TextStyle? textStyle;
+
+  /// The text style for the input text when the field is disabled.
+  ///
+  /// If null, falls back to [textStyle] with the theme's disabled color.
+  final TextStyle? disabledTextStyle;
 
   /// The text style for the label text.
   final TextStyle? labelStyle;
@@ -471,7 +483,9 @@ class PasswordTextFieldTheme {
           pasteWarningBorderColor ?? other.pasteWarningBorderColor,
       customErrorBorderColor:
           customErrorBorderColor ?? other.customErrorBorderColor,
+      disabledBorderColor: disabledBorderColor ?? other.disabledBorderColor,
       textStyle: textStyle ?? other.textStyle,
+      disabledTextStyle: disabledTextStyle ?? other.disabledTextStyle,
       labelStyle: labelStyle ?? other.labelStyle,
       hintStyle: hintStyle ?? other.hintStyle,
       floatingLabelStyle: floatingLabelStyle ?? other.floatingLabelStyle,
@@ -499,7 +513,9 @@ class PasswordTextFieldTheme {
     Color? errorBorderColor,
     Color? pasteWarningBorderColor,
     Color? customErrorBorderColor,
+    Color? disabledBorderColor,
     TextStyle? textStyle,
+    TextStyle? disabledTextStyle,
     TextStyle? labelStyle,
     TextStyle? hintStyle,
     TextStyle? floatingLabelStyle,
@@ -523,7 +539,9 @@ class PasswordTextFieldTheme {
           pasteWarningBorderColor ?? this.pasteWarningBorderColor,
       customErrorBorderColor:
           customErrorBorderColor ?? this.customErrorBorderColor,
+      disabledBorderColor: disabledBorderColor ?? this.disabledBorderColor,
       textStyle: textStyle ?? this.textStyle,
+      disabledTextStyle: disabledTextStyle ?? this.disabledTextStyle,
       labelStyle: labelStyle ?? this.labelStyle,
       hintStyle: hintStyle ?? this.hintStyle,
       floatingLabelStyle: floatingLabelStyle ?? this.floatingLabelStyle,

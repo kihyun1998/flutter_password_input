@@ -1,3 +1,13 @@
+## 0.3.4
+
+**feat**
+- Add `PasswordFieldWarning.disabled` — prefix/suffix builders now receive `disabled` state when `enabled: false`
+- Add `disabledBorderColor` to `PasswordTextFieldTheme` for customizable disabled border color (falls back to `borderColor` with 50% opacity)
+- Add `disabledTextStyle` to `PasswordTextFieldTheme` for customizable disabled text style (falls back to `textStyle`)
+- Visibility toggle button is now properly disabled when `enabled: false`
+
+---
+
 ## 0.3.3
 
 **deps**

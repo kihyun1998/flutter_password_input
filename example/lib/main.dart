@@ -52,6 +52,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   Color _errorBorderColor = Colors.orange;
   Color? _pasteWarningBorderColor;
   Color? _customErrorBorderColor;
+  Color? _disabledBorderColor;
+  Color? _disabledTextColor;
   Color? _visibilityIconColor;
   double _visibilityIconSize = 20;
 
@@ -123,6 +125,10 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     errorBorderColor: _errorBorderColor,
     pasteWarningBorderColor: _pasteWarningBorderColor,
     customErrorBorderColor: _customErrorBorderColor,
+    disabledBorderColor: _disabledBorderColor,
+    disabledTextStyle: _disabledTextColor != null
+        ? TextStyle(color: _disabledTextColor)
+        : null,
     visibilityIconColor: _visibilityIconColor,
     visibilityIconSize: _visibilityIconSize,
     tooltipTheme: WarningTooltipTheme(
@@ -160,6 +166,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
 
   Color _warningColor(PasswordFieldWarning warning) {
     return switch (warning) {
+      PasswordFieldWarning.disabled =>
+        _disabledBorderColor ?? Colors.grey.shade400,
       PasswordFieldWarning.customError =>
         _customErrorBorderColor ?? _errorBorderColor,
       PasswordFieldWarning.capsLock => _errorBorderColor,
@@ -396,6 +404,20 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                         _customErrorBorderColor,
                         (c) {
                           setState(() => _customErrorBorderColor = c);
+                        },
+                      ),
+                      _buildNullableColorPicker(
+                        'Disabled Border',
+                        _disabledBorderColor,
+                        (c) {
+                          setState(() => _disabledBorderColor = c);
+                        },
+                      ),
+                      _buildNullableColorPicker(
+                        'Disabled Text',
+                        _disabledTextColor,
+                        (c) {
+                          setState(() => _disabledTextColor = c);
                         },
                       ),
                       _buildNullableColorPicker(
