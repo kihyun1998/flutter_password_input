@@ -16,7 +16,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.2.1
+  flutter_password_input: ^0.2.2
 ```
 
 ## Usage
@@ -137,6 +137,8 @@ Used when `warningDisplayMode` is `WarningDisplayMode.tooltip`.
 | `borderColor` | `Color?` | `null` | Tooltip border color |
 | `borderWidth` | `double?` | `0.0` | Tooltip border width |
 | `textStyle` | `TextStyle?` | `null` | Tooltip text style |
+| `direction` | `TooltipDirection?` | `null` | Tooltip direction override (`top`, `bottom`, `left`, `right`) |
+| `alignment` | `TooltipAlignment?` | `null` | Tooltip alignment override (`start`, `center`, `end`) |
 | `offset` | `double?` | `8.0` | Gap between tooltip and target |
 | `crossAxisOffset` | `double?` | `0.0` | Cross-axis offset |
 | `screenMargin` | `double?` | `8.0` | Minimum distance from viewport edges |
@@ -152,6 +154,8 @@ Used when `warningDisplayMode` is `WarningDisplayMode.tooltip`.
 | `arrowLength` | `double?` | `6.0` | Arrow length |
 | `arrowPositionRatio` | `double?` | `0.25` | Arrow position (0.0-1.0) |
 | `interactive` | `bool?` | `true` | Keep tooltip visible on hover |
+| `waitDuration` | `Duration?` | `null` | Delay before tooltip appears |
+| `showDuration` | `Duration?` | `null` | Auto-hide after this duration |
 
 ## License
 

@@ -1,3 +1,13 @@
+## 0.2.2
+
+**feat**
+- Add `direction` and `alignment` to `WarningTooltipTheme` for theme-level tooltip positioning (overrides per-warning alignment when set)
+- Add `waitDuration` to `WarningTooltipTheme` for delayed tooltip appearance
+- Add `showDuration` to `WarningTooltipTheme` for auto-hiding tooltips after a set time
+- Re-export `TooltipDirection` and `TooltipAlignment` enums for direct use
+
+---
+
 ## 0.2.1
 
 **feat**

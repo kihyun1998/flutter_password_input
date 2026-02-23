@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:just_tooltip/just_tooltip.dart' show TooltipAnimation;
+import 'package:just_tooltip/just_tooltip.dart'
+    show TooltipAlignment, TooltipAnimation, TooltipDirection;
 
 /// A theme class that defines the visual styling for warning tooltips.
 ///
@@ -24,6 +25,8 @@ class WarningTooltipTheme {
     this.borderColor,
     this.borderWidth,
     this.textStyle,
+    this.direction,
+    this.alignment,
     this.offset,
     this.crossAxisOffset,
     this.screenMargin,
@@ -33,6 +36,8 @@ class WarningTooltipTheme {
     this.arrowLength,
     this.arrowPositionRatio,
     this.interactive,
+    this.waitDuration,
+    this.showDuration,
     this.animation,
     this.animationCurve,
     this.fadeBegin,
@@ -83,6 +88,22 @@ class WarningTooltipTheme {
   /// ([capsLockWarningStyle], [pasteWarningStyle]) are used instead.
   final TextStyle? textStyle;
 
+  /// Which side the tooltip appears on.
+  ///
+  /// When set, overrides the direction derived from
+  /// [PasswordTextField.capsLockWarningAlignment] and
+  /// [PasswordTextField.pasteWarningAlignment].
+  /// If null, the per-warning alignment is used.
+  final TooltipDirection? direction;
+
+  /// The alignment of the tooltip along the cross-axis.
+  ///
+  /// When set, overrides the alignment derived from
+  /// [PasswordTextField.capsLockWarningAlignment] and
+  /// [PasswordTextField.pasteWarningAlignment].
+  /// If null, the per-warning alignment is used.
+  final TooltipAlignment? alignment;
+
   /// The gap between the tooltip and the target widget.
   ///
   /// If null, defaults to 8.0.
@@ -129,6 +150,16 @@ class WarningTooltipTheme {
   /// If null, defaults to true.
   final bool? interactive;
 
+  /// The delay before the tooltip appears.
+  ///
+  /// If null, the tooltip appears immediately.
+  final Duration? waitDuration;
+
+  /// The duration after which the tooltip auto-hides.
+  ///
+  /// If null, the tooltip stays visible until dismissed.
+  final Duration? showDuration;
+
   /// The animation style for the tooltip.
   ///
   /// If null, defaults to [TooltipAnimation.fade].
@@ -171,6 +202,8 @@ class WarningTooltipTheme {
       borderColor: borderColor ?? other.borderColor,
       borderWidth: borderWidth ?? other.borderWidth,
       textStyle: textStyle ?? other.textStyle,
+      direction: direction ?? other.direction,
+      alignment: alignment ?? other.alignment,
       offset: offset ?? other.offset,
       crossAxisOffset: crossAxisOffset ?? other.crossAxisOffset,
       screenMargin: screenMargin ?? other.screenMargin,
@@ -180,6 +213,8 @@ class WarningTooltipTheme {
       arrowLength: arrowLength ?? other.arrowLength,
       arrowPositionRatio: arrowPositionRatio ?? other.arrowPositionRatio,
       interactive: interactive ?? other.interactive,
+      waitDuration: waitDuration ?? other.waitDuration,
+      showDuration: showDuration ?? other.showDuration,
       animation: animation ?? other.animation,
       animationCurve: animationCurve ?? other.animationCurve,
       fadeBegin: fadeBegin ?? other.fadeBegin,
@@ -199,6 +234,8 @@ class WarningTooltipTheme {
     Color? borderColor,
     double? borderWidth,
     TextStyle? textStyle,
+    TooltipDirection? direction,
+    TooltipAlignment? alignment,
     double? offset,
     double? crossAxisOffset,
     double? screenMargin,
@@ -208,6 +245,8 @@ class WarningTooltipTheme {
     double? arrowLength,
     double? arrowPositionRatio,
     bool? interactive,
+    Duration? waitDuration,
+    Duration? showDuration,
     TooltipAnimation? animation,
     Curve? animationCurve,
     double? fadeBegin,
@@ -224,6 +263,8 @@ class WarningTooltipTheme {
       borderColor: borderColor ?? this.borderColor,
       borderWidth: borderWidth ?? this.borderWidth,
       textStyle: textStyle ?? this.textStyle,
+      direction: direction ?? this.direction,
+      alignment: alignment ?? this.alignment,
       offset: offset ?? this.offset,
       crossAxisOffset: crossAxisOffset ?? this.crossAxisOffset,
       screenMargin: screenMargin ?? this.screenMargin,
@@ -233,6 +274,8 @@ class WarningTooltipTheme {
       arrowLength: arrowLength ?? this.arrowLength,
       arrowPositionRatio: arrowPositionRatio ?? this.arrowPositionRatio,
       interactive: interactive ?? this.interactive,
+      waitDuration: waitDuration ?? this.waitDuration,
+      showDuration: showDuration ?? this.showDuration,
       animation: animation ?? this.animation,
       animationCurve: animationCurve ?? this.animationCurve,
       fadeBegin: fadeBegin ?? this.fadeBegin,

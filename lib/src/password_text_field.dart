@@ -775,6 +775,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           tt?.animationDuration ?? const Duration(milliseconds: 150);
       final tooltipScreenMargin = tt?.screenMargin ?? 8.0;
       final tooltipInteractive = tt?.interactive ?? true;
+      final tooltipWaitDuration = tt?.waitDuration;
+      final tooltipShowDuration = tt?.showDuration;
       final tooltipAnimation = tt?.animation;
       final tooltipAnimationCurve = tt?.animationCurve;
       final tooltipFadeBegin = tt?.fadeBegin;
@@ -808,11 +810,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         enableTap: false,
         enableHover: false,
         interactive: tooltipInteractive,
-        direction: pasteMapping.direction,
-        alignment: pasteMapping.alignment,
+        direction: tt?.direction ?? pasteMapping.direction,
+        alignment: tt?.alignment ?? pasteMapping.alignment,
         offset: tooltipOffset,
         crossAxisOffset: tooltipCrossAxisOffset,
         screenMargin: tooltipScreenMargin,
+        waitDuration: tooltipWaitDuration,
+        showDuration: tooltipShowDuration,
         animationDuration: tooltipAnimationDuration,
         animation: tooltipAnimation ?? jt.TooltipAnimation.fade,
         animationCurve: tooltipAnimationCurve,
@@ -834,11 +838,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         enableTap: false,
         enableHover: false,
         interactive: tooltipInteractive,
-        direction: capsLockMapping.direction,
-        alignment: capsLockMapping.alignment,
+        direction: tt?.direction ?? capsLockMapping.direction,
+        alignment: tt?.alignment ?? capsLockMapping.alignment,
         offset: tooltipOffset,
         crossAxisOffset: tooltipCrossAxisOffset,
         screenMargin: tooltipScreenMargin,
+        waitDuration: tooltipWaitDuration,
+        showDuration: tooltipShowDuration,
         animationDuration: tooltipAnimationDuration,
         animation: tooltipAnimation ?? jt.TooltipAnimation.fade,
         animationCurve: tooltipAnimationCurve,

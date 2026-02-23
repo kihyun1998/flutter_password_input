@@ -86,6 +86,10 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   double _tooltipArrowLength = 8;
   double _tooltipArrowPositionRatio = 0.5;
   bool _tooltipInteractive = true;
+  TooltipDirection? _tooltipDirection;
+  TooltipAlignment? _tooltipAlignment;
+  double _tooltipWaitDurationMs = 0;
+  double _tooltipShowDurationMs = 0;
   TooltipAnimation _tooltipAnimation = TooltipAnimation.fade;
   double _tooltipFadeBegin = 0.0;
   double _tooltipScaleBegin = 0.0;
@@ -134,6 +138,14 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       arrowLength: _tooltipArrowLength,
       arrowPositionRatio: _tooltipArrowPositionRatio,
       interactive: _tooltipInteractive,
+      direction: _tooltipDirection,
+      alignment: _tooltipAlignment,
+      waitDuration: _tooltipWaitDurationMs > 0
+          ? Duration(milliseconds: _tooltipWaitDurationMs.round())
+          : null,
+      showDuration: _tooltipShowDurationMs > 0
+          ? Duration(milliseconds: _tooltipShowDurationMs.round())
+          : null,
       animation: _tooltipAnimation,
       fadeBegin: _tooltipFadeBegin,
       scaleBegin: _tooltipScaleBegin,
@@ -586,6 +598,24 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       _buildSwitch('Interactive', _tooltipInteractive, (v) {
         setState(() => _tooltipInteractive = v);
       }),
+      _buildNullableEnumPicker<TooltipDirection>(
+        'Direction (theme override)',
+        TooltipDirection.values,
+        _tooltipDirection,
+        (v) => setState(() => _tooltipDirection = v),
+      ),
+      _buildNullableEnumPicker<TooltipAlignment>(
+        'Alignment (theme override)',
+        TooltipAlignment.values,
+        _tooltipAlignment,
+        (v) => setState(() => _tooltipAlignment = v),
+      ),
+      _buildSlider('Wait Duration (ms)', _tooltipWaitDurationMs, 0, 2000, (v) {
+        setState(() => _tooltipWaitDurationMs = v);
+      }),
+      _buildSlider('Show Duration (ms)', _tooltipShowDurationMs, 0, 5000, (v) {
+        setState(() => _tooltipShowDurationMs = v);
+      }),
       _buildTooltipAnimationPicker(),
       if (_tooltipAnimation == TooltipAnimation.fade ||
           _tooltipAnimation == TooltipAnimation.fadeScale ||
@@ -768,6 +798,39 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
               onChanged: (v) {
                 if (v != null) onChanged(v);
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds a nullable enum dropdown picker with a "None" option.
+  Widget _buildNullableEnumPicker<T extends Enum>(
+    String label,
+    List<T> values,
+    T? current,
+    ValueChanged<T?> onChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Text(label, style: const TextStyle(fontSize: 12)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: DropdownButton<T?>(
+              value: current,
+              isExpanded: true,
+              isDense: true,
+              style: const TextStyle(fontSize: 12, color: Colors.black),
+              items: [
+                const DropdownMenuItem(value: null, child: Text('None')),
+                ...values.map(
+                  (v) => DropdownMenuItem(value: v, child: Text(v.name)),
+                ),
+              ],
+              onChanged: (v) => onChanged(v),
             ),
           ),
         ],
