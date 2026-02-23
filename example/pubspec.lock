@@ -58,10 +58,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_ime
-      sha256: "8b7f84fa54fe624d767ac7e3e0b48469e6749826bfc33afcc8f026c2ee2db3af"
+      sha256: a8e06338486bae466a05832f2dff1e8ee3be6b72cf177ae73d9c382373a97731
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.3"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -76,7 +76,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.3.0"
+    version: "0.3.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter

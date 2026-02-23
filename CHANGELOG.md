@@ -1,3 +1,10 @@
+## 0.3.3
+
+**deps**
+- Upgrade `flutter_ime` from `^2.1.1` to `^2.1.3` (fix Caps Lock detection miss after app switch)
+
+---
+
 ## 0.3.2
 
 **fix**
