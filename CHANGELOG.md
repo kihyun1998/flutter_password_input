@@ -1,3 +1,10 @@
+## 0.3.2
+
+**fix**
+- Fix `hasCustomError` state being lost when focus leaves and returns to the field
+
+---
+
 ## 0.3.1
 
 **deps**

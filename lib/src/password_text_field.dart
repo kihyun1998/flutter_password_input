@@ -418,7 +418,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         _pasteWarningTimer?.cancel();
         setState(() {
           _showPasteWarning = false;
-          _activeWarning = PasswordFieldWarning.none;
+          _resolveActiveWarning();
         });
         // Restore IME on focus lost
         _handleEnglishInputOnUnfocus();
