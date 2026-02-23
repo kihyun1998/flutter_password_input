@@ -16,7 +16,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.2.2
+  flutter_password_input: ^0.3.0
 ```
 
 ## Usage
@@ -43,14 +43,23 @@ PasswordTextField(
 )
 ```
 
-### With Prefix/Suffix
+### With Prefix/Suffix Builders
+
+Builders receive the current `PasswordFieldWarning` state, so icons can
+change color when Caps Lock is on, paste is blocked, or a custom error is active.
 
 ```dart
 PasswordTextField(
   labelText: 'Password',
-  prefixWidget: Icon(Icons.lock),
-  suffixWidget: IconButton(
-    icon: Icon(Icons.info),
+  prefixWidgetBuilder: (context, warning) => Icon(
+    Icons.lock,
+    color: warning == PasswordFieldWarning.none ? Colors.grey : Colors.orange,
+  ),
+  suffixWidgetBuilder: (context, warning) => IconButton(
+    icon: Icon(
+      Icons.info,
+      color: warning == PasswordFieldWarning.none ? Colors.grey : Colors.orange,
+    ),
     onPressed: () {},
   ),
 )
@@ -77,9 +86,9 @@ PasswordTextField(
 | `showVisibilityToggle` | `bool` | `true` | Show password visibility toggle |
 | `visibilityOnIcon` | `Widget?` | `null` | Custom icon when password visible |
 | `visibilityOffIcon` | `Widget?` | `null` | Custom icon when password hidden |
-| `prefixWidget` | `Widget?` | `null` | Widget before the input area |
+| `prefixWidgetBuilder` | `PasswordFieldWidgetBuilder?` | `null` | Builder for widget before the input area (receives warning state) |
 | `prefixIconConstraints` | `BoxConstraints?` | `null` | Size constraints for prefix icon |
-| `suffixWidget` | `Widget?` | `null` | Widget after the input area |
+| `suffixWidgetBuilder` | `PasswordFieldWidgetBuilder?` | `null` | Builder for widget after the input area (receives warning state) |
 | `suffixIconConstraints` | `BoxConstraints?` | `null` | Size constraints for suffix icon |
 | `showCapsLockWarning` | `bool` | `true` | Show Caps Lock warning |
 | `capsLockWarningText` | `String?` | `'Caps Lock is on'` | Caps Lock warning message |

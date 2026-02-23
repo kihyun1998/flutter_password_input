@@ -1,3 +1,17 @@
+## 0.3.0
+
+**BREAKING**
+- Replace `prefixWidget` with `prefixWidgetBuilder` (`PasswordFieldWidgetBuilder?`) — builder receives `(BuildContext, PasswordFieldWarning)` so icons can react to warning state
+- Replace `suffixWidget` with `suffixWidgetBuilder` (`PasswordFieldWidgetBuilder?`) — same builder signature
+
+**feat**
+- Add `PasswordFieldWarning` enum (`none`, `capsLock`, `pasteBlocked`, `customError`) representing the active warning
+- Add `PasswordFieldWidgetBuilder` typedef for prefix/suffix builders
+- Border and floating-label color now uses **last-triggered** warning semantics instead of fixed priority
+- When an active warning turns off, the field falls back to the next still-active warning via `_resolveActiveWarning()`
+
+---
+
 ## 0.2.2
 
 **feat**

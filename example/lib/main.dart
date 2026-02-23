@@ -154,6 +154,17 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     ),
   );
 
+  Color _warningColor(PasswordFieldWarning warning) {
+    return switch (warning) {
+      PasswordFieldWarning.customError =>
+        _customErrorBorderColor ?? _errorBorderColor,
+      PasswordFieldWarning.capsLock => _errorBorderColor,
+      PasswordFieldWarning.pasteBlocked =>
+        _pasteWarningBorderColor ?? _errorBorderColor,
+      PasswordFieldWarning.none => Colors.grey,
+    };
+  }
+
   @override
   void dispose() {
     _passwordController.dispose();
@@ -216,10 +227,14 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       enabled: _enabled,
                       capsLockWarningText: _capsLockWarningText,
                       capsLockWarningAlignment: _capsLockWarningAlignment,
-                      prefixWidget: _showPrefixWidget
-                          ? const Padding(
-                              padding: EdgeInsets.only(left: 12),
-                              child: Icon(Icons.lock_outline, size: 20),
+                      prefixWidgetBuilder: _showPrefixWidget
+                          ? (context, warning) => Padding(
+                              padding: const EdgeInsets.only(left: 12),
+                              child: Icon(
+                                Icons.lock_outline,
+                                size: 20,
+                                color: _warningColor(warning),
+                              ),
                             )
                           : null,
                       prefixIconConstraints: _showPrefixWidget
@@ -228,9 +243,13 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                               minHeight: _prefixIconMinHeight,
                             )
                           : null,
-                      suffixWidget: _showSuffixWidget
-                          ? IconButton(
-                              icon: const Icon(Icons.info_outline, size: 20),
+                      suffixWidgetBuilder: _showSuffixWidget
+                          ? (context, warning) => IconButton(
+                              icon: Icon(
+                                Icons.info_outline,
+                                size: 20,
+                                color: _warningColor(warning),
+                              ),
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

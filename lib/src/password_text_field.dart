@@ -18,6 +18,24 @@ enum WarningAlignment {
   bottomRight,
 }
 
+/// Represents which warning is currently active on the password field.
+///
+/// Used by [PasswordFieldWidgetBuilder] to let prefix/suffix builders
+/// react to the current warning state. Uses "last triggered" semantics:
+/// the most recently triggered warning wins.
+enum PasswordFieldWarning {
+  none,
+  capsLock,
+  pasteBlocked,
+  customError,
+}
+
+/// Builder typedef for prefix/suffix widgets that receive the current warning state.
+typedef PasswordFieldWidgetBuilder = Widget Function(
+  BuildContext context,
+  PasswordFieldWarning warning,
+);
+
 /// Controls how warning messages (Caps Lock, paste) are displayed.
 enum WarningDisplayMode {
   /// Warnings appear as inline text messages above or below the text field.
@@ -71,9 +89,9 @@ class PasswordTextField extends StatefulWidget {
     this.showVisibilityToggle = true,
     this.visibilityOnIcon,
     this.visibilityOffIcon,
-    this.prefixWidget,
+    this.prefixWidgetBuilder,
     this.prefixIconConstraints,
-    this.suffixWidget,
+    this.suffixWidgetBuilder,
     this.suffixIconConstraints,
     this.onFocus,
     this.onLostFocus,
@@ -181,21 +199,24 @@ class PasswordTextField extends StatefulWidget {
   /// If null, uses the default [Icons.visibility_off] icon.
   final Widget? visibilityOffIcon;
 
-  /// A widget to display before the text input area.
+  /// Builder for a widget to display before the text input area.
   ///
-  /// Commonly used for icons like a lock icon.
-  final Widget? prefixWidget;
+  /// Receives the current [PasswordFieldWarning] state, allowing the widget
+  /// to react to warning changes (e.g., change icon color on caps lock).
+  final PasswordFieldWidgetBuilder? prefixWidgetBuilder;
 
   /// The constraints for the prefix icon.
   ///
   /// If null, uses Flutter's default [BoxConstraints(minWidth: 48, minHeight: 48)].
   final BoxConstraints? prefixIconConstraints;
 
-  /// A widget to display after the text input area but before the visibility toggle.
+  /// Builder for a widget to display after the text input area but before the visibility toggle.
   ///
-  /// When both [suffixWidget] and [showVisibilityToggle] are provided,
-  /// they are displayed in a row with the suffix widget first.
-  final Widget? suffixWidget;
+  /// Receives the current [PasswordFieldWarning] state, allowing the widget
+  /// to react to warning changes. When both [suffixWidgetBuilder] and
+  /// [showVisibilityToggle] are provided, they are displayed in a row
+  /// with the suffix widget first.
+  final PasswordFieldWidgetBuilder? suffixWidgetBuilder;
 
   /// The constraints for the suffix icon.
   ///
@@ -292,6 +313,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   bool _isCapsLockOn = false;
   bool _hasFocus = false;
   bool _showPasteWarning = false;
+  PasswordFieldWarning _activeWarning = PasswordFieldWarning.none;
   Timer? _pasteWarningTimer;
   bool _pasteKeyHeld = false;
   StreamSubscription<bool>? _capsLockSubscription;
@@ -346,6 +368,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         _pasteTooltipController = null;
       }
     }
+    if (oldWidget.hasCustomError != widget.hasCustomError) {
+      if (widget.hasCustomError) {
+        _activeWarning = PasswordFieldWarning.customError;
+      } else {
+        _resolveActiveWarning();
+      }
+    }
   }
 
   @override
@@ -386,7 +415,11 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           widget.onCapsLockStateChanged?.call(false);
         }
         // Hide paste warning when focus is lost
-        _hidePasteWarning();
+        _pasteWarningTimer?.cancel();
+        setState(() {
+          _showPasteWarning = false;
+          _activeWarning = PasswordFieldWarning.none;
+        });
         // Restore IME on focus lost
         _handleEnglishInputOnUnfocus();
         widget.onLostFocus?.call();
@@ -443,6 +476,11 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     if (capsLockOn != _isCapsLockOn) {
       setState(() {
         _isCapsLockOn = capsLockOn;
+        if (capsLockOn && widget.showCapsLockWarning) {
+          _activeWarning = PasswordFieldWarning.capsLock;
+        } else {
+          _resolveActiveWarning();
+        }
       });
       widget.onCapsLockStateChanged?.call(capsLockOn);
     }
@@ -457,6 +495,11 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     if (_hasFocus && isOn != _isCapsLockOn) {
       setState(() {
         _isCapsLockOn = isOn;
+        if (isOn && widget.showCapsLockWarning) {
+          _activeWarning = PasswordFieldWarning.capsLock;
+        } else {
+          _resolveActiveWarning();
+        }
       });
       widget.onCapsLockStateChanged?.call(isOn);
     }
@@ -491,11 +534,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     }
     setState(() {
       _showPasteWarning = true;
+      _activeWarning = PasswordFieldWarning.pasteBlocked;
     });
     _pasteWarningTimer = Timer(widget.pasteWarningDuration, () {
       if (!mounted) return;
       setState(() {
         _showPasteWarning = false;
+        _resolveActiveWarning();
       });
     });
   }
@@ -505,7 +550,33 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     _pasteWarningTimer?.cancel();
     setState(() {
       _showPasteWarning = false;
+      _resolveActiveWarning();
     });
+  }
+
+  /// Resolves which warning should be active when the current one turns off.
+  /// Falls back through the priority: customError > capsLock > pasteBlocked > none.
+  void _resolveActiveWarning() {
+    if (widget.hasCustomError) {
+      _activeWarning = PasswordFieldWarning.customError;
+    } else if (_isCapsLockOn && _hasFocus && widget.showCapsLockWarning) {
+      _activeWarning = PasswordFieldWarning.capsLock;
+    } else if (_showPasteWarning) {
+      _activeWarning = PasswordFieldWarning.pasteBlocked;
+    } else {
+      _activeWarning = PasswordFieldWarning.none;
+    }
+  }
+
+  /// Returns the appropriate color based on the current active warning.
+  Color _warningColor(Color errorColor, Color pasteWarningColor,
+      Color customErrorColor, Color focusColor) {
+    return switch (_activeWarning) {
+      PasswordFieldWarning.customError => customErrorColor,
+      PasswordFieldWarning.capsLock => errorColor,
+      PasswordFieldWarning.pasteBlocked => pasteWarningColor,
+      PasswordFieldWarning.none => focusColor,
+    };
   }
 
   bool _isTopAlignment(WarningAlignment alignment) {
@@ -594,9 +665,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   Widget? _buildSuffixIcon(ThemeData appTheme) {
     final theme = _theme;
     final hasVisibilityToggle = widget.showVisibilityToggle;
-    final hasSuffixWidget = widget.suffixWidget != null;
+    final hasSuffixBuilder = widget.suffixWidgetBuilder != null;
 
-    if (!hasVisibilityToggle && !hasSuffixWidget) {
+    if (!hasVisibilityToggle && !hasSuffixBuilder) {
       return null;
     }
 
@@ -621,27 +692,37 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           )
         : null;
 
-    if (hasSuffixWidget && hasVisibilityToggle) {
+    final suffixWidget = hasSuffixBuilder
+        ? widget.suffixWidgetBuilder!(context, _activeWarning)
+        : null;
+
+    if (hasSuffixBuilder && hasVisibilityToggle) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          widget.suffixWidget!,
+          suffixWidget!,
           visibilityButton!,
         ],
       );
     }
 
-    return hasSuffixWidget ? widget.suffixWidget : visibilityButton;
+    return hasSuffixBuilder ? suffixWidget : visibilityButton;
   }
 
   Widget _buildTextField(
       ThemeData appTheme,
       PasswordTextFieldTheme theme,
-      bool showCapsLockWarning,
       Color errorColor,
       Color pasteWarningColor,
       Color customErrorColor,
       Color focusColor) {
+    final activeColor = _warningColor(
+        errorColor, pasteWarningColor, customErrorColor, focusColor);
+    final enabledBorderColor =
+        _activeWarning == PasswordFieldWarning.customError
+            ? customErrorColor
+            : theme.borderColor ?? appTheme.dividerColor;
+
     final textField = SizedBox(
       width: theme.width,
       height: theme.height,
@@ -664,16 +745,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           contentPadding: theme.contentPadding,
           labelText: widget.useFloatingLabel ? widget.labelText : null,
           labelStyle: theme.labelStyle,
-          floatingLabelStyle: theme.floatingLabelStyle ??
-              TextStyle(
-                color: widget.hasCustomError
-                    ? customErrorColor
-                    : showCapsLockWarning
-                        ? errorColor
-                        : _showPasteWarning
-                            ? pasteWarningColor
-                            : focusColor,
-              ),
+          floatingLabelStyle:
+              theme.floatingLabelStyle ?? TextStyle(color: activeColor),
           floatingLabelBehavior: widget.useFloatingLabel
               ? FloatingLabelBehavior.auto
               : FloatingLabelBehavior.never,
@@ -681,7 +754,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           hintStyle: theme.hintStyle,
           fillColor: theme.backgroundColor,
           filled: theme.backgroundColor != null,
-          prefixIcon: widget.prefixWidget,
+          prefixIcon: widget.prefixWidgetBuilder?.call(context, _activeWarning),
           prefixIconConstraints: widget.prefixIconConstraints,
           suffixIcon: _buildSuffixIcon(appTheme),
           suffixIconConstraints: widget.suffixIconConstraints,
@@ -689,13 +762,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
             borderSide: theme.borderWidth == 0
                 ? BorderSide.none
                 : BorderSide(
-                    color: widget.hasCustomError
-                        ? customErrorColor
-                        : showCapsLockWarning
-                            ? errorColor
-                            : _showPasteWarning
-                                ? pasteWarningColor
-                                : focusColor,
+                    color: activeColor,
                     width: theme.borderWidth!,
                   ),
             borderRadius: BorderRadius.circular(theme.borderRadius!),
@@ -704,9 +771,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
             borderSide: theme.borderWidth == 0
                 ? BorderSide.none
                 : BorderSide(
-                    color: widget.hasCustomError
-                        ? customErrorColor
-                        : theme.borderColor ?? appTheme.dividerColor,
+                    color: enabledBorderColor,
                     width: theme.borderWidth!,
                   ),
             borderRadius: BorderRadius.circular(theme.borderRadius!),
@@ -754,14 +819,15 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     final customErrorColor = theme.customErrorBorderColor ?? errorColor;
     final focusColor = theme.focusBorderColor ?? appTheme.primaryColor;
 
-    final textField = _buildTextField(appTheme, theme, showCapsLockWarning,
-        errorColor, pasteWarningColor, customErrorColor, focusColor);
+    final textField = _buildTextField(appTheme, theme, errorColor,
+        pasteWarningColor, customErrorColor, focusColor);
 
     // Tooltip mode
     if (widget.warningDisplayMode == WarningDisplayMode.tooltip) {
       _updateTooltipVisibility(_capsLockTooltipController,
-          showCapsLockWarning && !_showPasteWarning);
-      _updateTooltipVisibility(_pasteTooltipController, _showPasteWarning);
+          _activeWarning == PasswordFieldWarning.capsLock);
+      _updateTooltipVisibility(_pasteTooltipController,
+          _activeWarning == PasswordFieldWarning.pasteBlocked);
 
       final capsLockMapping =
           _mapWarningAlignmentToTooltip(widget.capsLockWarningAlignment);
