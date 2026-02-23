@@ -1,3 +1,17 @@
+## 0.4.0
+
+**BREAKING**
+- Rename `PasswordFieldWarning` to `PasswordFieldStatus` — update all references in prefix/suffix builders and switch expressions
+- `PasswordFieldWidgetBuilder` parameter renamed from `warning` to `status`
+
+**feat**
+- Add `PasswordFieldStatus.checked` and `PasswordFieldStatus.unchecked` — builders receive these states when `isChecked` is `true`/`false`
+- Add `isChecked` (`bool?`) to `PasswordTextField` — `null` applies no checked styling, `true`/`false` changes border color accordingly; not intended to be used with `hasCustomError`
+- Add `checkedBorderColor` to `PasswordTextFieldTheme` (falls back to `Colors.green`)
+- Add `uncheckedBorderColor` to `PasswordTextFieldTheme` (falls back to `errorBorderColor`)
+
+---
+
 ## 0.3.4
 
 **feat**

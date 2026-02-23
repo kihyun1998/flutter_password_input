@@ -16,7 +16,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.3.4
+  flutter_password_input: ^0.4.0
 ```
 
 ## Usage
@@ -45,22 +45,37 @@ PasswordTextField(
 
 ### With Prefix/Suffix Builders
 
-Builders receive the current `PasswordFieldWarning` state, so icons can
-change color when Caps Lock is on, paste is blocked, a custom error is active, or the field is disabled.
+Builders receive the current `PasswordFieldStatus`, so icons can
+change color when Caps Lock is on, paste is blocked, a custom error is active, the field is checked/unchecked, or disabled.
 
 ```dart
 PasswordTextField(
   labelText: 'Password',
-  prefixWidgetBuilder: (context, warning) => Icon(
+  prefixWidgetBuilder: (context, status) => Icon(
     Icons.lock,
-    color: warning == PasswordFieldWarning.none ? Colors.grey : Colors.orange,
+    color: status == PasswordFieldStatus.none ? Colors.grey : Colors.orange,
   ),
-  suffixWidgetBuilder: (context, warning) => IconButton(
+  suffixWidgetBuilder: (context, status) => IconButton(
     icon: Icon(
       Icons.info,
-      color: warning == PasswordFieldWarning.none ? Colors.grey : Colors.orange,
+      color: status == PasswordFieldStatus.none ? Colors.grey : Colors.orange,
     ),
     onPressed: () {},
+  ),
+)
+```
+
+### With isChecked
+
+Use `isChecked` for external validation state (e.g. password match). `null` applies no styling, `true` shows `checkedBorderColor`, `false` shows `uncheckedBorderColor`.
+
+```dart
+PasswordTextField(
+  labelText: 'Confirm Password',
+  isChecked: passwordsMatch ? true : false,
+  theme: PasswordTextFieldTheme(
+    checkedBorderColor: Colors.green,
+    uncheckedBorderColor: Colors.red,
   ),
 )
 ```
@@ -100,6 +115,7 @@ PasswordTextField(
 | `pasteWarningAlignment` | `WarningAlignment` | `bottomLeft` | Paste warning position |
 | `warningDisplayMode` | `WarningDisplayMode` | `message` | `message` (inline text) or `tooltip` |
 | `hasCustomError` | `bool` | `false` | External error state (changes border color) |
+| `isChecked` | `bool?` | `null` | Validation state — `true` shows checked color, `false` shows unchecked color, `null` no effect |
 | `onFocus` | `VoidCallback?` | `null` | Called on focus gained |
 | `onLostFocus` | `VoidCallback?` | `null` | Called on focus lost |
 | `onChange` | `ValueChanged<String>?` | `null` | Called on text change |
@@ -122,6 +138,8 @@ PasswordTextField(
 | `errorBorderColor` | `Color?` | `Colors.orange` | Border color (Caps Lock on) |
 | `pasteWarningBorderColor` | `Color?` | `null` | Border color (paste blocked, falls back to `errorBorderColor`) |
 | `customErrorBorderColor` | `Color?` | `null` | Border color (custom error, falls back to `errorBorderColor`) |
+| `checkedBorderColor` | `Color?` | `Colors.green` | Border color when `isChecked` is `true` |
+| `uncheckedBorderColor` | `Color?` | `null` | Border color when `isChecked` is `false` (falls back to `errorBorderColor`) |
 | `disabledBorderColor` | `Color?` | `null` | Border color (disabled, falls back to `borderColor` with 50% opacity) |
 | `textStyle` | `TextStyle?` | `null` | Input text style |
 | `disabledTextStyle` | `TextStyle?` | `null` | Text style when disabled (falls back to `textStyle`) |

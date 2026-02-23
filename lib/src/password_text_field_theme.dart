@@ -319,6 +319,8 @@ class PasswordTextFieldTheme {
     this.errorBorderColor,
     this.pasteWarningBorderColor,
     this.customErrorBorderColor,
+    this.checkedBorderColor,
+    this.uncheckedBorderColor,
     this.disabledBorderColor,
     this.textStyle,
     this.disabledTextStyle,
@@ -390,6 +392,16 @@ class PasswordTextFieldTheme {
   ///
   /// If null, falls back to [errorBorderColor].
   final Color? customErrorBorderColor;
+
+  /// The border color when [PasswordTextField.isChecked] is true.
+  ///
+  /// If null, defaults to Colors.green.
+  final Color? checkedBorderColor;
+
+  /// The border color when [PasswordTextField.isChecked] is false.
+  ///
+  /// If null, falls back to [errorBorderColor].
+  final Color? uncheckedBorderColor;
 
   /// The border color when the text field is disabled.
   ///
@@ -483,6 +495,8 @@ class PasswordTextFieldTheme {
           pasteWarningBorderColor ?? other.pasteWarningBorderColor,
       customErrorBorderColor:
           customErrorBorderColor ?? other.customErrorBorderColor,
+      checkedBorderColor: checkedBorderColor ?? other.checkedBorderColor,
+      uncheckedBorderColor: uncheckedBorderColor ?? other.uncheckedBorderColor,
       disabledBorderColor: disabledBorderColor ?? other.disabledBorderColor,
       textStyle: textStyle ?? other.textStyle,
       disabledTextStyle: disabledTextStyle ?? other.disabledTextStyle,
@@ -513,6 +527,8 @@ class PasswordTextFieldTheme {
     Color? errorBorderColor,
     Color? pasteWarningBorderColor,
     Color? customErrorBorderColor,
+    Color? checkedBorderColor,
+    Color? uncheckedBorderColor,
     Color? disabledBorderColor,
     TextStyle? textStyle,
     TextStyle? disabledTextStyle,
@@ -539,6 +555,8 @@ class PasswordTextFieldTheme {
           pasteWarningBorderColor ?? this.pasteWarningBorderColor,
       customErrorBorderColor:
           customErrorBorderColor ?? this.customErrorBorderColor,
+      checkedBorderColor: checkedBorderColor ?? this.checkedBorderColor,
+      uncheckedBorderColor: uncheckedBorderColor ?? this.uncheckedBorderColor,
       disabledBorderColor: disabledBorderColor ?? this.disabledBorderColor,
       textStyle: textStyle ?? this.textStyle,
       disabledTextStyle: disabledTextStyle ?? this.disabledTextStyle,

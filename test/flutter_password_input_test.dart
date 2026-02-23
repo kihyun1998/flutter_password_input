@@ -132,10 +132,12 @@ void main() {
 
       // Use .first because IconButton internally creates additional SizedBoxes
       final sizedBox = tester.widget<SizedBox>(
-        find.descendant(
-          of: find.byType(PasswordTextField),
-          matching: find.byType(SizedBox),
-        ).first,
+        find
+            .descendant(
+              of: find.byType(PasswordTextField),
+              matching: find.byType(SizedBox),
+            )
+            .first,
       );
 
       expect(sizedBox.width, 300);
@@ -250,7 +252,7 @@ void main() {
 
     testWidgets('calls prefixWidgetBuilder with none warning initially',
         (tester) async {
-      PasswordFieldWarning? capturedWarning;
+      PasswordFieldStatus? capturedWarning;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -266,7 +268,7 @@ void main() {
         ),
       );
 
-      expect(capturedWarning, PasswordFieldWarning.none);
+      expect(capturedWarning, PasswordFieldStatus.none);
       expect(find.byIcon(Icons.person), findsOneWidget);
     });
 
@@ -277,8 +279,7 @@ void main() {
           home: Scaffold(
             body: PasswordTextField(
               labelText: 'Password',
-              suffixWidgetBuilder: (context, warning) =>
-                  const Icon(Icons.info),
+              suffixWidgetBuilder: (context, warning) => const Icon(Icons.info),
             ),
           ),
         ),
@@ -406,7 +407,7 @@ void main() {
     testWidgets(
         'passes customError warning to builder when hasCustomError becomes true',
         (tester) async {
-      PasswordFieldWarning? capturedWarning;
+      PasswordFieldStatus? capturedWarning;
       bool hasError = false;
 
       await tester.pumpWidget(
@@ -434,12 +435,12 @@ void main() {
         ),
       );
 
-      expect(capturedWarning, PasswordFieldWarning.none);
+      expect(capturedWarning, PasswordFieldStatus.none);
 
       await tester.tap(find.text('Set Error'));
       await tester.pump();
 
-      expect(capturedWarning, PasswordFieldWarning.customError);
+      expect(capturedWarning, PasswordFieldStatus.customError);
     });
 
     testWidgets(
@@ -447,7 +448,7 @@ void main() {
         (tester) async {
       // _activeWarning is only updated via didUpdateWidget, so we must
       // transition false → true → false to exercise the clear path.
-      PasswordFieldWarning? capturedWarning;
+      PasswordFieldStatus? capturedWarning;
       bool hasError = false;
 
       await tester.pumpWidget(
@@ -475,20 +476,21 @@ void main() {
         ),
       );
 
-      expect(capturedWarning, PasswordFieldWarning.none);
+      expect(capturedWarning, PasswordFieldStatus.none);
 
       // false → true
       await tester.tap(find.text('Toggle Error'));
       await tester.pump();
-      expect(capturedWarning, PasswordFieldWarning.customError);
+      expect(capturedWarning, PasswordFieldStatus.customError);
 
       // true → false
       await tester.tap(find.text('Toggle Error'));
       await tester.pump();
-      expect(capturedWarning, PasswordFieldWarning.none);
+      expect(capturedWarning, PasswordFieldStatus.none);
     });
 
-    testWidgets('renders in tooltip display mode without error', (tester) async {
+    testWidgets('renders in tooltip display mode without error',
+        (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(

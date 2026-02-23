@@ -69,6 +69,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   double _suffixIconMinWidth = 48;
   double _suffixIconMinHeight = 48;
   bool _hasCustomError = false;
+  bool? _isChecked;
+  Color _checkedBorderColor = Colors.green;
+  Color _uncheckedBorderColor = Colors.red;
   bool _disablePaste = false;
   bool _showPasteWarning = true;
   WarningAlignment _capsLockWarningAlignment = WarningAlignment.bottomLeft;
@@ -125,6 +128,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     errorBorderColor: _errorBorderColor,
     pasteWarningBorderColor: _pasteWarningBorderColor,
     customErrorBorderColor: _customErrorBorderColor,
+    checkedBorderColor: _checkedBorderColor,
+    uncheckedBorderColor: _uncheckedBorderColor,
     disabledBorderColor: _disabledBorderColor,
     disabledTextStyle: _disabledTextColor != null
         ? TextStyle(color: _disabledTextColor)
@@ -164,16 +169,18 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     ),
   );
 
-  Color _warningColor(PasswordFieldWarning warning) {
+  Color _warningColor(PasswordFieldStatus warning) {
     return switch (warning) {
-      PasswordFieldWarning.disabled =>
+      PasswordFieldStatus.disabled =>
         _disabledBorderColor ?? Colors.grey.shade400,
-      PasswordFieldWarning.customError =>
+      PasswordFieldStatus.customError =>
         _customErrorBorderColor ?? _errorBorderColor,
-      PasswordFieldWarning.capsLock => _errorBorderColor,
-      PasswordFieldWarning.pasteBlocked =>
+      PasswordFieldStatus.capsLock => _errorBorderColor,
+      PasswordFieldStatus.pasteBlocked =>
         _pasteWarningBorderColor ?? _errorBorderColor,
-      PasswordFieldWarning.none => Colors.grey,
+      PasswordFieldStatus.checked => _checkedBorderColor,
+      PasswordFieldStatus.unchecked => _uncheckedBorderColor,
+      PasswordFieldStatus.none => Colors.grey,
     };
   }
 
@@ -284,6 +291,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       pasteWarningAlignment: _pasteWarningAlignment,
                       warningDisplayMode: _warningDisplayMode,
                       hasCustomError: _hasCustomError,
+                      isChecked: _isChecked,
                       onCapsLockStateChanged: (isCapsLockOn) {
                         setState(() => _isCapsLockOn = isCapsLockOn);
                       },
@@ -406,6 +414,18 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                           setState(() => _customErrorBorderColor = c);
                         },
                       ),
+                      _buildColorPicker('Checked Border', _checkedBorderColor, (
+                        c,
+                      ) {
+                        setState(() => _checkedBorderColor = c);
+                      }),
+                      _buildColorPicker(
+                        'Unchecked Border',
+                        _uncheckedBorderColor,
+                        (c) {
+                          setState(() => _uncheckedBorderColor = c);
+                        },
+                      ),
                       _buildNullableColorPicker(
                         'Disabled Border',
                         _disabledBorderColor,
@@ -501,6 +521,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       _buildSwitch('Custom Error', _hasCustomError, (v) {
                         setState(() => _hasCustomError = v);
                       }),
+                      _buildIsCheckedPicker(),
                       _buildSwitch('Disable Paste', _disablePaste, (v) {
                         setState(() => _disablePaste = v);
                       }),
@@ -882,6 +903,44 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                 ),
               ],
               onChanged: (v) => onChanged(v),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds a 3-way picker for [isChecked] (null / true / false).
+  Widget _buildIsCheckedPicker() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          const Text('isChecked', style: TextStyle(fontSize: 13)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Row(
+              children: [
+                for (final entry in {
+                  'None': null,
+                  'true': true,
+                  'false': false,
+                }.entries)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: ChoiceChip(
+                        label: Text(
+                          entry.key,
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                        selected: _isChecked == entry.value,
+                        onSelected: (_) =>
+                            setState(() => _isChecked = entry.value),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],
