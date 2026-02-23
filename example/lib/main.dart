@@ -51,6 +51,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   Color _focusBorderColor = Colors.deepPurple;
   Color _errorBorderColor = Colors.orange;
   Color? _pasteWarningBorderColor;
+  Color? _customErrorBorderColor;
   Color? _visibilityIconColor;
   double _visibilityIconSize = 20;
 
@@ -61,6 +62,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   bool _enabled = true;
   bool _showPrefixWidget = false;
   bool _showSuffixWidget = false;
+  bool _hasCustomError = false;
   bool _disablePaste = false;
   bool _showPasteWarning = true;
   WarningAlignment _capsLockWarningAlignment = WarningAlignment.bottomLeft;
@@ -110,6 +112,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     focusBorderColor: _focusBorderColor,
     errorBorderColor: _errorBorderColor,
     pasteWarningBorderColor: _pasteWarningBorderColor,
+    customErrorBorderColor: _customErrorBorderColor,
     visibilityIconColor: _visibilityIconColor,
     visibilityIconSize: _visibilityIconSize,
     tooltipTheme: WarningTooltipTheme(
@@ -221,6 +224,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       pasteWarningText: _pasteWarningText,
                       pasteWarningAlignment: _pasteWarningAlignment,
                       warningDisplayMode: _warningDisplayMode,
+                      hasCustomError: _hasCustomError,
                       onCapsLockStateChanged: (isCapsLockOn) {
                         setState(() => _isCapsLockOn = isCapsLockOn);
                       },
@@ -337,6 +341,13 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                         },
                       ),
                       _buildNullableColorPicker(
+                        'Custom Error Border',
+                        _customErrorBorderColor,
+                        (c) {
+                          setState(() => _customErrorBorderColor = c);
+                        },
+                      ),
+                      _buildNullableColorPicker(
                         'Visibility Icon',
                         _visibilityIconColor,
                         (c) {
@@ -413,6 +424,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       }),
                       _buildSwitch('Enabled', _enabled, (v) {
                         setState(() => _enabled = v);
+                      }),
+                      _buildSwitch('Custom Error', _hasCustomError, (v) {
+                        setState(() => _hasCustomError = v);
                       }),
                       _buildSwitch('Disable Paste', _disablePaste, (v) {
                         setState(() => _disablePaste = v);

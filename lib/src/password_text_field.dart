@@ -86,6 +86,7 @@ class PasswordTextField extends StatefulWidget {
     this.pasteWarningAlignment = WarningAlignment.bottomLeft,
     this.onPasteBlocked,
     this.warningDisplayMode = WarningDisplayMode.message,
+    this.hasCustomError = false,
   });
 
   /// Controls the text being edited.
@@ -260,6 +261,14 @@ class PasswordTextField extends StatefulWidget {
   /// [pasteWarningAlignment]) for tooltip positioning.
   /// Defaults to [WarningDisplayMode.message].
   final WarningDisplayMode warningDisplayMode;
+
+  /// Whether the text field is in a custom error state.
+  ///
+  /// When true, the border color changes to [PasswordTextFieldTheme.customErrorBorderColor]
+  /// (or [PasswordTextFieldTheme.errorBorderColor] if not specified).
+  /// This is useful for external validation such as password mismatch.
+  /// Defaults to false.
+  final bool hasCustomError;
 
   @override
   State<PasswordTextField> createState() => _PasswordTextFieldState();
@@ -448,8 +457,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   }
 
   bool _onHardwareKey(KeyEvent event) {
-    if (event is KeyUpEvent &&
-        event.logicalKey == LogicalKeyboardKey.keyV) {
+    if (event is KeyUpEvent && event.logicalKey == LogicalKeyboardKey.keyV) {
       _pasteKeyHeld = false;
     }
     return false;
@@ -620,6 +628,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       bool showCapsLockWarning,
       Color errorColor,
       Color pasteWarningColor,
+      Color customErrorColor,
       Color focusColor) {
     final textField = SizedBox(
       width: theme.width,
@@ -645,11 +654,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           labelStyle: theme.labelStyle,
           floatingLabelStyle: theme.floatingLabelStyle ??
               TextStyle(
-                color: showCapsLockWarning
-                    ? errorColor
-                    : _showPasteWarning
-                        ? pasteWarningColor
-                        : focusColor,
+                color: widget.hasCustomError
+                    ? customErrorColor
+                    : showCapsLockWarning
+                        ? errorColor
+                        : _showPasteWarning
+                            ? pasteWarningColor
+                            : focusColor,
               ),
           floatingLabelBehavior: widget.useFloatingLabel
               ? FloatingLabelBehavior.auto
@@ -664,11 +675,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
             borderSide: theme.borderWidth == 0
                 ? BorderSide.none
                 : BorderSide(
-                    color: showCapsLockWarning
-                        ? errorColor
-                        : _showPasteWarning
-                            ? pasteWarningColor
-                            : focusColor,
+                    color: widget.hasCustomError
+                        ? customErrorColor
+                        : showCapsLockWarning
+                            ? errorColor
+                            : _showPasteWarning
+                                ? pasteWarningColor
+                                : focusColor,
                     width: theme.borderWidth!,
                   ),
             borderRadius: BorderRadius.circular(theme.borderRadius!),
@@ -677,7 +690,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
             borderSide: theme.borderWidth == 0
                 ? BorderSide.none
                 : BorderSide(
-                    color: theme.borderColor ?? appTheme.dividerColor,
+                    color: widget.hasCustomError
+                        ? customErrorColor
+                        : theme.borderColor ?? appTheme.dividerColor,
                     width: theme.borderWidth!,
                   ),
             borderRadius: BorderRadius.circular(theme.borderRadius!),
@@ -722,15 +737,16 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
 
     final errorColor = theme.errorBorderColor ?? Colors.orange;
     final pasteWarningColor = theme.pasteWarningBorderColor ?? errorColor;
+    final customErrorColor = theme.customErrorBorderColor ?? errorColor;
     final focusColor = theme.focusBorderColor ?? appTheme.primaryColor;
 
     final textField = _buildTextField(appTheme, theme, showCapsLockWarning,
-        errorColor, pasteWarningColor, focusColor);
+        errorColor, pasteWarningColor, customErrorColor, focusColor);
 
     // Tooltip mode
     if (widget.warningDisplayMode == WarningDisplayMode.tooltip) {
-      _updateTooltipVisibility(
-          _capsLockTooltipController, showCapsLockWarning && !_showPasteWarning);
+      _updateTooltipVisibility(_capsLockTooltipController,
+          showCapsLockWarning && !_showPasteWarning);
       _updateTooltipVisibility(_pasteTooltipController, _showPasteWarning);
 
       final capsLockMapping =

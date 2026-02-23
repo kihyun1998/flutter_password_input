@@ -1,3 +1,13 @@
+## 0.2.0
+
+**feat**
+- Add `hasCustomError` to `PasswordTextField` for external error state control (default: false)
+  - Changes border color and floating label color when active
+  - Works in both focused and unfocused states
+- Add `customErrorBorderColor` to `PasswordTextFieldTheme` (falls back to `errorBorderColor`)
+
+---
+
 ## 0.1.8
 
 **fix**

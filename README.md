@@ -7,6 +7,7 @@ A password text field with Caps Lock detection and visibility toggle.
 - Caps Lock warning when focused
 - Password visibility toggle
 - Force English input mode (disables IME on Windows, switches to English keyboard on macOS)
+- Custom error state for external validation
 - Disable paste option
 - Prefix/suffix widget support
 - Theming via `PasswordTextFieldTheme`
@@ -15,7 +16,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.1.8
+  flutter_password_input: ^0.2.0
 ```
 
 ## Usage
@@ -87,6 +88,7 @@ PasswordTextField(
 | `pasteWarningDuration` | `Duration` | `3 seconds` | Auto-hide duration for paste warning |
 | `pasteWarningAlignment` | `WarningAlignment` | `bottomLeft` | Paste warning position |
 | `warningDisplayMode` | `WarningDisplayMode` | `message` | `message` (inline text) or `tooltip` |
+| `hasCustomError` | `bool` | `false` | External error state (changes border color) |
 | `onFocus` | `VoidCallback?` | `null` | Called on focus gained |
 | `onLostFocus` | `VoidCallback?` | `null` | Called on focus lost |
 | `onChange` | `ValueChanged<String>?` | `null` | Called on text change |
@@ -108,6 +110,7 @@ PasswordTextField(
 | `focusBorderColor` | `Color?` | `null` | Border color (focused) |
 | `errorBorderColor` | `Color?` | `Colors.orange` | Border color (Caps Lock on) |
 | `pasteWarningBorderColor` | `Color?` | `null` | Border color (paste blocked, falls back to `errorBorderColor`) |
+| `customErrorBorderColor` | `Color?` | `null` | Border color (custom error, falls back to `errorBorderColor`) |
 | `textStyle` | `TextStyle?` | `null` | Input text style |
 | `labelStyle` | `TextStyle?` | `null` | Label text style |
 | `hintStyle` | `TextStyle?` | `null` | Hint text style |

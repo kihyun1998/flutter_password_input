@@ -275,6 +275,7 @@ class PasswordTextFieldTheme {
     this.focusBorderColor,
     this.errorBorderColor,
     this.pasteWarningBorderColor,
+    this.customErrorBorderColor,
     this.textStyle,
     this.labelStyle,
     this.hintStyle,
@@ -339,6 +340,11 @@ class PasswordTextFieldTheme {
   /// when [pasteWarningStyle] is not specified.
   /// If null, falls back to [errorBorderColor].
   final Color? pasteWarningBorderColor;
+
+  /// The border color when [PasswordTextField.hasCustomError] is true.
+  ///
+  /// If null, falls back to [errorBorderColor].
+  final Color? customErrorBorderColor;
 
   /// The text style for the input text.
   ///
@@ -420,6 +426,8 @@ class PasswordTextFieldTheme {
       errorBorderColor: errorBorderColor ?? other.errorBorderColor,
       pasteWarningBorderColor:
           pasteWarningBorderColor ?? other.pasteWarningBorderColor,
+      customErrorBorderColor:
+          customErrorBorderColor ?? other.customErrorBorderColor,
       textStyle: textStyle ?? other.textStyle,
       labelStyle: labelStyle ?? other.labelStyle,
       hintStyle: hintStyle ?? other.hintStyle,
@@ -447,6 +455,7 @@ class PasswordTextFieldTheme {
     Color? focusBorderColor,
     Color? errorBorderColor,
     Color? pasteWarningBorderColor,
+    Color? customErrorBorderColor,
     TextStyle? textStyle,
     TextStyle? labelStyle,
     TextStyle? hintStyle,
@@ -469,6 +478,8 @@ class PasswordTextFieldTheme {
       errorBorderColor: errorBorderColor ?? this.errorBorderColor,
       pasteWarningBorderColor:
           pasteWarningBorderColor ?? this.pasteWarningBorderColor,
+      customErrorBorderColor:
+          customErrorBorderColor ?? this.customErrorBorderColor,
       textStyle: textStyle ?? this.textStyle,
       labelStyle: labelStyle ?? this.labelStyle,
       hintStyle: hintStyle ?? this.hintStyle,
