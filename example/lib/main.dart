@@ -79,6 +79,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   double _tooltipPaddingH = 12;
   double _tooltipPaddingV = 8;
   double _tooltipElevation = 4;
+  Color? _tooltipBorderColor;
+  double _tooltipBorderWidth = 0;
   double _tooltipOffset = 8;
   double _tooltipCrossAxisOffset = 0;
   bool _tooltipShowArrow = false;
@@ -131,6 +133,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
         vertical: _tooltipPaddingV,
       ),
       elevation: _tooltipElevation,
+      borderColor: _tooltipBorderColor,
+      borderWidth: _tooltipBorderWidth,
       offset: _tooltipOffset,
       crossAxisOffset: _tooltipCrossAxisOffset,
       showArrow: _tooltipShowArrow,
@@ -606,6 +610,12 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       _buildSlider('Tooltip Elevation', _tooltipElevation, 0, 16, (v) {
         setState(() => _tooltipElevation = v);
       }),
+      _buildNullableColorPicker('Tooltip Border', _tooltipBorderColor, (c) {
+        setState(() => _tooltipBorderColor = c);
+      }),
+      _buildSlider('Tooltip Border Width', _tooltipBorderWidth, 0, 4, (v) {
+        setState(() => _tooltipBorderWidth = v);
+      }),
       _buildSlider('Tooltip Offset', _tooltipOffset, 0, 24, (v) {
         setState(() => _tooltipOffset = v);
       }),
@@ -915,13 +925,14 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   ) {
     final colors = <Color?>[
       null,
-      Colors.white,
-      Colors.grey.shade200,
-      Colors.grey.shade400,
-      Colors.deepPurple.shade50,
-      Colors.blue.shade50,
-      Colors.orange.shade50,
-      Colors.red.shade50,
+      Colors.deepPurple,
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.red,
+      Colors.pink,
+      Colors.teal,
+      Colors.grey,
     ];
 
     return Column(

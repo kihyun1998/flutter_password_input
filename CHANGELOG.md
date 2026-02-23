@@ -1,3 +1,10 @@
+## 0.3.1
+
+**deps**
+- Upgrade `just_tooltip` from `^0.2.1` to `^0.2.3` (bug fix)
+
+---
+
 ## 0.3.0
 
 **BREAKING**
