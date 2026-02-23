@@ -16,7 +16,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.2.0
+  flutter_password_input: ^0.2.1
 ```
 
 ## Usage
@@ -78,7 +78,9 @@ PasswordTextField(
 | `visibilityOnIcon` | `Widget?` | `null` | Custom icon when password visible |
 | `visibilityOffIcon` | `Widget?` | `null` | Custom icon when password hidden |
 | `prefixWidget` | `Widget?` | `null` | Widget before the input area |
+| `prefixIconConstraints` | `BoxConstraints?` | `null` | Size constraints for prefix icon |
 | `suffixWidget` | `Widget?` | `null` | Widget after the input area |
+| `suffixIconConstraints` | `BoxConstraints?` | `null` | Size constraints for suffix icon |
 | `showCapsLockWarning` | `bool` | `true` | Show Caps Lock warning |
 | `capsLockWarningText` | `String?` | `'Caps Lock is on'` | Caps Lock warning message |
 | `capsLockWarningAlignment` | `WarningAlignment` | `bottomLeft` | Caps Lock warning position |

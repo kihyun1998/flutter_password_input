@@ -61,7 +61,11 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   bool _useFloatingLabel = true;
   bool _enabled = true;
   bool _showPrefixWidget = false;
+  double _prefixIconMinWidth = 48;
+  double _prefixIconMinHeight = 48;
   bool _showSuffixWidget = false;
+  double _suffixIconMinWidth = 48;
+  double _suffixIconMinHeight = 48;
   bool _hasCustomError = false;
   bool _disablePaste = false;
   bool _showPasteWarning = true;
@@ -206,6 +210,12 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                               child: Icon(Icons.lock_outline, size: 20),
                             )
                           : null,
+                      prefixIconConstraints: _showPrefixWidget
+                          ? BoxConstraints(
+                              minWidth: _prefixIconMinWidth,
+                              minHeight: _prefixIconMinHeight,
+                            )
+                          : null,
                       suffixWidget: _showSuffixWidget
                           ? IconButton(
                               icon: const Icon(Icons.info_outline, size: 20),
@@ -217,6 +227,12 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                                   ),
                                 );
                               },
+                            )
+                          : null,
+                      suffixIconConstraints: _showSuffixWidget
+                          ? BoxConstraints(
+                              minWidth: _suffixIconMinWidth,
+                              minHeight: _suffixIconMinHeight,
                             )
                           : null,
                       disablePaste: _disablePaste,
@@ -445,11 +461,51 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       ) {
                         setState(() => _showPrefixWidget = v);
                       }),
+                      if (_showPrefixWidget) ...[
+                        _buildSlider(
+                          'Prefix Min Width',
+                          _prefixIconMinWidth,
+                          20,
+                          80,
+                          (v) {
+                            setState(() => _prefixIconMinWidth = v);
+                          },
+                        ),
+                        _buildSlider(
+                          'Prefix Min Height',
+                          _prefixIconMinHeight,
+                          20,
+                          80,
+                          (v) {
+                            setState(() => _prefixIconMinHeight = v);
+                          },
+                        ),
+                      ],
                       _buildSwitch('Show Suffix Widget', _showSuffixWidget, (
                         v,
                       ) {
                         setState(() => _showSuffixWidget = v);
                       }),
+                      if (_showSuffixWidget) ...[
+                        _buildSlider(
+                          'Suffix Min Width',
+                          _suffixIconMinWidth,
+                          20,
+                          80,
+                          (v) {
+                            setState(() => _suffixIconMinWidth = v);
+                          },
+                        ),
+                        _buildSlider(
+                          'Suffix Min Height',
+                          _suffixIconMinHeight,
+                          20,
+                          80,
+                          (v) {
+                            setState(() => _suffixIconMinHeight = v);
+                          },
+                        ),
+                      ],
 
                       const SizedBox(height: 24),
                       SizedBox(

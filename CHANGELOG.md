@@ -1,3 +1,10 @@
+## 0.2.1
+
+**feat**
+- Add `prefixIconConstraints` and `suffixIconConstraints` to `PasswordTextField` for controlling icon size
+
+---
+
 ## 0.2.0
 
 **feat**

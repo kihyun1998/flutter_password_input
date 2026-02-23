@@ -72,7 +72,9 @@ class PasswordTextField extends StatefulWidget {
     this.visibilityOnIcon,
     this.visibilityOffIcon,
     this.prefixWidget,
+    this.prefixIconConstraints,
     this.suffixWidget,
+    this.suffixIconConstraints,
     this.onFocus,
     this.onLostFocus,
     this.onChange,
@@ -184,11 +186,21 @@ class PasswordTextField extends StatefulWidget {
   /// Commonly used for icons like a lock icon.
   final Widget? prefixWidget;
 
+  /// The constraints for the prefix icon.
+  ///
+  /// If null, uses Flutter's default [BoxConstraints(minWidth: 48, minHeight: 48)].
+  final BoxConstraints? prefixIconConstraints;
+
   /// A widget to display after the text input area but before the visibility toggle.
   ///
   /// When both [suffixWidget] and [showVisibilityToggle] are provided,
   /// they are displayed in a row with the suffix widget first.
   final Widget? suffixWidget;
+
+  /// The constraints for the suffix icon.
+  ///
+  /// If null, uses Flutter's default [BoxConstraints(minWidth: 48, minHeight: 48)].
+  final BoxConstraints? suffixIconConstraints;
 
   /// Called when the text field gains focus.
   final VoidCallback? onFocus;
@@ -670,7 +682,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           fillColor: theme.backgroundColor,
           filled: theme.backgroundColor != null,
           prefixIcon: widget.prefixWidget,
+          prefixIconConstraints: widget.prefixIconConstraints,
           suffixIcon: _buildSuffixIcon(appTheme),
+          suffixIconConstraints: widget.suffixIconConstraints,
           focusedBorder: OutlineInputBorder(
             borderSide: theme.borderWidth == 0
                 ? BorderSide.none
