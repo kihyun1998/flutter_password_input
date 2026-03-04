@@ -13,9 +13,13 @@ enum WarningAlignment {
   topLeft,
   topCenter,
   topRight,
+  topStartTargetCenter,
+  topEndTargetCenter,
   bottomLeft,
   bottomCenter,
   bottomRight,
+  bottomStartTargetCenter,
+  bottomEndTargetCenter,
 }
 
 /// Represents the current status of the password field.
@@ -617,7 +621,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   bool _isTopAlignment(WarningAlignment alignment) {
     return alignment == WarningAlignment.topLeft ||
         alignment == WarningAlignment.topCenter ||
-        alignment == WarningAlignment.topRight;
+        alignment == WarningAlignment.topRight ||
+        alignment == WarningAlignment.topStartTargetCenter ||
+        alignment == WarningAlignment.topEndTargetCenter;
   }
 
   Alignment _toAlignment(WarningAlignment alignment) {
@@ -630,6 +636,12 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         return Alignment.center;
       case WarningAlignment.topRight:
       case WarningAlignment.bottomRight:
+        return Alignment.centerRight;
+      case WarningAlignment.topStartTargetCenter:
+      case WarningAlignment.bottomStartTargetCenter:
+        return Alignment.centerLeft;
+      case WarningAlignment.topEndTargetCenter:
+      case WarningAlignment.bottomEndTargetCenter:
         return Alignment.centerRight;
     }
   }
@@ -667,6 +679,16 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           direction: jt.TooltipDirection.top,
           alignment: jt.TooltipAlignment.end
         );
+      case WarningAlignment.topStartTargetCenter:
+        return (
+          direction: jt.TooltipDirection.top,
+          alignment: jt.TooltipAlignment.startTargetCenter
+        );
+      case WarningAlignment.topEndTargetCenter:
+        return (
+          direction: jt.TooltipDirection.top,
+          alignment: jt.TooltipAlignment.endTargetCenter
+        );
       case WarningAlignment.bottomLeft:
         return (
           direction: jt.TooltipDirection.bottom,
@@ -681,6 +703,16 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         return (
           direction: jt.TooltipDirection.bottom,
           alignment: jt.TooltipAlignment.end
+        );
+      case WarningAlignment.bottomStartTargetCenter:
+        return (
+          direction: jt.TooltipDirection.bottom,
+          alignment: jt.TooltipAlignment.startTargetCenter
+        );
+      case WarningAlignment.bottomEndTargetCenter:
+        return (
+          direction: jt.TooltipDirection.bottom,
+          alignment: jt.TooltipAlignment.endTargetCenter
         );
     }
   }

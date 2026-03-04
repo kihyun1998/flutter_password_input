@@ -1,3 +1,11 @@
+## 0.4.1
+
+**feat**
+- Add `WarningAlignment.topStartTargetCenter`, `topEndTargetCenter`, `bottomStartTargetCenter`, `bottomEndTargetCenter` — arrow dynamically points toward the center of the target widget
+- Upgrade `just_tooltip` from `^0.2.3` to `^0.2.5`
+
+---
+
 ## 0.4.0
 
 **BREAKING**

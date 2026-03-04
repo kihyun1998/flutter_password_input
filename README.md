@@ -16,7 +16,7 @@ A password text field with Caps Lock detection and visibility toggle.
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.4.0
+  flutter_password_input: ^0.4.1
 ```
 
 ## Usage
@@ -167,7 +167,7 @@ Used when `warningDisplayMode` is `WarningDisplayMode.tooltip`.
 | `borderWidth` | `double?` | `0.0` | Tooltip border width |
 | `textStyle` | `TextStyle?` | `null` | Tooltip text style |
 | `direction` | `TooltipDirection?` | `null` | Tooltip direction override (`top`, `bottom`, `left`, `right`) |
-| `alignment` | `TooltipAlignment?` | `null` | Tooltip alignment override (`start`, `center`, `end`) |
+| `alignment` | `TooltipAlignment?` | `null` | Tooltip alignment override (`start`, `center`, `end`, `startTargetCenter`, `endTargetCenter`) |
 | `offset` | `double?` | `8.0` | Gap between tooltip and target |
 | `crossAxisOffset` | `double?` | `0.0` | Cross-axis offset |
 | `screenMargin` | `double?` | `8.0` | Minimum distance from viewport edges |
