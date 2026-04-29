@@ -1,3 +1,20 @@
+## Unreleased
+
+**feat**
+- Add `WarningTooltipTheme.defaults` static const exposing default tooltip values (parity with `PasswordTextFieldTheme.defaults`)
+
+**chore**
+- Internal refactor of `PasswordTextField` — no behavior change
+  - Split `build()` into `_buildTooltipMode` / `_buildMessageMode` (180 lines → 30 lines)
+  - Group status border colors into `_StatusColors` record typedef
+  - Extract `_applyCapsLockState` from duplicated Caps Lock state handlers
+  - Extract `_buildOutlineBorder` helper from repeated focused/enabled/disabled border construction
+  - Simplify `WarningAlignment` → tooltip direction/alignment mapping (10-case → 5-case using `||` patterns)
+  - Consolidate hardcoded `'Caps Lock is on'` / `'Paste is disabled'` fallback strings into private constants
+  - Replace inline tooltip default fallbacks with `WarningTooltipTheme.defaults` merge
+
+---
+
 ## 0.4.1
 
 **feat**

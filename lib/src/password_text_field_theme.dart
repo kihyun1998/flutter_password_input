@@ -190,6 +190,32 @@ class WarningTooltipTheme {
   /// If null, defaults to -0.05.
   final double? rotationBegin;
 
+  /// The default theme values used when properties are not specified.
+  ///
+  /// Fields without defaults (boxShadow, borderColor, textStyle, direction,
+  /// alignment, waitDuration, showDuration, animationCurve) remain null.
+  static const WarningTooltipTheme defaults = WarningTooltipTheme(
+    backgroundColor: Color(0xFF616161),
+    borderRadius: BorderRadius.all(Radius.circular(6)),
+    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    elevation: 4.0,
+    borderWidth: 0.0,
+    offset: 8.0,
+    crossAxisOffset: 0.0,
+    screenMargin: 8.0,
+    animationDuration: Duration(milliseconds: 150),
+    showArrow: false,
+    arrowBaseWidth: 12.0,
+    arrowLength: 6.0,
+    arrowPositionRatio: 0.25,
+    interactive: true,
+    animation: TooltipAnimation.fade,
+    fadeBegin: 0.0,
+    scaleBegin: 0.0,
+    slideOffset: 0.3,
+    rotationBegin: -0.05,
+  );
+
   /// Merges this theme with another, with this theme's values taking priority.
   WarningTooltipTheme merge(WarningTooltipTheme? other) {
     if (other == null) return this;
