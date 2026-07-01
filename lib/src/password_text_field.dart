@@ -393,10 +393,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         _capsLockTooltipController ??= jt.JustTooltipController();
         _pasteTooltipController ??= jt.JustTooltipController();
       } else {
-        _capsLockTooltipController?.hide();
-        _capsLockTooltipController = null;
-        _pasteTooltipController?.hide();
-        _pasteTooltipController = null;
+        _disposeTooltipControllers();
       }
     }
     if (oldWidget.enabled != widget.enabled) {
@@ -424,9 +421,19 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     _capsLockSubscription?.cancel();
     _inputSourceSubscription?.cancel();
     HardwareKeyboard.instance.removeHandler(_onHardwareKey);
-    _capsLockTooltipController = null;
-    _pasteTooltipController = null;
+    _disposeTooltipControllers();
     super.dispose();
+  }
+
+  /// Disposes both tooltip controllers (if present) and clears the references.
+  ///
+  /// [JustTooltipController] is a [ChangeNotifier], so it must be disposed to
+  /// release its listeners; nulling alone leaks it.
+  void _disposeTooltipControllers() {
+    _capsLockTooltipController?.dispose();
+    _capsLockTooltipController = null;
+    _pasteTooltipController?.dispose();
+    _pasteTooltipController = null;
   }
 
   void _onFocusChange() {
@@ -563,6 +570,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     if (_showPasteWarning &&
         widget.warningDisplayMode == WarningDisplayMode.tooltip) {
       _pasteTooltipKey++;
+      _pasteTooltipController?.dispose();
       _pasteTooltipController = jt.JustTooltipController();
     }
     setState(() {
