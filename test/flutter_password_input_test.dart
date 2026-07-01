@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_password_input/flutter_password_input.dart';
 import 'package:flutter_password_input/src/warning_message_layout.dart';
+import 'package:flutter_password_input/src/warning_tooltip_layout.dart';
 import 'package:flutter_ime/flutter_ime_platform_interface.dart';
 // ignore: implementation_imports
 import 'package:flutter_ime/src/platform_support.dart';
@@ -650,6 +651,242 @@ void main() {
       final warnY = tester.getTopLeft(find.text('warn')).dy;
       expect(warnY, lessThan(fieldY),
           reason: 'a top-aligned warning renders above the field');
+    });
+
+    testWidgets('center alignment horizontally centers the warning',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: WarningMessageLayout(
+                width: 250,
+                margin: null,
+                pasteWarning: WarningMessage(
+                  text: 'warn',
+                  style: TextStyle(fontSize: 12),
+                  alignment: WarningAlignment.bottomCenter,
+                ),
+                child: SizedBox(key: Key('field'), width: 250, height: 40),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final fieldCenter = tester.getCenter(find.byKey(const Key('field'))).dx;
+      final warnCenter = tester.getCenter(find.text('warn')).dx;
+      expect(warnCenter, moreOrLessEquals(fieldCenter, epsilon: 1.0),
+          reason: 'center alignment horizontally centers the warning');
+    });
+
+    testWidgets('maps each alignment to its horizontal placement',
+        (tester) async {
+      // Expected placement per the alignment spec: start/left values hug the
+      // left edge, end/right values hug the right edge.
+      const cases = <WarningAlignment, String>{
+        WarningAlignment.topRight: 'right',
+        WarningAlignment.bottomRight: 'right',
+        WarningAlignment.topStartTargetCenter: 'left',
+        WarningAlignment.bottomStartTargetCenter: 'left',
+        WarningAlignment.topEndTargetCenter: 'right',
+        WarningAlignment.bottomEndTargetCenter: 'right',
+      };
+
+      for (final entry in cases.entries) {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: WarningMessageLayout(
+                  width: 250,
+                  margin: null,
+                  pasteWarning: WarningMessage(
+                    text: 'warn',
+                    style: const TextStyle(fontSize: 12),
+                    alignment: entry.key,
+                  ),
+                  child: const SizedBox(key: Key('field'), width: 250, height: 40),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final field = find.byKey(const Key('field'));
+        final warn = find.text('warn');
+        if (entry.value == 'left') {
+          expect(tester.getTopLeft(warn).dx,
+              moreOrLessEquals(tester.getTopLeft(field).dx, epsilon: 1.0),
+              reason: '${entry.key} should align to the left edge');
+        } else {
+          expect(tester.getTopRight(warn).dx,
+              moreOrLessEquals(tester.getTopRight(field).dx, epsilon: 1.0),
+              reason: '${entry.key} should align to the right edge');
+        }
+      }
+    });
+
+    testWidgets('renders a bottom-aligned caps-lock warning below the field',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: WarningMessageLayout(
+              width: 250,
+              margin: null,
+              capsLockWarning: WarningMessage(
+                text: 'caps',
+                style: TextStyle(fontSize: 12),
+                alignment: WarningAlignment.bottomLeft,
+              ),
+              child: SizedBox(key: Key('field'), width: 200, height: 40),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('caps'), findsOneWidget);
+      final fieldY = tester.getTopLeft(find.byKey(const Key('field'))).dy;
+      final capsY = tester.getTopLeft(find.text('caps')).dy;
+      expect(capsY, greaterThan(fieldY),
+          reason: 'a bottom-aligned caps-lock warning renders below the field');
+    });
+
+    testWidgets('renders a top-aligned caps-lock warning above the field',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: WarningMessageLayout(
+              width: 250,
+              margin: null,
+              capsLockWarning: WarningMessage(
+                text: 'caps',
+                style: TextStyle(fontSize: 12),
+                alignment: WarningAlignment.topLeft,
+              ),
+              child: SizedBox(key: Key('field'), width: 200, height: 40),
+            ),
+          ),
+        ),
+      );
+
+      final fieldY = tester.getTopLeft(find.byKey(const Key('field'))).dy;
+      final capsY = tester.getTopLeft(find.text('caps')).dy;
+      expect(capsY, lessThan(fieldY),
+          reason: 'a top-aligned caps-lock warning renders above the field');
+    });
+  });
+
+  group('WarningTooltipLayout', () {
+    testWidgets('maps warning alignment to tooltip direction and alignment',
+        (tester) async {
+      final tt = const WarningTooltipTheme().merge(WarningTooltipTheme.defaults);
+
+      // Expected (direction, tooltip-alignment) per the alignment spec.
+      const cases = <WarningAlignment,
+          ({TooltipDirection dir, TooltipAlignment align})>{
+        WarningAlignment.topLeft:
+            (dir: TooltipDirection.top, align: TooltipAlignment.start),
+        WarningAlignment.bottomCenter:
+            (dir: TooltipDirection.bottom, align: TooltipAlignment.center),
+        WarningAlignment.topRight:
+            (dir: TooltipDirection.top, align: TooltipAlignment.end),
+        WarningAlignment.bottomStartTargetCenter: (
+          dir: TooltipDirection.bottom,
+          align: TooltipAlignment.startTargetCenter
+        ),
+        WarningAlignment.topEndTargetCenter: (
+          dir: TooltipDirection.top,
+          align: TooltipAlignment.endTargetCenter
+        ),
+        WarningAlignment.bottomEndTargetCenter: (
+          dir: TooltipDirection.bottom,
+          align: TooltipAlignment.endTargetCenter
+        ),
+      };
+
+      for (final entry in cases.entries) {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: WarningTooltipLayout(
+                activeStatus: PasswordFieldStatus.none,
+                margin: null,
+                width: 250,
+                tooltipTheme: tt,
+                capsLockMessage: 'caps',
+                capsLockTextStyle: const TextStyle(fontSize: 12),
+                capsLockAlignment: entry.key,
+                pasteMessage: 'paste',
+                pasteTextStyle: const TextStyle(fontSize: 12),
+                pasteAlignment: WarningAlignment.bottomLeft,
+                pasteGeneration: 0,
+                child: const SizedBox(width: 250, height: 40),
+              ),
+            ),
+          ),
+        );
+
+        final caps = tester
+            .widgetList<JustTooltip>(find.byType(JustTooltip))
+            .firstWhere((t) => t.message == 'caps');
+        expect(caps.direction, entry.value.dir,
+            reason: '${entry.key} → direction');
+        expect(caps.alignment, entry.value.align,
+            reason: '${entry.key} → alignment');
+      }
+    });
+  });
+
+  group('PasswordTextField checked state', () {
+    testWidgets('reports checked status and a green border when isChecked true',
+        (tester) async {
+      PasswordFieldStatus? captured;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              labelText: 'Password',
+              isChecked: true,
+              prefixWidgetBuilder: (context, status) {
+                captured = status;
+                return const Icon(Icons.person);
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(captured, PasswordFieldStatus.checked);
+
+      final textField = tester.widget<TextField>(find.byType(TextField));
+      final border = textField.decoration!.enabledBorder as OutlineInputBorder;
+      expect(border.borderSide.color, Colors.green,
+          reason: 'checked defaults to a green border');
+    });
+
+    testWidgets('reports unchecked status when isChecked false', (tester) async {
+      PasswordFieldStatus? captured;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              labelText: 'Password',
+              isChecked: false,
+              prefixWidgetBuilder: (context, status) {
+                captured = status;
+                return const Icon(Icons.person);
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(captured, PasswordFieldStatus.unchecked);
     });
   });
 
