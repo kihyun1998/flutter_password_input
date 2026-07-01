@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_password_input/flutter_password_input.dart';
+import 'package:flutter_password_input/src/warning_message_layout.dart';
 import 'package:flutter_ime/flutter_ime_platform_interface.dart';
 // ignore: implementation_imports
 import 'package:flutter_ime/src/platform_support.dart';
@@ -598,6 +599,57 @@ void main() {
       );
 
       expect(find.byType(PasswordTextField), findsOneWidget);
+    });
+  });
+
+  group('WarningMessageLayout', () {
+    testWidgets('places a bottom-aligned warning below the field',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: WarningMessageLayout(
+              width: 250,
+              margin: null,
+              pasteWarning: WarningMessage(
+                text: 'warn',
+                style: TextStyle(fontSize: 12),
+                alignment: WarningAlignment.bottomLeft,
+              ),
+              child: SizedBox(key: Key('field'), width: 200, height: 40),
+            ),
+          ),
+        ),
+      );
+
+      final fieldY = tester.getTopLeft(find.byKey(const Key('field'))).dy;
+      final warnY = tester.getTopLeft(find.text('warn')).dy;
+      expect(warnY, greaterThan(fieldY),
+          reason: 'a bottom-aligned warning renders below the field');
+    });
+
+    testWidgets('places a top-aligned warning above the field', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: WarningMessageLayout(
+              width: 250,
+              margin: null,
+              pasteWarning: WarningMessage(
+                text: 'warn',
+                style: TextStyle(fontSize: 12),
+                alignment: WarningAlignment.topLeft,
+              ),
+              child: SizedBox(key: Key('field'), width: 200, height: 40),
+            ),
+          ),
+        ),
+      );
+
+      final fieldY = tester.getTopLeft(find.byKey(const Key('field'))).dy;
+      final warnY = tester.getTopLeft(find.text('warn')).dy;
+      expect(warnY, lessThan(fieldY),
+          reason: 'a top-aligned warning renders above the field');
     });
   });
 

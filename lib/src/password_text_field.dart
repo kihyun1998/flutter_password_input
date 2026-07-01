@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:just_tooltip/just_tooltip.dart' as jt;
 
 import 'keyboard_input_monitor.dart';
 import 'password_text_field_theme.dart';
+import 'warning_message_layout.dart';
+import 'warning_tooltip_layout.dart';
 
 /// Alignment options for warning messages displayed around the text field.
 enum WarningAlignment {
@@ -343,8 +344,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   Timer? _pasteWarningTimer;
   bool _pasteKeyHeld = false;
   late final KeyboardInputMonitor _keyboardMonitor;
-  jt.JustTooltipController? _capsLockTooltipController;
-  jt.JustTooltipController? _pasteTooltipController;
+
+  /// Bumped each time a paste warning re-fires while already showing. Passed to
+  /// [WarningTooltipLayout] as its `pasteGeneration` so the tooltip replays.
   int _pasteTooltipKey = 0;
 
   PasswordTextFieldTheme get _theme =>
@@ -364,11 +366,6 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         KeyboardInputMonitor(onCapsLockChanged: _onCapsLockChanged);
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
 
-    if (widget.warningDisplayMode == WarningDisplayMode.tooltip) {
-      _capsLockTooltipController = jt.JustTooltipController();
-      _pasteTooltipController = jt.JustTooltipController();
-    }
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (widget.autofocus) {
@@ -384,14 +381,6 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       _focusNode.removeListener(_onFocusChange);
       _focusNode = widget.focusNode ?? FocusNode();
       _focusNode.addListener(_onFocusChange);
-    }
-    if (oldWidget.warningDisplayMode != widget.warningDisplayMode) {
-      if (widget.warningDisplayMode == WarningDisplayMode.tooltip) {
-        _capsLockTooltipController ??= jt.JustTooltipController();
-        _pasteTooltipController ??= jt.JustTooltipController();
-      } else {
-        _disposeTooltipControllers();
-      }
     }
     if (oldWidget.enabled != widget.enabled) {
       _resolveActiveWarning();
@@ -413,19 +402,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     _pasteWarningTimer?.cancel();
     _keyboardMonitor.dispose();
     HardwareKeyboard.instance.removeHandler(_onHardwareKey);
-    _disposeTooltipControllers();
     super.dispose();
-  }
-
-  /// Disposes both tooltip controllers (if present) and clears the references.
-  ///
-  /// [JustTooltipController] is a [ChangeNotifier], so it must be disposed to
-  /// release its listeners; nulling alone leaks it.
-  void _disposeTooltipControllers() {
-    _capsLockTooltipController?.dispose();
-    _capsLockTooltipController = null;
-    _pasteTooltipController?.dispose();
-    _pasteTooltipController = null;
   }
 
   void _onFocusChange() {
@@ -521,9 +498,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     _pasteWarningTimer?.cancel();
     if (_showPasteWarning &&
         widget.warningDisplayMode == WarningDisplayMode.tooltip) {
+      // A paste warning is already showing: bump the generation so
+      // WarningTooltipLayout replays the tooltip animation.
       _pasteTooltipKey++;
-      _pasteTooltipController?.dispose();
-      _pasteTooltipController = jt.JustTooltipController();
     }
     setState(() {
       _showPasteWarning = true;
@@ -587,74 +564,6 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     };
   }
 
-  bool _isTopAlignment(WarningAlignment alignment) {
-    return alignment == WarningAlignment.topLeft ||
-        alignment == WarningAlignment.topCenter ||
-        alignment == WarningAlignment.topRight ||
-        alignment == WarningAlignment.topStartTargetCenter ||
-        alignment == WarningAlignment.topEndTargetCenter;
-  }
-
-  Alignment _toAlignment(WarningAlignment alignment) {
-    switch (alignment) {
-      case WarningAlignment.topLeft:
-      case WarningAlignment.bottomLeft:
-        return Alignment.centerLeft;
-      case WarningAlignment.topCenter:
-      case WarningAlignment.bottomCenter:
-        return Alignment.center;
-      case WarningAlignment.topRight:
-      case WarningAlignment.bottomRight:
-        return Alignment.centerRight;
-      case WarningAlignment.topStartTargetCenter:
-      case WarningAlignment.bottomStartTargetCenter:
-        return Alignment.centerLeft;
-      case WarningAlignment.topEndTargetCenter:
-      case WarningAlignment.bottomEndTargetCenter:
-        return Alignment.centerRight;
-    }
-  }
-
-  Widget _buildWarning(
-      String text, TextStyle style, WarningAlignment alignment) {
-    final isTop = _isTopAlignment(alignment);
-    return Padding(
-      padding: EdgeInsets.only(
-        top: isTop ? 0 : 4,
-        bottom: isTop ? 4 : 0,
-      ),
-      child: Align(
-        alignment: _toAlignment(alignment),
-        child: Text(text, style: style),
-      ),
-    );
-  }
-
-  ({jt.TooltipDirection direction, jt.TooltipAlignment alignment})
-      _mapWarningAlignmentToTooltip(WarningAlignment warningAlignment) {
-    final direction = _isTopAlignment(warningAlignment)
-        ? jt.TooltipDirection.top
-        : jt.TooltipDirection.bottom;
-    final alignment = switch (warningAlignment) {
-      WarningAlignment.topLeft ||
-      WarningAlignment.bottomLeft =>
-        jt.TooltipAlignment.start,
-      WarningAlignment.topCenter ||
-      WarningAlignment.bottomCenter =>
-        jt.TooltipAlignment.center,
-      WarningAlignment.topRight ||
-      WarningAlignment.bottomRight =>
-        jt.TooltipAlignment.end,
-      WarningAlignment.topStartTargetCenter ||
-      WarningAlignment.bottomStartTargetCenter =>
-        jt.TooltipAlignment.startTargetCenter,
-      WarningAlignment.topEndTargetCenter ||
-      WarningAlignment.bottomEndTargetCenter =>
-        jt.TooltipAlignment.endTargetCenter,
-    };
-    return (direction: direction, alignment: alignment);
-  }
-
   OutlineInputBorder _buildOutlineBorder(
       PasswordTextFieldTheme theme, Color color) {
     return OutlineInputBorder(
@@ -663,18 +572,6 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           : BorderSide(color: color, width: theme.borderWidth!),
       borderRadius: BorderRadius.circular(theme.borderRadius!),
     );
-  }
-
-  void _updateTooltipVisibility(
-      jt.JustTooltipController? controller, bool shouldShow) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (shouldShow) {
-        controller?.show();
-      } else {
-        controller?.hide();
-      }
-    });
   }
 
   Widget? _buildSuffixIcon(ThemeData appTheme) {
@@ -808,100 +705,23 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       Widget textField,
       PasswordTextFieldTheme theme,
       _StatusColors colors) {
-    _updateTooltipVisibility(_capsLockTooltipController,
-        _activeStatus == PasswordFieldStatus.capsLock);
-    _updateTooltipVisibility(_pasteTooltipController,
-        _activeStatus == PasswordFieldStatus.pasteBlocked);
-
-    final capsLockMapping =
-        _mapWarningAlignmentToTooltip(widget.capsLockWarningAlignment);
-    final pasteMapping =
-        _mapWarningAlignmentToTooltip(widget.pasteWarningAlignment);
-
     final tt = (theme.tooltipTheme ?? const WarningTooltipTheme())
         .merge(WarningTooltipTheme.defaults);
-
-    jt.JustTooltipTheme buildTooltipTheme(TextStyle textStyle) {
-      return jt.JustTooltipTheme(
-        backgroundColor: tt.backgroundColor!,
-        borderRadius: tt.borderRadius!,
-        padding: tt.padding!,
-        elevation: tt.elevation!,
-        boxShadow: tt.boxShadow,
-        borderColor: tt.borderColor,
-        borderWidth: tt.borderWidth!,
-        textStyle: textStyle,
-        showArrow: tt.showArrow!,
-        arrowBaseWidth: tt.arrowBaseWidth!,
-        arrowLength: tt.arrowLength!,
-        arrowPositionRatio: tt.arrowPositionRatio!,
-      );
-    }
-
-    jt.JustTooltip buildTooltip({
-      Key? key,
-      required jt.JustTooltipController? controller,
-      required jt.TooltipDirection direction,
-      required jt.TooltipAlignment alignment,
-      required TextStyle textStyle,
-      required String message,
-      required Widget child,
-    }) {
-      return jt.JustTooltip(
-        key: key,
-        controller: controller,
-        enableTap: false,
-        enableHover: false,
-        interactive: tt.interactive!,
-        direction: direction,
-        alignment: alignment,
-        offset: tt.offset!,
-        crossAxisOffset: tt.crossAxisOffset!,
-        screenMargin: tt.screenMargin!,
-        waitDuration: tt.waitDuration,
-        showDuration: tt.showDuration,
-        animationDuration: tt.animationDuration!,
-        animation: tt.animation!,
-        animationCurve: tt.animationCurve,
-        fadeBegin: tt.fadeBegin!,
-        scaleBegin: tt.scaleBegin!,
-        slideOffset: tt.slideOffset!,
-        rotationBegin: tt.rotationBegin!,
-        theme: buildTooltipTheme(textStyle),
-        message: message,
-        child: child,
-      );
-    }
-
-    Widget child = textField;
-
-    child = buildTooltip(
-      key: ValueKey(_pasteTooltipKey),
-      controller: _pasteTooltipController,
-      direction: tt.direction ?? pasteMapping.direction,
-      alignment: tt.alignment ?? pasteMapping.alignment,
-      textStyle: tt.textStyle ??
-          theme.pasteWarningStyle ??
-          TextStyle(color: colors.pasteWarning, fontSize: 12),
-      message: widget.pasteWarningText ?? _kDefaultPasteWarning,
-      child: child,
-    );
-
-    child = buildTooltip(
-      controller: _capsLockTooltipController,
-      direction: tt.direction ?? capsLockMapping.direction,
-      alignment: tt.alignment ?? capsLockMapping.alignment,
-      textStyle: tt.textStyle ??
-          theme.capsLockWarningStyle ??
-          TextStyle(color: colors.error, fontSize: 12),
-      message: widget.capsLockWarningText ?? _kDefaultCapsLockWarning,
-      child: child,
-    );
-
-    return Container(
+    return WarningTooltipLayout(
+      activeStatus: _activeStatus,
       margin: widget.margin,
       width: theme.width,
-      child: child,
+      tooltipTheme: tt,
+      capsLockMessage: widget.capsLockWarningText ?? _kDefaultCapsLockWarning,
+      capsLockTextStyle: theme.capsLockWarningStyle ??
+          TextStyle(color: colors.error, fontSize: 12),
+      capsLockAlignment: widget.capsLockWarningAlignment,
+      pasteMessage: widget.pasteWarningText ?? _kDefaultPasteWarning,
+      pasteTextStyle: theme.pasteWarningStyle ??
+          TextStyle(color: colors.pasteWarning, fontSize: 12),
+      pasteAlignment: widget.pasteWarningAlignment,
+      pasteGeneration: _pasteTooltipKey,
+      child: textField,
     );
   }
 
@@ -910,47 +730,26 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       PasswordTextFieldTheme theme,
       _StatusColors colors,
       bool showCapsLockWarning) {
-    Widget? capsLockWarning;
-    if (showCapsLockWarning) {
-      capsLockWarning = _buildWarning(
-        widget.capsLockWarningText ?? _kDefaultCapsLockWarning,
-        theme.capsLockWarningStyle ??
-            TextStyle(color: colors.error, fontSize: 12),
-        widget.capsLockWarningAlignment,
-      );
-    }
-
-    Widget? pasteWarning;
-    if (_showPasteWarning) {
-      pasteWarning = _buildWarning(
-        widget.pasteWarningText ?? _kDefaultPasteWarning,
-        theme.pasteWarningStyle ??
-            TextStyle(color: colors.pasteWarning, fontSize: 12),
-        widget.pasteWarningAlignment,
-      );
-    }
-
-    return Container(
+    return WarningMessageLayout(
       margin: widget.margin,
       width: theme.width,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (capsLockWarning != null &&
-              _isTopAlignment(widget.capsLockWarningAlignment))
-            capsLockWarning,
-          if (pasteWarning != null &&
-              _isTopAlignment(widget.pasteWarningAlignment))
-            pasteWarning,
-          textField,
-          if (capsLockWarning != null &&
-              !_isTopAlignment(widget.capsLockWarningAlignment))
-            capsLockWarning,
-          if (pasteWarning != null &&
-              !_isTopAlignment(widget.pasteWarningAlignment))
-            pasteWarning,
-        ],
-      ),
+      capsLockWarning: showCapsLockWarning
+          ? WarningMessage(
+              text: widget.capsLockWarningText ?? _kDefaultCapsLockWarning,
+              style: theme.capsLockWarningStyle ??
+                  TextStyle(color: colors.error, fontSize: 12),
+              alignment: widget.capsLockWarningAlignment,
+            )
+          : null,
+      pasteWarning: _showPasteWarning
+          ? WarningMessage(
+              text: widget.pasteWarningText ?? _kDefaultPasteWarning,
+              style: theme.pasteWarningStyle ??
+                  TextStyle(color: colors.pasteWarning, fontSize: 12),
+              alignment: widget.pasteWarningAlignment,
+            )
+          : null,
+      child: textField,
     );
   }
 
