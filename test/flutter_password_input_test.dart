@@ -471,8 +471,8 @@ void main() {
     testWidgets(
         'clears customError warning in builder when hasCustomError becomes false',
         (tester) async {
-      // _activeWarning is only updated via didUpdateWidget, so we must
-      // transition false → true → false to exercise the clear path.
+      // Transition false → true → false to exercise both the set and the
+      // clear path of the customError status.
       PasswordFieldStatus? capturedWarning;
       bool hasError = false;
 
@@ -546,6 +546,95 @@ void main() {
       );
 
       expect(find.byType(PasswordTextField), findsOneWidget);
+    });
+  });
+
+  group('PasswordTextField status priority', () {
+    testWidgets('a blocked paste does not override an active customError',
+        (tester) async {
+      PasswordFieldStatus? captured;
+      bool hasError = false;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) => MaterialApp(
+            home: Scaffold(
+              body: Column(
+                children: [
+                  PasswordTextField(
+                    labelText: 'Password',
+                    hasCustomError: hasError,
+                    disablePaste: true,
+                    prefixWidgetBuilder: (context, status) {
+                      captured = status;
+                      return const Icon(Icons.person);
+                    },
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => hasError = true),
+                    child: const Text('Set Error'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Activate the custom error state.
+      await tester.tap(find.text('Set Error'));
+      await tester.pump();
+      expect(captured, PasswordFieldStatus.customError);
+
+      // Block a paste while customError is active.
+      final element = tester.element(find.byType(TextField));
+      Actions.invoke(
+          element, const PasteTextIntent(SelectionChangedCause.keyboard));
+      await tester.pump();
+
+      expect(captured, PasswordFieldStatus.customError,
+          reason: 'customError outranks pasteBlocked in the priority order');
+    });
+
+    testWidgets('a disabled field reports disabled even when hasCustomError sets',
+        (tester) async {
+      PasswordFieldStatus? captured;
+      bool hasError = false;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) => MaterialApp(
+            home: Scaffold(
+              body: Column(
+                children: [
+                  PasswordTextField(
+                    labelText: 'Password',
+                    enabled: false,
+                    hasCustomError: hasError,
+                    prefixWidgetBuilder: (context, status) {
+                      captured = status;
+                      return const Icon(Icons.person);
+                    },
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => hasError = true),
+                    child: const Text('Set Error'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(captured, PasswordFieldStatus.disabled);
+
+      // Toggle hasCustomError on; disabled must still win.
+      await tester.tap(find.text('Set Error'));
+      await tester.pump();
+
+      expect(captured, PasswordFieldStatus.disabled,
+          reason: 'disabled outranks customError in the priority order');
     });
   });
 

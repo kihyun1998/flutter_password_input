@@ -359,9 +359,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChange);
 
-    if (widget.enabled == false) {
-      _activeStatus = PasswordFieldStatus.disabled;
-    }
+    _resolveActiveWarning();
 
     // Subscribe to Caps Lock state changes using flutter_ime
     _capsLockSubscription = onCapsLockChanged().listen(_onCapsLockChanged);
@@ -400,11 +398,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       _resolveActiveWarning();
     }
     if (oldWidget.hasCustomError != widget.hasCustomError) {
-      if (widget.hasCustomError) {
-        _activeStatus = PasswordFieldStatus.customError;
-      } else {
-        _resolveActiveWarning();
-      }
+      _resolveActiveWarning();
     }
     if (oldWidget.isChecked != widget.isChecked) {
       _resolveActiveWarning();
@@ -536,11 +530,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   void _applyCapsLockState(bool isOn) {
     setState(() {
       _isCapsLockOn = isOn;
-      if (isOn && widget.showCapsLockWarning) {
-        _activeStatus = PasswordFieldStatus.capsLock;
-      } else {
-        _resolveActiveWarning();
-      }
+      _resolveActiveWarning();
     });
     widget.onCapsLockStateChanged?.call(isOn);
   }
@@ -575,7 +565,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     }
     setState(() {
       _showPasteWarning = true;
-      _activeStatus = PasswordFieldStatus.pasteBlocked;
+      _resolveActiveWarning();
     });
     _pasteWarningTimer = Timer(widget.pasteWarningDuration, () {
       if (!mounted) return;
@@ -595,7 +585,14 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     });
   }
 
-  /// Resolves the active status based on current state.
+  /// Resolves [_activeStatus] from the current inputs (widget flags plus the
+  /// internal focus/caps-lock/paste state).
+  ///
+  /// This is the single source of truth for [_activeStatus] — it is the only
+  /// method that assigns it. Event handlers update their own primitive state
+  /// (e.g. `_showPasteWarning = true`) and then call this, rather than setting
+  /// a status directly, so the priority order below can never be bypassed.
+  ///
   /// Priority: disabled > customError > capsLock > pasteBlocked > checked/unchecked > none.
   void _resolveActiveWarning() {
     if (widget.enabled == false) {
