@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_ime/flutter_ime.dart';
 import 'package:just_tooltip/just_tooltip.dart' as jt;
 
+import 'keyboard_input_monitor.dart';
 import 'password_text_field_theme.dart';
 
 /// Alignment options for warning messages displayed around the text field.
@@ -343,8 +342,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   PasswordFieldStatus _activeStatus = PasswordFieldStatus.none;
   Timer? _pasteWarningTimer;
   bool _pasteKeyHeld = false;
-  StreamSubscription<bool>? _capsLockSubscription;
-  StreamSubscription<bool>? _inputSourceSubscription;
+  late final KeyboardInputMonitor _keyboardMonitor;
   jt.JustTooltipController? _capsLockTooltipController;
   jt.JustTooltipController? _pasteTooltipController;
   int _pasteTooltipKey = 0;
@@ -361,8 +359,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
 
     _resolveActiveWarning();
 
-    // Subscribe to Caps Lock state changes using flutter_ime
-    _capsLockSubscription = onCapsLockChanged().listen(_onCapsLockChanged);
+    // Isolate all Caps Lock / IME interaction behind the keyboard monitor.
+    _keyboardMonitor =
+        KeyboardInputMonitor(onCapsLockChanged: _onCapsLockChanged);
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
 
     if (widget.warningDisplayMode == WarningDisplayMode.tooltip) {
@@ -412,8 +411,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       _focusNode.dispose();
     }
     _pasteWarningTimer?.cancel();
-    _capsLockSubscription?.cancel();
-    _inputSourceSubscription?.cancel();
+    _keyboardMonitor.dispose();
     HardwareKeyboard.instance.removeHandler(_onHardwareKey);
     _disposeTooltipControllers();
     super.dispose();
@@ -442,7 +440,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         // Check Caps Lock state when focus is gained
         _checkCapsLockState();
         // Handle English input enforcement
-        _handleEnglishInputOnFocus();
+        _keyboardMonitor.handleFocusGained(
+            forceEnglishInput: widget.forceEnglishInput);
         widget.onFocus?.call();
       } else {
         // Hide Caps Lock warning when focus is lost
@@ -459,55 +458,18 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           _resolveActiveWarning();
         });
         // Restore IME on focus lost
-        _handleEnglishInputOnUnfocus();
+        _keyboardMonitor.handleFocusLost(
+            forceEnglishInput: widget.forceEnglishInput);
         widget.onLostFocus?.call();
       }
     }
   }
 
-  /// Handles English input enforcement when focus is gained.
-  void _handleEnglishInputOnFocus() {
-    if (!widget.forceEnglishInput) return;
-
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.windows:
-        disableIME();
-        break;
-      case TargetPlatform.macOS:
-        setEnglishKeyboard();
-        _inputSourceSubscription = onInputSourceChanged().listen((isEnglish) {
-          if (!isEnglish && _hasFocus) {
-            setEnglishKeyboard();
-          }
-        });
-        break;
-      default:
-        break;
-    }
-  }
-
-  /// Restores IME when focus is lost.
-  void _handleEnglishInputOnUnfocus() {
-    if (!widget.forceEnglishInput) return;
-
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.windows:
-        enableIME();
-        break;
-      case TargetPlatform.macOS:
-        _inputSourceSubscription?.cancel();
-        _inputSourceSubscription = null;
-        break;
-      default:
-        break;
-    }
-  }
-
-  /// Checks the current Caps Lock state using flutter_ime.
+  /// Checks the current Caps Lock state via the keyboard monitor.
   ///
   /// Updates the internal state and notifies listeners if the state has changed.
   Future<void> _checkCapsLockState() async {
-    final capsLockOn = await isCapsLockOn();
+    final capsLockOn = await _keyboardMonitor.isCapsLockOn();
 
     if (!mounted) return;
 
@@ -516,7 +478,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     }
   }
 
-  /// Handles Caps Lock state changes from flutter_ime stream.
+  /// Handles Caps Lock state changes forwarded by the keyboard monitor.
   ///
   /// Only updates state when the field has focus.
   void _onCapsLockChanged(bool isOn) {

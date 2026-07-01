@@ -1,9 +1,61 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_password_input/flutter_password_input.dart';
+import 'package:flutter_ime/flutter_ime_platform_interface.dart';
+// ignore: implementation_imports
+import 'package:flutter_ime/src/platform_support.dart';
 import 'package:just_tooltip/just_tooltip.dart';
+
+/// A test double for the flutter_ime platform channel. Replacing
+/// [FlutterImePlatform.instance] with this lets us drive Caps Lock / input
+/// source streams and observe IME-enforcement calls without touching real
+/// platform code — the genuine external boundary of the keyboard integration.
+class _FakeImePlatform extends FlutterImePlatform {
+  final StreamController<bool> capsController = StreamController<bool>.broadcast();
+  final StreamController<bool> inputSourceController =
+      StreamController<bool>.broadcast();
+  bool capsLockValue = false;
+
+  /// Ordered log of IME-enforcement calls, e.g. 'disableIME', 'enableIME',
+  /// 'setEnglishKeyboard'.
+  final List<String> calls = [];
+
+  @override
+  Future<bool> isCapsLockOn() async => capsLockValue;
+
+  @override
+  Stream<bool> get onCapsLockChanged => capsController.stream;
+
+  @override
+  Future<void> disableIME() async => calls.add('disableIME');
+
+  @override
+  Future<void> enableIME() async => calls.add('enableIME');
+
+  @override
+  Future<void> setEnglishKeyboard() async => calls.add('setEnglishKeyboard');
+
+  @override
+  Stream<bool> get onInputSourceChanged => inputSourceController.stream;
+}
+
+/// Forces flutter_ime's supported-platform policy in tests, independent of the
+/// host OS, so IME code paths are reachable on any CI machine.
+class _ForceSupport extends PlatformSupport {
+  const _ForceSupport({this.windows = true});
+
+  final bool windows;
+
+  @override
+  bool get isSupported => true;
+
+  @override
+  bool get isWindowsOnly => windows;
+}
 
 /// Tracks the create/dispose balance of [JustTooltipController] instances by
 /// listening to Flutter's debug-mode object-allocation events. Because
@@ -635,6 +687,139 @@ void main() {
 
       expect(captured, PasswordFieldStatus.disabled,
           reason: 'disabled outranks customError in the priority order');
+    });
+  });
+
+  group('PasswordTextField keyboard integration', () {
+    late _FakeImePlatform fake;
+    late FlutterImePlatform original;
+
+    setUp(() {
+      original = FlutterImePlatform.instance;
+      fake = _FakeImePlatform();
+      FlutterImePlatform.instance = fake;
+      debugSetPlatformSupport(const _ForceSupport());
+    });
+
+    tearDown(() {
+      FlutterImePlatform.instance = original;
+      debugSetPlatformSupport(null);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('reports Caps Lock changes from the IME stream while focused',
+        (tester) async {
+      bool? capsState;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              labelText: 'Password',
+              forceEnglishInput: false,
+              onCapsLockStateChanged: (value) => capsState = value,
+            ),
+          ),
+        ),
+      );
+
+      // Focus the field so Caps Lock updates are honored.
+      await tester.tap(find.byType(TextField));
+      await tester.pump();
+
+      // The IME reports Caps Lock turned on.
+      fake.capsController.add(true);
+      await tester.pump();
+
+      expect(capsState, isTrue);
+    });
+
+    testWidgets('toggles the Windows IME on focus and blur', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                const PasswordTextField(
+                  labelText: 'Password',
+                  forceEnglishInput: true,
+                ),
+                const TextField(key: Key('other')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+      expect(fake.calls, contains('disableIME'),
+          reason: 'gaining focus on Windows must disable the IME');
+
+      await tester.tap(find.byKey(const Key('other')));
+      await tester.pump();
+      expect(fake.calls, contains('enableIME'),
+          reason: 'losing focus on Windows must re-enable the IME');
+
+      // Reset before the test body ends; flutter_test asserts foundation debug
+      // vars are unset at that point (before tearDown runs).
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets(
+        're-forces the English keyboard on macOS when the input source changes',
+        (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      debugSetPlatformSupport(const _ForceSupport(windows: false));
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              labelText: 'Password',
+              forceEnglishInput: true,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(TextField));
+      await tester.pump();
+      expect(fake.calls, contains('setEnglishKeyboard'),
+          reason: 'gaining focus on macOS must force the English keyboard');
+
+      // The user switches to a non-English input source while focused.
+      fake.calls.clear();
+      fake.inputSourceController.add(false);
+      await tester.pump();
+      expect(fake.calls, contains('setEnglishKeyboard'),
+          reason: 'a non-English switch while focused must be reverted');
+
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('cancels the Caps Lock subscription on dispose', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              labelText: 'Password',
+              forceEnglishInput: false,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(fake.capsController.hasListener, isTrue,
+          reason: 'the field subscribes to Caps Lock changes while mounted');
+
+      await tester.pumpWidget(
+        const MaterialApp(home: Scaffold(body: SizedBox())),
+      );
+      expect(fake.capsController.hasListener, isFalse,
+          reason: 'the Caps Lock subscription must be cancelled on dispose');
     });
   });
 
