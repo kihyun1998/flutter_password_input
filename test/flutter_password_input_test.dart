@@ -1110,6 +1110,239 @@ void main() {
       expect(fake.capsController.hasListener, isFalse,
           reason: 'the Caps Lock subscription must be cancelled on dispose');
     });
+
+    testWidgets('picks up Caps Lock already on when focus is gained',
+        (tester) async {
+      fake.capsLockValue = true;
+      bool? capsState;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              labelText: 'Password',
+              forceEnglishInput: false,
+              onCapsLockStateChanged: (value) => capsState = value,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(TextField));
+      await tester.pump(); // focus change
+      await tester.pump(); // async isCapsLockOn() resolves
+
+      expect(capsState, isTrue,
+          reason: 'the on-focus check reports Caps Lock that was already on');
+    });
+
+    testWidgets('clears the Caps Lock warning and notifies false on blur',
+        (tester) async {
+      fake.capsLockValue = true;
+      final states = <bool>[];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                PasswordTextField(
+                  labelText: 'Password',
+                  forceEnglishInput: false,
+                  onCapsLockStateChanged: (value) => states.add(value),
+                ),
+                const TextField(key: Key('other')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+      await tester.pump();
+      expect(states, contains(true), reason: 'Caps Lock is picked up on focus');
+
+      await tester.tap(find.byKey(const Key('other')));
+      await tester.pump();
+      expect(states.last, isFalse,
+          reason: 'losing focus clears Caps Lock and notifies false');
+    });
+
+    testWidgets('cancels the macOS input-source subscription on blur',
+        (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      debugSetPlatformSupport(const _ForceSupport(windows: false));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                const PasswordTextField(
+                  labelText: 'Password',
+                  forceEnglishInput: true,
+                ),
+                const TextField(key: Key('other')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+      expect(fake.inputSourceController.hasListener, isTrue,
+          reason: 'focus subscribes to input-source changes on macOS');
+
+      await tester.tap(find.byKey(const Key('other')));
+      await tester.pump();
+      expect(fake.inputSourceController.hasListener, isFalse,
+          reason: 'blur cancels the macOS input-source subscription');
+
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('autofocus requests focus after the first frame',
+        (tester) async {
+      bool focused = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              labelText: 'Password',
+              forceEnglishInput: false,
+              autofocus: true,
+              onFocus: () => focused = true,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump(); // post-frame callback requests focus
+      await tester.pump();
+
+      expect(focused, isTrue,
+          reason: 'autofocus focuses the field after the first frame');
+    });
+
+    testWidgets('rewires focus when the external focusNode is replaced',
+        (tester) async {
+      final nodeA = FocusNode();
+      final nodeB = FocusNode();
+      addTearDown(nodeA.dispose);
+      addTearDown(nodeB.dispose);
+      FocusNode current = nodeA;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) => MaterialApp(
+            home: Scaffold(
+              body: Column(
+                children: [
+                  PasswordTextField(
+                    labelText: 'Password',
+                    forceEnglishInput: false,
+                    focusNode: current,
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => current = nodeB),
+                    child: const Text('Swap'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Replace the external focusNode at runtime.
+      await tester.tap(find.text('Swap'));
+      await tester.pump();
+
+      // The field now follows the new node.
+      nodeB.requestFocus();
+      await tester.pump();
+      await tester.pump();
+      expect(nodeB.hasFocus, isTrue,
+          reason: 'the field tracks the replacement focusNode');
+    });
+
+    testWidgets('hides the paste warning when the user types', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              labelText: 'Password',
+              forceEnglishInput: false,
+              disablePaste: true,
+            ),
+          ),
+        ),
+      );
+
+      final element = tester.element(find.byType(TextField));
+      Actions.invoke(
+          element, const PasteTextIntent(SelectionChangedCause.keyboard));
+      await tester.pump();
+      expect(find.text('Paste is disabled'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), 'x');
+      await tester.pump();
+      expect(find.text('Paste is disabled'), findsNothing,
+          reason: 'typing hides the paste warning');
+    });
+
+    testWidgets('re-resolves status when isChecked and enabled change at runtime',
+        (tester) async {
+      PasswordFieldStatus? captured;
+      bool enabled = true;
+      bool? checked;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) => MaterialApp(
+            home: Scaffold(
+              body: Column(
+                children: [
+                  PasswordTextField(
+                    labelText: 'Password',
+                    forceEnglishInput: false,
+                    enabled: enabled,
+                    isChecked: checked,
+                    prefixWidgetBuilder: (context, status) {
+                      captured = status;
+                      return const Icon(Icons.person);
+                    },
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => checked = true),
+                    child: const Text('Check'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => enabled = false),
+                    child: const Text('Disable'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(captured, PasswordFieldStatus.none);
+
+      // isChecked null -> true resolves to checked.
+      await tester.tap(find.text('Check'));
+      await tester.pump();
+      expect(captured, PasswordFieldStatus.checked);
+
+      // enabled true -> false resolves to disabled (higher priority).
+      await tester.tap(find.text('Disable'));
+      await tester.pump();
+      expect(captured, PasswordFieldStatus.disabled);
+    });
   });
 
   group('PasswordTextField tooltip controller lifecycle', () {
