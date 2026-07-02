@@ -1,3 +1,14 @@
+## 0.5.0
+
+**BREAKING**
+- Upgrade `just_tooltip` from `^0.2.5` to `^0.3.0` — the public `PasswordTextField` / `WarningTooltipTheme` API is unchanged, but apps that depend on `just_tooltip` directly must move to `^0.3.0`
+
+**chore**
+- Adapt `WarningTooltipLayout` to the `just_tooltip` 0.3.0 controller model — `JustTooltipController` is now an attach-based command source (no longer a `ChangeNotifier`), so the internal `dispose()` calls are removed; the paste controller is still recreated on repeat paste to replay its animation
+- Retire the now-obsolete tooltip controller lifecycle tracker and test group (the dispose-balance invariant no longer exists)
+
+---
+
 ## 0.4.2
 
 **fix**
