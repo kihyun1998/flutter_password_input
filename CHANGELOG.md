@@ -1,17 +1,31 @@
-## Unreleased
+## 0.4.2
+
+**fix**
+- Field status now honors its documented priority (`disabled > customError > capsLock > pasteBlocked > checked/unchecked > none`) instead of whichever event fired last:
+  - A blocked paste no longer overrides an active `hasCustomError`
+  - A disabled field stays `disabled` even when `hasCustomError` is set
+- Initial `hasCustomError` / `isChecked` are now reflected on the first frame (previously applied only after the value changed)
+- Dispose internal `JustTooltipController` instances to stop a `ChangeNotifier` memory leak in tooltip mode (on dispose, on mode switch, and on repeated paste warnings)
 
 **feat**
 - Add `WarningTooltipTheme.defaults` static const exposing default tooltip values (parity with `PasswordTextFieldTheme.defaults`)
 
 **chore**
 - Internal refactor of `PasswordTextField` — no behavior change
-  - Split `build()` into `_buildTooltipMode` / `_buildMessageMode` (180 lines → 30 lines)
+  - Isolate all `flutter_ime` interaction (Caps Lock detection, English-input enforcement) behind a `KeyboardInputMonitor` seam
+  - Extract warning rendering into `WarningMessageLayout` and `WarningTooltipLayout` widgets, so `just_tooltip` is used only by the tooltip widget
+  - Make `_resolveActiveWarning` the single source of truth for field status
+  - Split `build()` into `_buildTooltipMode` / `_buildMessageMode`
   - Group status border colors into `_StatusColors` record typedef
   - Extract `_applyCapsLockState` from duplicated Caps Lock state handlers
   - Extract `_buildOutlineBorder` helper from repeated focused/enabled/disabled border construction
   - Simplify `WarningAlignment` → tooltip direction/alignment mapping (10-case → 5-case using `||` patterns)
   - Consolidate hardcoded `'Caps Lock is on'` / `'Paste is disabled'` fallback strings into private constants
   - Replace inline tooltip default fallbacks with `WarningTooltipTheme.defaults` merge
+- Raise line coverage to ~99% (100% across the widget, keyboard monitor, and both warning layout widgets)
+
+**deps**
+- Upgrade `flutter_ime` from `^2.1.3` to `^2.1.4`
 
 ---
 

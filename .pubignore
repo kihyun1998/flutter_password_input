@@ -1,0 +1,6 @@
+# Development-only agent configuration (see CLAUDE.md); not part of the package.
+docs/
+CLAUDE.md
+
+# Build artifacts (.gitignore only excludes the root /build/, not example/build/).
+build/
