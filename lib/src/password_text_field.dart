@@ -622,9 +622,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   }
 
   Widget _buildTextField(
-      ThemeData appTheme,
-      PasswordTextFieldTheme theme,
-      _StatusColors colors) {
+      ThemeData appTheme, PasswordTextFieldTheme theme, _StatusColors colors) {
     final activeColor = _statusColor(colors);
     final enabledBorderColor = switch (_activeStatus) {
       PasswordFieldStatus.customError => colors.customError,
@@ -702,9 +700,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   }
 
   Widget _buildTooltipMode(
-      Widget textField,
-      PasswordTextFieldTheme theme,
-      _StatusColors colors) {
+      Widget textField, PasswordTextFieldTheme theme, _StatusColors colors) {
     final tt = (theme.tooltipTheme ?? const WarningTooltipTheme())
         .merge(WarningTooltipTheme.defaults);
     return WarningTooltipLayout(
@@ -725,11 +721,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     );
   }
 
-  Widget _buildMessageMode(
-      Widget textField,
-      PasswordTextFieldTheme theme,
-      _StatusColors colors,
-      bool showCapsLockWarning) {
+  Widget _buildMessageMode(Widget textField, PasswordTextFieldTheme theme,
+      _StatusColors colors, bool showCapsLockWarning) {
     return WarningMessageLayout(
       margin: widget.margin,
       width: theme.width,

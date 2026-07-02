@@ -17,7 +17,8 @@ import 'package:just_tooltip/just_tooltip.dart';
 /// source streams and observe IME-enforcement calls without touching real
 /// platform code — the genuine external boundary of the keyboard integration.
 class _FakeImePlatform extends FlutterImePlatform {
-  final StreamController<bool> capsController = StreamController<bool>.broadcast();
+  final StreamController<bool> capsController =
+      StreamController<bool>.broadcast();
   final StreamController<bool> inputSourceController =
       StreamController<bool>.broadcast();
   bool capsLockValue = false;
@@ -706,7 +707,8 @@ void main() {
                     style: const TextStyle(fontSize: 12),
                     alignment: entry.key,
                   ),
-                  child: const SizedBox(key: Key('field'), width: 250, height: 40),
+                  child:
+                      const SizedBox(key: Key('field'), width: 250, height: 40),
                 ),
               ),
             ),
@@ -782,17 +784,24 @@ void main() {
   group('WarningTooltipLayout', () {
     testWidgets('maps warning alignment to tooltip direction and alignment',
         (tester) async {
-      final tt = const WarningTooltipTheme().merge(WarningTooltipTheme.defaults);
+      final tt =
+          const WarningTooltipTheme().merge(WarningTooltipTheme.defaults);
 
       // Expected (direction, tooltip-alignment) per the alignment spec.
-      const cases = <WarningAlignment,
-          ({TooltipDirection dir, TooltipAlignment align})>{
-        WarningAlignment.topLeft:
-            (dir: TooltipDirection.top, align: TooltipAlignment.start),
-        WarningAlignment.bottomCenter:
-            (dir: TooltipDirection.bottom, align: TooltipAlignment.center),
-        WarningAlignment.topRight:
-            (dir: TooltipDirection.top, align: TooltipAlignment.end),
+      const cases =
+          <WarningAlignment, ({TooltipDirection dir, TooltipAlignment align})>{
+        WarningAlignment.topLeft: (
+          dir: TooltipDirection.top,
+          align: TooltipAlignment.start
+        ),
+        WarningAlignment.bottomCenter: (
+          dir: TooltipDirection.bottom,
+          align: TooltipAlignment.center
+        ),
+        WarningAlignment.topRight: (
+          dir: TooltipDirection.top,
+          align: TooltipAlignment.end
+        ),
         WarningAlignment.bottomStartTargetCenter: (
           dir: TooltipDirection.bottom,
           align: TooltipAlignment.startTargetCenter
@@ -868,7 +877,8 @@ void main() {
           reason: 'checked defaults to a green border');
     });
 
-    testWidgets('reports unchecked status when isChecked false', (tester) async {
+    testWidgets('reports unchecked status when isChecked false',
+        (tester) async {
       PasswordFieldStatus? captured;
 
       await tester.pumpWidget(
@@ -937,7 +947,8 @@ void main() {
           reason: 'customError outranks pasteBlocked in the priority order');
     });
 
-    testWidgets('a disabled field reports disabled even when hasCustomError sets',
+    testWidgets(
+        'a disabled field reports disabled even when hasCustomError sets',
         (tester) async {
       PasswordFieldStatus? captured;
       bool hasError = false;
@@ -1089,7 +1100,8 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets('cancels the Caps Lock subscription on dispose', (tester) async {
+    testWidgets('cancels the Caps Lock subscription on dispose',
+        (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -1294,7 +1306,8 @@ void main() {
           reason: 'typing hides the paste warning');
     });
 
-    testWidgets('re-resolves status when isChecked and enabled change at runtime',
+    testWidgets(
+        're-resolves status when isChecked and enabled change at runtime',
         (tester) async {
       PasswordFieldStatus? captured;
       bool enabled = true;
