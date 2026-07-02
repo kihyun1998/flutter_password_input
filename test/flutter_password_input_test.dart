@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_password_input/flutter_password_input.dart';
 import 'package:flutter_password_input/src/warning_message_layout.dart';
@@ -58,28 +57,6 @@ class _ForceSupport extends PlatformSupport {
 
   @override
   bool get isWindowsOnly => windows;
-}
-
-/// Tracks the create/dispose balance of [JustTooltipController] instances by
-/// listening to Flutter's debug-mode object-allocation events. Because
-/// [JustTooltipController] is a [ChangeNotifier], every construction dispatches
-/// an [ObjectCreated] event and every [ChangeNotifier.dispose] dispatches an
-/// [ObjectDisposed] event, letting us assert disposal through a public seam
-/// rather than the widget's private fields.
-class _TooltipControllerLifecycle {
-  int created = 0;
-  int disposed = 0;
-
-  int get alive => created - disposed;
-
-  void _onEvent(ObjectEvent event) {
-    if (event.object is! JustTooltipController) return;
-    if (event is ObjectCreated) created++;
-    if (event is ObjectDisposed) disposed++;
-  }
-
-  void start() => FlutterMemoryAllocations.instance.addListener(_onEvent);
-  void stop() => FlutterMemoryAllocations.instance.removeListener(_onEvent);
 }
 
 void main() {
@@ -1355,125 +1332,6 @@ void main() {
       await tester.tap(find.text('Disable'));
       await tester.pump();
       expect(captured, PasswordFieldStatus.disabled);
-    });
-  });
-
-  group('PasswordTextField tooltip controller lifecycle', () {
-    testWidgets('disposes tooltip controllers when removed from the tree',
-        (tester) async {
-      final lifecycle = _TooltipControllerLifecycle()..start();
-      addTearDown(lifecycle.stop);
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: PasswordTextField(
-              labelText: 'Password',
-              warningDisplayMode: WarningDisplayMode.tooltip,
-            ),
-          ),
-        ),
-      );
-
-      expect(lifecycle.created, greaterThan(0),
-          reason: 'tooltip mode should create JustTooltipController(s)');
-
-      // Remove the field from the tree, triggering State.dispose().
-      await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: SizedBox())),
-      );
-
-      expect(lifecycle.alive, 0,
-          reason: 'every tooltip controller must be disposed on unmount');
-    });
-
-    testWidgets('disposes tooltip controllers when switching to message mode',
-        (tester) async {
-      final lifecycle = _TooltipControllerLifecycle()..start();
-      addTearDown(lifecycle.stop);
-
-      var mode = WarningDisplayMode.tooltip;
-
-      await tester.pumpWidget(
-        StatefulBuilder(
-          builder: (context, setState) => MaterialApp(
-            home: Scaffold(
-              body: Column(
-                children: [
-                  PasswordTextField(
-                    labelText: 'Password',
-                    warningDisplayMode: mode,
-                  ),
-                  ElevatedButton(
-                    onPressed: () =>
-                        setState(() => mode = WarningDisplayMode.message),
-                    child: const Text('To Message'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final createdInTooltipMode = lifecycle.created;
-      expect(createdInTooltipMode, greaterThan(0));
-
-      // Switch to message mode; the widget stays mounted.
-      await tester.tap(find.text('To Message'));
-      await tester.pump();
-
-      expect(lifecycle.disposed, createdInTooltipMode,
-          reason: 'controllers dropped by the mode switch must be disposed, '
-              'not just nulled');
-    });
-
-    testWidgets('does not leak the paste controller when the warning re-fires',
-        (tester) async {
-      final lifecycle = _TooltipControllerLifecycle()..start();
-      addTearDown(lifecycle.stop);
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: PasswordTextField(
-              labelText: 'Password',
-              disablePaste: true,
-              warningDisplayMode: WarningDisplayMode.tooltip,
-            ),
-          ),
-        ),
-      );
-
-      final element = tester.element(find.byType(TextField));
-
-      // First blocked paste shows the warning.
-      Actions.invoke(
-          element, const PasteTextIntent(SelectionChangedCause.keyboard));
-      await tester.pump();
-
-      // Release the paste key so a second attempt is honored (not swallowed
-      // by the held-key guard).
-      await simulateKeyDownEvent(LogicalKeyboardKey.keyV);
-      await simulateKeyUpEvent(LogicalKeyboardKey.keyV);
-
-      // Second blocked paste while the warning is still showing swaps in a
-      // fresh paste tooltip controller.
-      Actions.invoke(
-          element, const PasteTextIntent(SelectionChangedCause.keyboard));
-      await tester.pump();
-
-      expect(lifecycle.created, greaterThan(2),
-          reason: 're-triggering in tooltip mode should replace the paste '
-              'controller (proves the leak-prone path ran)');
-
-      // Unmount; the replaced controller must have been disposed too.
-      await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: SizedBox())),
-      );
-
-      expect(lifecycle.alive, 0,
-          reason: 'the controller replaced mid-warning must not be orphaned');
     });
   });
 

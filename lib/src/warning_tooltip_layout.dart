@@ -11,9 +11,11 @@ import 'warning_message_layout.dart' show WarningMessageLayout;
 /// This widget owns the two [jt.JustTooltipController]s end-to-end — it
 /// creates them, drives their visibility from [activeStatus], recreates the
 /// paste controller when [pasteGeneration] changes (so a repeated paste
-/// re-triggers the tooltip animation), and disposes them. Keeping that
-/// lifecycle here is why the field widget no longer references `just_tooltip`
-/// at all.
+/// re-triggers the tooltip animation). Keeping that lifecycle here is why the
+/// field widget no longer references `just_tooltip` at all.
+///
+/// (As of just_tooltip 0.3.0 the controllers are not `ChangeNotifier`s and
+/// need no disposal.)
 class WarningTooltipLayout extends StatefulWidget {
   const WarningTooltipLayout({
     super.key,
@@ -80,16 +82,9 @@ class _WarningTooltipLayoutState extends State<WarningTooltipLayout> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.pasteGeneration != widget.pasteGeneration) {
       _pasteKey++;
-      _pasteController.dispose();
+      // JustTooltipController (0.3.0+) holds no resources; just replace it.
       _pasteController = jt.JustTooltipController();
     }
-  }
-
-  @override
-  void dispose() {
-    _capsLockController.dispose();
-    _pasteController.dispose();
-    super.dispose();
   }
 
   void _updateVisibility(jt.JustTooltipController controller, bool shouldShow) {
