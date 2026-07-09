@@ -4,12 +4,12 @@
 - Upgrade `just_tooltip` from `^0.3.0` to `^0.4.0` — the public `PasswordTextField` / `WarningTooltipTheme` API is unchanged, and no `just_tooltip` API was removed, but a caret on `0.x` pins the minor, so apps that depend on `just_tooltip` directly must move to `^0.4.0`
 
 **note**
-- `just_tooltip 0.4.0` makes a nested tooltip suppress its ancestors. `WarningTooltipLayout` **does** nest — the caps-lock tooltip wraps the paste tooltip wraps the field — but suppression is gated on hover, and both tooltips are `enableHover: false` and driven entirely by their controllers. Neither is suppressed. Verified, not assumed: see the new tests below.
+- `just_tooltip 0.4.0` lets a nested tooltip suppress its ancestors. `WarningTooltipLayout` **does** nest — the caps-lock tooltip wraps the paste tooltip wraps the field — but the suppression path is unreachable here: only a tooltip with `enableHover` claims its ancestors, and only a claimed ancestor is suppressed. Both tooltips set `enableHover: false` and are driven entirely by their controllers, so the inner one never claims and a programmatic `show()` on the outer one always wins. Verified, not assumed: see the new tests below.
 - Warning tooltips also pick up `just_tooltip`'s fix for tooltips laid out in an `Overlay` that does not fill the window from its origin — a `PasswordTextField` under a nested `Navigator` or an embedded Flutter view had its warning tooltip displaced by the Overlay's offset.
 - `TooltipAnchor` (new in `just_tooltip 0.4.0`) is not re-exported. These tooltips are anchored to the field and never to a pointer — hover is disabled.
 
 **test**
-- Add `warning_tooltip_layout_test.dart`, driving `WarningTooltipLayout` through each `PasswordFieldStatus` and asserting which tooltip is shown. The existing tooltip coverage (`renders in tooltip display mode without error`) only asserted that the widget builds; nothing checked that either tooltip ever appeared, so a regression in the nested pair would have passed silently.
+- Add `warning_tooltip_layout_test.dart` (7 tests), driving `WarningTooltipLayout` through each `PasswordFieldStatus` and asserting which tooltip is shown, plus the two facts that keep the nested pair safe — the caps-lock tooltip encloses the paste tooltip, and neither reacts to hover or tap. The existing tooltip coverage (`renders in tooltip display mode without error`) only asserted that the widget builds; nothing checked that either tooltip ever appeared, so a regression in the nested pair would have passed silently. Both invariant tests are mutation-checked: enabling hover, or swapping the nesting order, makes them fail.
 
 ## 0.5.0
 
