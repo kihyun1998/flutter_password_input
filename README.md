@@ -26,7 +26,7 @@ Raised in `0.6.1`. `just_tooltip` 0.4.2 walks `RenderObject.parent`, which was `
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.6.1
+  flutter_password_input: ^0.6.2
 ```
 
 ## Usage
