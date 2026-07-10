@@ -9,6 +9,11 @@
 - That fix is unreachable from this package, for the same reason 0.6.0's nested-suppression path was: `WarningTooltipLayout` passes `enableHover: false` to both tooltips unconditionally. `just_tooltip` gates the whole hover path on it — it builds no `MouseRegion`, and its hover reconciler short-circuits before the repaired scheduler call. The warnings are driven only by `JustTooltipController`, so nothing in 0.4.3 can reach them.
 - No `just_tooltip` API changed between 0.4.2 and 0.4.3 (the only other diff is a doc comment on `interactive`), and the Flutter/Dart floor is unchanged at `3.13.0` / `3.1.0`.
 
+**docs**
+
+- `WarningTooltipTheme.interactive` and `WarningTooltipTheme.waitDuration` are documented as having **no effect**, in both the README table and their dartdoc. `just_tooltip` reads both only along its hover path, and these tooltips pass `enableHover: false`, so no pointer event ever reaches the scheduler. Previously the README advertised them as "Keep tooltip visible on hover" and "Delay before tooltip appears". They stay in the API so the theme remains a superset of `just_tooltip`'s options.
+- `showDuration` is **not** affected and keeps working: `JustTooltip.showTooltip()` starts the auto-hide countdown explicitly for a programmatic show.
+
 ---
 
 ## 0.6.1

@@ -146,13 +146,16 @@ class WarningTooltipTheme {
 
   /// Whether the tooltip content is interactive.
   ///
-  /// When true, hovering over the tooltip keeps it visible.
+  /// **Has no effect.** Warning tooltips are built with `enableHover: false`
+  /// and shown from a controller, so no pointer ever enters or leaves them,
+  /// and `just_tooltip` reads this only along its hover path.
   /// If null, defaults to true.
   final bool? interactive;
 
   /// The delay before the tooltip appears.
   ///
-  /// If null, the tooltip appears immediately.
+  /// **Has no effect.** `just_tooltip` applies this only when hover opens the
+  /// tooltip; a controller-driven show — the only kind here — is immediate.
   final Duration? waitDuration;
 
   /// The duration after which the tooltip auto-hides.

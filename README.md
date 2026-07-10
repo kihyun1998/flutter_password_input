@@ -208,9 +208,11 @@ Used when `warningDisplayMode` is `WarningDisplayMode.tooltip`.
 | `arrowBaseWidth` | `double?` | `12.0` | Arrow base width |
 | `arrowLength` | `double?` | `6.0` | Arrow length |
 | `arrowPositionRatio` | `double?` | `0.25` | Arrow position (0.0-1.0) |
-| `interactive` | `bool?` | `true` | Keep tooltip visible on hover |
-| `waitDuration` | `Duration?` | `null` | Delay before tooltip appears |
+| `interactive` | `bool?` | `true` | **No effect** — see below |
+| `waitDuration` | `Duration?` | `null` | **No effect** — see below |
 | `showDuration` | `Duration?` | `null` | Auto-hide after this duration |
+
+`interactive` and `waitDuration` are inert. Both are read by `just_tooltip` only along its hover path, and these warning tooltips are built with `enableHover: false` — they are driven entirely by a controller, so no pointer ever enters or leaves them. They are still accepted so the theme stays a superset of `just_tooltip`'s options, but setting them changes nothing. `showDuration` does work: a programmatic show starts the auto-hide countdown explicitly.
 
 ## License
 
