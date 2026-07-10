@@ -1,3 +1,19 @@
+## 0.6.1
+
+**DEPS**
+
+- `just_tooltip: ^0.4.2` (was `^0.4.0`). Upstream anchors a tooltip to the *visible* part of its child, re-aims it whenever the child moves, and hides it once the child is clipped out of sight.
+
+**Behaviour change for `WarningDisplayMode.tooltip`**
+
+- The caps-lock and paste warnings are shown through `JustTooltipController`, so they inherit the new tracking. A warning no longer stays where its field used to be when a surrounding view scrolls, resizes, or reflows — it re-aims at the visible part of the field. It does not move rigidly with the field: measured in a 400px horizontal viewport, scrolling by 60px moved the field's centre by 60px and the warning by 32px, because the warning aims at the *visible* centre and is still clamped by `screenMargin`.
+- A warning whose field scrolls **entirely** out of view now hides, where before it stayed on screen pointing at nothing. Showing it again is a fresh `controller.show()`.
+
+**Requires Flutter 3.13**
+
+- Minimum Flutter is now `3.13.0` (Dart `3.1.0`), up from `3.3.0`. `just_tooltip` 0.4.2 walks `RenderObject.parent`, which was `AbstractNode?` — a type with no `describeApproximatePaintClip` — before Flutter 3.13.
+- This is a correction, not a new restriction. The `just_tooltip: ^0.4.0` constraint in 0.6.0 already resolves 0.4.2 under caret rules, so 0.6.0's `>=3.3.0` floor is a promise it cannot keep. Anyone on an older Flutter is broken today; 0.6.1 simply stops advertising support it never had.
+
 ## 0.6.0
 
 **BREAKING**

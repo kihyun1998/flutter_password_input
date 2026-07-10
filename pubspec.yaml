@@ -1,7 +1,7 @@
 name: flutter_password_input
 description: A customizable password text field widget with Caps Lock detection,
   visibility toggle, force English input mode, and comprehensive theming support.
-version: 0.6.0
+version: 0.6.1
 homepage: https://github.com/kihyun1998/flutter_password_input
 repository: https://github.com/kihyun1998/flutter_password_input
 issue_tracker: https://github.com/kihyun1998/flutter_password_input/issues
@@ -13,15 +13,20 @@ topics:
   - caps-lock
   - security
 
+# Raised from Dart 3.0.0 / Flutter 3.3.0 by just_tooltip 0.4.2, whose ancestor
+# clip walk reads `RenderObject.parent`. That was `AbstractNode?` — a type with
+# no `describeApproximatePaintClip` — until Flutter 3.13. Our `^0.4.0` already
+# resolved 0.4.2, so the old floor had quietly become a promise we could not
+# keep; raising it is the honest fix, not the cause.
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.3.0"
+  sdk: ">=3.1.0 <4.0.0"
+  flutter: ">=3.13.0"
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_ime: ^2.1.4
-  just_tooltip: ^0.4.0
+  just_tooltip: ^0.4.2
 
 dev_dependencies:
   flutter_lints: ^5.0.0

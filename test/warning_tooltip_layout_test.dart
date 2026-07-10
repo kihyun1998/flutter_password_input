@@ -145,4 +145,83 @@ void main() {
           reason: 'exactly one warning is ever active');
     });
   });
+
+  /// `just_tooltip` 0.4.2 anchors a tooltip to the *visible* part of its child
+  /// and re-aims it whenever the child moves. Both warnings are shown through a
+  /// controller with hover disabled, so they inherit that tracking wholesale.
+  group('WarningTooltipLayout tracks a scrolling field', () {
+    Widget scrollableLayout(ScrollController scroll) {
+      return MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 400,
+            height: 300,
+            child: SingleChildScrollView(
+              controller: scroll,
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  const SizedBox(width: 40),
+                  WarningTooltipLayout(
+                    activeStatus: PasswordFieldStatus.capsLock,
+                    margin: null,
+                    width: 250,
+                    tooltipTheme: WarningTooltipTheme.defaults,
+                    capsLockMessage: capsLock,
+                    capsLockTextStyle: const TextStyle(fontSize: 12),
+                    capsLockAlignment: WarningAlignment.topLeft,
+                    pasteMessage: paste,
+                    pasteTextStyle: const TextStyle(fontSize: 12),
+                    pasteAlignment: WarningAlignment.bottomLeft,
+                    pasteGeneration: 0,
+                    child: const SizedBox(
+                        key: Key('field'), width: 200, height: 40),
+                  ),
+                  const SizedBox(width: 600),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    double warningCentre(WidgetTester tester) =>
+        tester.getRect(find.text(capsLock)).center.dx;
+
+    testWidgets('the warning re-aims when the field scrolls', (tester) async {
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+
+      await tester.pumpWidget(scrollableLayout(scroll));
+      await tester.pumpAndSettle();
+
+      final before = warningCentre(tester);
+      scroll.jumpTo(60);
+      await tester.pumpAndSettle();
+
+      expect(find.text(capsLock), findsOneWidget,
+          reason: 'part of the field still shows');
+      expect(warningCentre(tester), isNot(before),
+          reason: 'it must not stay where the field used to be');
+    });
+
+    testWidgets('the warning hides once the field is scrolled out of sight',
+        (tester) async {
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+
+      await tester.pumpWidget(scrollableLayout(scroll));
+      await tester.pumpAndSettle();
+      expect(find.text(capsLock), findsOneWidget);
+
+      // The field spans 40..240; scrolling by 330 puts it wholly left of the
+      // 400px viewport.
+      scroll.jumpTo(330);
+      await tester.pumpAndSettle();
+
+      expect(find.text(capsLock), findsNothing,
+          reason: 'no visible target, no warning');
+    });
+  });
 }
