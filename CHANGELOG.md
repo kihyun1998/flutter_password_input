@@ -14,6 +14,8 @@
 - Minimum Flutter is now `3.13.0` (Dart `3.1.0`), up from `3.3.0`. `just_tooltip` 0.4.2 walks `RenderObject.parent`, which was `AbstractNode?` — a type with no `describeApproximatePaintClip` — before Flutter 3.13.
 - This is a correction, not a new restriction. The `just_tooltip: ^0.4.0` constraint in 0.6.0 already resolves 0.4.2 under caret rules, so 0.6.0's `>=3.3.0` floor is a promise it cannot keep. Anyone on an older Flutter is broken today; 0.6.1 simply stops advertising support it never had.
 
+---
+
 ## 0.6.0
 
 **BREAKING**
@@ -26,6 +28,8 @@
 
 **test**
 - Add `warning_tooltip_layout_test.dart` (7 tests), driving `WarningTooltipLayout` through each `PasswordFieldStatus` and asserting which tooltip is shown, plus the two facts that keep the nested pair safe — the caps-lock tooltip encloses the paste tooltip, and neither reacts to hover or tap. The existing tooltip coverage (`renders in tooltip display mode without error`) only asserted that the widget builds; nothing checked that either tooltip ever appeared, so a regression in the nested pair would have passed silently. Both invariant tests are mutation-checked: enabling hover, or swapping the nesting order, makes them fail.
+
+---
 
 ## 0.5.0
 

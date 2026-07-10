@@ -9,8 +9,18 @@ A password text field with Caps Lock detection and visibility toggle.
 - Force English input mode (disables IME on Windows, switches to English keyboard on macOS)
 - Custom error state for external validation
 - Disable paste option
+- Warnings as inline text or as a tooltip (`WarningDisplayMode`)
 - Prefix/suffix widget support
 - Theming via `PasswordTextFieldTheme`
+
+## Requirements
+
+| | Minimum |
+|---|---|
+| Flutter | `3.13.0` |
+| Dart | `3.1.0` |
+
+Raised in `0.6.1`. `just_tooltip` 0.4.2 walks `RenderObject.parent`, which was `AbstractNode?` — a type without `describeApproximatePaintClip` — before Flutter 3.13.
 
 ## Install
 
@@ -80,6 +90,22 @@ PasswordTextField(
 )
 ```
 
+### Warning Display Modes
+
+Caps Lock and paste warnings render as inline text above or below the field (`WarningDisplayMode.message`, the default) or as a tooltip anchored to the field (`WarningDisplayMode.tooltip`, styled via `WarningTooltipTheme`). Either way the side is chosen by `capsLockWarningAlignment` / `pasteWarningAlignment`.
+
+```dart
+PasswordTextField(
+  labelText: 'Password',
+  warningDisplayMode: WarningDisplayMode.tooltip,
+  theme: PasswordTextFieldTheme(
+    tooltipTheme: WarningTooltipTheme(showArrow: true),
+  ),
+)
+```
+
+A tooltip aims at the **visible** part of its field, so it re-aims whenever a surrounding view scrolls, resizes, or reflows — it does not move rigidly with the field, because it is still clamped by `screenMargin`. A field that scrolls entirely out of view hides its tooltip; showing it again is a fresh warning.
+
 ## Properties
 
 ### PasswordTextField
@@ -101,9 +127,9 @@ PasswordTextField(
 | `showVisibilityToggle` | `bool` | `true` | Show password visibility toggle |
 | `visibilityOnIcon` | `Widget?` | `null` | Custom icon when password visible |
 | `visibilityOffIcon` | `Widget?` | `null` | Custom icon when password hidden |
-| `prefixWidgetBuilder` | `PasswordFieldWidgetBuilder?` | `null` | Builder for widget before the input area (receives warning state) |
+| `prefixWidgetBuilder` | `PasswordFieldWidgetBuilder?` | `null` | Builder for widget before the input area (receives `PasswordFieldStatus`) |
 | `prefixIconConstraints` | `BoxConstraints?` | `null` | Size constraints for prefix icon |
-| `suffixWidgetBuilder` | `PasswordFieldWidgetBuilder?` | `null` | Builder for widget after the input area (receives warning state) |
+| `suffixWidgetBuilder` | `PasswordFieldWidgetBuilder?` | `null` | Builder for widget after the input area (receives `PasswordFieldStatus`) |
 | `suffixIconConstraints` | `BoxConstraints?` | `null` | Size constraints for suffix icon |
 | `showCapsLockWarning` | `bool` | `true` | Show Caps Lock warning |
 | `capsLockWarningText` | `String?` | `'Caps Lock is on'` | Caps Lock warning message |
