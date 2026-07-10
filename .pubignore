@@ -4,3 +4,7 @@ CLAUDE.md
 
 # Build artifacts (.gitignore only excludes the root /build/, not example/build/).
 build/
+
+# This file disables pub's git-based file listing, so .gitignore's /coverage/ no
+# longer applies and lcov.info would otherwise ship in the archive.
+coverage/
