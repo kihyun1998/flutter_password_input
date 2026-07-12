@@ -1,3 +1,16 @@
+## 0.6.3
+
+**DEPS**
+
+- `just_tooltip: ^0.4.4` (was `^0.4.3`). Upstream lands two fixes: an empty-message tooltip no longer suppresses the tooltips nested around it (#46), and a tooltip already on screen now rebuilds to follow its own `message`, `theme`, `direction`, or `alignment` when they change mid-show (#47). No `just_tooltip` API changed and the Flutter/Dart floor is unchanged at `3.13.0` / `3.1.0`.
+
+**Behaviour change — narrow, tooltip mode only**
+
+- The suppression fix (#46) is **unreachable** here, for the same reason as 0.6.0/0.6.2: it is claimed from the hover path (`MouseRegion.onEnter`) or from a message toggling empty↔non-empty, and these tooltips pass `enableHover: false` (no `MouseRegion` is built) and carry fixed, non-empty messages that never toggle. Nothing in `WarningTooltipLayout` can reach it.
+- The config-follow fix (#47) **is** reachable. `WarningTooltipLayout.build()` rebuilds each `JustTooltip` with freshly-resolved `tooltipTheme` / alignment / message, and 0.4.4's `didUpdateWidget` now marks a *shown* overlay dirty on any such rebuild. So if a caps-lock or paste warning tooltip's theme, alignment, or text changes while it is on screen, the visible tooltip now updates on the next frame; before 0.4.4 it kept the stale overlay until the warning was hidden and shown again. This only affects an already-displayed tooltip whose configuration actually changes mid-show — a latent correctness improvement, not a regression.
+
+---
+
 ## 0.6.2
 
 **DEPS**
