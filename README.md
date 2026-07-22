@@ -18,9 +18,9 @@ A password text field with Caps Lock detection and visibility toggle.
 | | Minimum |
 |---|---|
 | Flutter | `3.13.0` |
-| Dart | `3.1.0` |
+| Dart | `3.4.0` |
 
-Raised in `0.6.1`. `just_tooltip` 0.4.2 walks `RenderObject.parent`, which was `AbstractNode?` — a type without `describeApproximatePaintClip` — before Flutter 3.13.
+Dart floor raised in `0.7.0`: `flutter_ime` 3.0.0 is a pure-Dart FFI package and its macOS observer needs `NativeCallable.keepIsolateAlive`, added in Dart 3.4. The Flutter floor is unchanged — it was raised in `0.6.1` because `just_tooltip` 0.4.2 walks `RenderObject.parent`, which was `AbstractNode?` (a type without `describeApproximatePaintClip`) before Flutter 3.13.
 
 ## Install
 
