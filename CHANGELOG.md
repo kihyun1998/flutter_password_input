@@ -1,3 +1,41 @@
+## 0.7.0
+
+**DEPS**
+
+- `flutter_ime: ^3.0.0` (was `^2.1.4`). 3.0.0 rewrites the plugin as a pure-Dart
+  FFI package: no native code, no plugin registration, and no Flutter dependency
+  of its own. For this package that means the generated plugin registrant no
+  longer references `flutter_ime` and a consumer app compiles no native IME code
+  — nothing here calls anything the plugin's C++/Swift layer used to provide.
+
+**Breaking — SDK floor**
+
+- Dart floor raised `3.1.0` → `3.4.0`. `flutter_ime` 3.0.0 bridges its macOS
+  input-source observer with `NativeCallable.keepIsolateAlive`, which arrived in
+  Dart 3.4. The Flutter floor is unchanged at `3.13.0`. This is the only breaking
+  part of the upgrade, and it is what makes it a minor bump rather than a patch.
+
+**No API or behaviour change here**
+
+- `flutter_ime` 3.0.0 keeps the same public API — every function has the same
+  name, parameters and return type — so `KeyboardInputMonitor` is untouched and
+  no call site changed. The keyboard-integration tests pass unchanged against the
+  new version through the same platform-interface seam.
+
+**Worth knowing (macOS, upstream)**
+
+- 3.0.0 fixes `flutter_ime`'s macOS layout classification: non-QWERTY English
+  layouts (Dvorak, Colemak, British, Australian, Canadian) now report as English,
+  where 2.x saw only ABC and US. A field forcing English no longer drags those
+  users onto ABC.
+- On macOS the Caps Lock warning can now flicker when the user switches language:
+  the Caps Lock key doubles as the input-source switch there, so a language change
+  briefly toggles the lock and `onCapsLockChanged` reports it. This is upstream
+  behaviour, not something this package can filter — there is no state that
+  separates the two, only duration.
+
+---
+
 ## 0.6.3
 
 **DEPS**
