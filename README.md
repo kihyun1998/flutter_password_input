@@ -26,7 +26,7 @@ Dart floor raised in `0.7.0`: `flutter_ime` 3.0.0 is a pure-Dart FFI package and
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.6.3
+  flutter_password_input: ^0.7.0
 ```
 
 ## Usage
