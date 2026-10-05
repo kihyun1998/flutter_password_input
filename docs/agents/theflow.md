@@ -4,7 +4,7 @@ Project-specific data for the `theflow` skill. The skill holds the portable
 *method*; this file holds this package's *bindings*. Per-incident evidence lives
 in [`lessons.md`](lessons.md).
 
-`CONTEXT.md` / `docs/adr/` do **not** exist yet — created lazily when a term
+`GLOSSARY.md` / `docs/adr/` do **not** exist yet — created lazily when a term
 actually collides or a decision is actually made. Identity lives in `CLAUDE.md`.
 
 ## Crate / module map
@@ -80,9 +80,9 @@ Single Flutter package. The barrel `lib/flutter_password_input.dart`
   `.pubignore` listed only `docs/`/`CLAUDE.md`/`build/` (305e7d3) — **any dir CI
   or a local run creates must be added to `.pubignore` explicitly.** The pub.dev
   archive cannot be un-published.
-- **Glossary candidates (when `CONTEXT.md` is opened)**: *Status* vs *Warning*
+- **Glossary candidates (when `GLOSSARY.md` is opened)**: *Status* vs *Warning*
   (renamed, de934a5), *active warning*, *checked*, *caps-lock monitor*. Open
-  `CONTEXT.md` the moment a change touches one of their meanings.
+  `GLOSSARY.md` the moment a change touches one of their meanings.
 - **Reclaim now-false rationale** across sequential work.
 
 ## Step 7 — gate matrix

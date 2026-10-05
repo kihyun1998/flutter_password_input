@@ -42,7 +42,7 @@ Canonical triage roles map 1:1 to identically-named labels (`needs-triage`,
 `docs/agents/triage-labels.md`.
 
 ### Domain docs
-Single-context layout — one `CONTEXT.md` + `docs/adr/` at the repo root. See
+Single-context layout — one `GLOSSARY.md` + `docs/adr/` at the repo root. See
 `docs/agents/domain.md`.
 
 **아직 둘 다 없다.** 용어가 실제로 충돌하거나 결정이 실제로 내려질 때 lazily 만든다 —
