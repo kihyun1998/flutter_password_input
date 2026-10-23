@@ -273,7 +273,9 @@ class PasswordTextField extends StatefulWidget {
   /// Whether to disable paste functionality in the text field.
   ///
   /// When true, both keyboard shortcuts (Ctrl+V/Cmd+V) and context menu
-  /// paste operations will be blocked.
+  /// paste operations will be blocked. The context menu is the
+  /// Flutter-rendered one on every platform, including iOS where [TextField]
+  /// would otherwise show the native system menu.
   /// Defaults to false.
   final bool disablePaste;
 
@@ -487,10 +489,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     return false;
   }
 
-  void _onPasteBlocked() {
+  void _onKeyboardPasteBlocked() {
     if (_pasteKeyHeld) return;
     _pasteKeyHeld = true;
+    _onPasteBlocked();
+  }
 
+  void _onPasteBlocked() {
     widget.onPasteBlocked?.call();
 
     if (!widget.showPasteWarning) return;
@@ -621,6 +626,28 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     return hasSuffixBuilder ? suffixWidget : visibilityButton;
   }
 
+  /// [TextField]'s own default context menu builder.
+  static final EditableTextContextMenuBuilder? _defaultContextMenuBuilder =
+      const TextField().contextMenuBuilder;
+
+  /// The Flutter-rendered context menu with its Paste item blocked.
+  Widget _buildPasteBlockedContextMenu(
+      BuildContext context, EditableTextState editableTextState) {
+    return AdaptiveTextSelectionToolbar.buttonItems(
+      anchors: editableTextState.contextMenuAnchors,
+      buttonItems: [
+        for (final item in editableTextState.contextMenuButtonItems)
+          if (item.type == ContextMenuButtonType.paste)
+            item.copyWith(onPressed: () {
+              editableTextState.hideToolbar();
+              _onPasteBlocked();
+            })
+          else
+            item,
+      ],
+    );
+  }
+
   Widget _buildTextField(
       ThemeData appTheme, PasswordTextFieldTheme theme, _StatusColors colors) {
     final activeColor = _statusColor(colors);
@@ -652,6 +679,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           widget.onChange?.call(value);
         },
         onSubmitted: widget.onSubmitted,
+        contextMenuBuilder: widget.disablePaste
+            ? _buildPasteBlockedContextMenu
+            : _defaultContextMenuBuilder,
         decoration: InputDecoration(
           counterText: '',
           contentPadding: theme.contentPadding,
@@ -687,7 +717,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         actions: {
           PasteTextIntent: CallbackAction<PasteTextIntent>(
             onInvoke: (intent) {
-              _onPasteBlocked();
+              _onKeyboardPasteBlocked();
               return null;
             },
           ),

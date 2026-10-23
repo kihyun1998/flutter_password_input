@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_password_input/flutter_password_input.dart';
 import 'package:flutter_password_input/src/warning_message_layout.dart';
@@ -1433,6 +1434,199 @@ void main() {
       expect(copied.backgroundColor, Colors.black); // unchanged
       expect(copied.elevation, 12.0); // overridden
       expect(copied.offset, 8.0); // unchanged
+    });
+  });
+
+  group('PasswordTextField context-menu paste', () {
+    setUp(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'Clipboard.getData') return {'text': 'clipboard'};
+        if (call.method == 'Clipboard.hasStrings') return {'value': true};
+        return null;
+      });
+    });
+
+    tearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, null);
+    });
+
+    Future<void> pasteFromContextMenu(WidgetTester tester) async {
+      await tester.longPress(find.byType(TextField));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Paste'));
+      await tester.pump();
+    }
+
+    testWidgets('blocks a context-menu paste like a keyboard paste',
+        (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+      var blocked = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              controller: controller,
+              disablePaste: true,
+              onPasteBlocked: () => blocked++,
+            ),
+          ),
+        ),
+      );
+
+      await pasteFromContextMenu(tester);
+
+      expect(controller.text, isEmpty);
+      expect(blocked, 1);
+      expect(find.text('Paste is disabled'), findsOneWidget);
+    });
+
+    Future<int Function()> pumpBlockedField(
+      WidgetTester tester, {
+      bool showPasteWarning = true,
+      WarningDisplayMode warningDisplayMode = WarningDisplayMode.message,
+    }) async {
+      var blocked = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: PasswordTextField(
+                disablePaste: true,
+                showPasteWarning: showPasteWarning,
+                warningDisplayMode: warningDisplayMode,
+                onPasteBlocked: () => blocked++,
+              ),
+            ),
+          ),
+        ),
+      );
+      return () => blocked;
+    }
+
+    testWidgets('reports every context-menu paste as a new attempt',
+        (tester) async {
+      final blocked = await pumpBlockedField(tester);
+
+      await pasteFromContextMenu(tester);
+      await pasteFromContextMenu(tester);
+
+      expect(blocked(), 2);
+    });
+
+    testWidgets('a keyboard paste after a context-menu paste is reported',
+        (tester) async {
+      final blocked = await pumpBlockedField(tester);
+
+      await pasteFromContextMenu(tester);
+      Actions.invoke(tester.element(find.byType(TextField)),
+          const PasteTextIntent(SelectionChangedCause.keyboard));
+      await tester.pump();
+
+      expect(blocked(), 2);
+    });
+
+    testWidgets('showPasteWarning: false reports without a warning',
+        (tester) async {
+      final blocked = await pumpBlockedField(tester, showPasteWarning: false);
+
+      await pasteFromContextMenu(tester);
+
+      expect(blocked(), 1);
+      expect(find.text('Paste is disabled'), findsNothing);
+    });
+
+    testWidgets('shows the paste warning tooltip in tooltip mode',
+        (tester) async {
+      await pumpBlockedField(tester,
+          warningDisplayMode: WarningDisplayMode.tooltip);
+      expect(find.text('Paste is disabled'), findsNothing);
+
+      await pasteFromContextMenu(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Paste is disabled'), findsOneWidget);
+    });
+
+    testWidgets('closes the menu after a blocked paste', (tester) async {
+      await pumpBlockedField(tester);
+
+      await pasteFromContextMenu(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Paste'), findsNothing);
+    });
+
+    testWidgets('keeps the other menu items working', (tester) async {
+      final controller = TextEditingController(text: 'secret');
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(controller: controller, disablePaste: true),
+          ),
+        ),
+      );
+
+      await tester.longPress(find.byType(TextField));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Select all'));
+      await tester.pump();
+
+      expect(controller.selection,
+          const TextSelection(baseOffset: 0, extentOffset: 6));
+    });
+
+    testWidgets('pastes normally when disablePaste is false', (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(controller: controller),
+          ),
+        ),
+      );
+
+      await pasteFromContextMenu(tester);
+      await tester.pumpAndSettle();
+
+      expect(controller.text, 'clipboard');
+    });
+
+    testWidgets('blocks paste on iOS where the native menu is supported',
+        (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+      var blocked = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(supportsShowingSystemContextMenu: true),
+              child: Scaffold(
+                body: PasswordTextField(
+                  controller: controller,
+                  disablePaste: true,
+                  onPasteBlocked: () => blocked++,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await pasteFromContextMenu(tester);
+
+      expect(controller.text, isEmpty);
+      expect(blocked, 1);
+      debugDefaultTargetPlatformOverride = null;
     });
   });
 }

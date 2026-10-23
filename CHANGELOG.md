@@ -1,3 +1,16 @@
+## 0.7.1
+
+**Fix**
+
+- `disablePaste` now blocks the context menu's **Paste** (long-press toolbar,
+  right-click menu), as its documentation always said. Tapping it leaves the
+  text unchanged, calls `onPasteBlocked` once per attempt and shows the paste
+  warning, exactly like a blocked Ctrl+V/Cmd+V. Before, the menu pasted the
+  clipboard into the field silently (#17).
+- With `disablePaste`, iOS shows the Flutter-rendered context menu instead of
+  the native system menu, whose Paste the platform handles out of the field's
+  reach. Fields without `disablePaste` are unchanged.
+
 ## 0.7.0
 
 **DEPS**

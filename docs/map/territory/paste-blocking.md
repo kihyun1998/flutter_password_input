@@ -10,22 +10,34 @@ timed "paste is disabled" warning.
 ## Design model
 From reading the source.
 
-- Interception: an `Actions` widget overriding `PasteTextIntent` wraps the
-  `TextField` (`_buildTextField`).
-- **Key repeat is collapsed to one block:** `_pasteKeyHeld` is set on the first
-  block and cleared only by a `KeyUpEvent` for `V` seen by a global
-  `HardwareKeyboard` handler (`_onHardwareKey`) (724f148).
+- Two interception routes, one handler (`_onPasteBlocked`):
+  - **keyboard:** an `Actions` widget overriding `PasteTextIntent` wraps the
+    `TextField` (`_buildTextField`) and calls `_onKeyboardPasteBlocked`;
+  - **context menu:** `_buildPasteBlockedContextMenu` rebuilds the
+    `AdaptiveTextSelectionToolbar` from `contextMenuButtonItems` with the Paste
+    item's `onPressed` replaced (#17). Used only with `disablePaste`; otherwise
+    `TextField`'s own default builder (`_defaultContextMenuBuilder`).
+- **The menu is always Flutter-rendered under `disablePaste`**, iOS included:
+  the native `SystemContextMenu` Paste is performed by the platform and never
+  reaches the field (maintainer, 2026-10-23, over keeping the native menu, which
+  needs `SystemContextMenu` and a Flutter floor of 3.24).
+- **Key repeat is collapsed to one block, on the keyboard route only:**
+  `_pasteKeyHeld` is set on the first block and cleared only by a `KeyUpEvent`
+  for `V` seen by a global `HardwareKeyboard` handler (`_onHardwareKey`)
+  (724f148). The context-menu route neither reads nor sets it.
 - The warning lasts `pasteWarningDuration` (default 3 s) via `_pasteWarningTimer`,
   and is cleared early by typing (`onChanged → _hidePasteWarning`) or blur.
 - In tooltip mode, a re-block while showing bumps `_pasteTooltipKey`, passed as
   `pasteGeneration`, so the tooltip replays its animation.
 
 ## Code
-- `lib/src/password_text_field.dart — _PasswordTextFieldState._onPasteBlocked`, `_hidePasteWarning`, `_onHardwareKey`, `_buildTextField` (`Actions`), `_onFocusChange` (blur clears)
-- Tests: group `PasswordTextField` — `calls onPasteBlocked…`, `shows default/custom paste warning…`, `hides paste warning after the specified duration`, `does not show paste warning when showPasteWarning is false`, `hides the paste warning when the user types`; `a blocked paste does not override an active customError`
+- `lib/src/password_text_field.dart — _PasswordTextFieldState._onPasteBlocked`, `_onKeyboardPasteBlocked`, `_buildPasteBlockedContextMenu`, `_defaultContextMenuBuilder`, `_hidePasteWarning`, `_onHardwareKey`, `_buildTextField` (`Actions`, `contextMenuBuilder`), `_onFocusChange` (blur clears)
+- Tests: group `PasswordTextField` — `calls onPasteBlocked…`, `shows default/custom paste warning…`, `hides paste warning after the specified duration`, `does not show paste warning when showPasteWarning is false`, `hides the paste warning when the user types`; `a blocked paste does not override an active customError`; group `PasswordTextField context-menu paste` (clipboard mocked on `SystemChannels.platform`, long-press, tap "Paste")
 
 ## Reference behaviour
-- Flutter 3.41.9 `widgets/editable_text.dart — contextMenuButtonItems`: the toolbar's paste button calls `pasteText(SelectionChangedCause.toolbar)` directly, not through `PasteTextIntent`.
+- Flutter 3.41.9 `widgets/editable_text.dart — contextMenuButtonItems`: the toolbar's paste button calls `pasteText(SelectionChangedCause.toolbar)` directly, not through `PasteTextIntent`. Same in 3.47.1 (`_pasteTextWithReporting`).
+- Flutter 3.47.1 `material/text_field.dart — _defaultContextMenuBuilder`: shows `SystemContextMenu` when `SystemContextMenu.isSupportedByField` (iOS with `MediaQuery.supportsShowingSystemContextMenu`), since 3.38 (f16f6d7f994). `SystemContextMenu` itself is 3.24+.
+- Flutter 3.47.1 `widgets/editable_text.dart — _semanticsOnPaste`: the accessibility paste action also calls `_pasteTextWithReporting` directly.
 
 ## Cross-cutting invariants
 **None.**
@@ -37,5 +49,5 @@ From reading the source.
 - [password-field](password-field.md) — the `Actions` wrapper must stay an ancestor of the `TextField`.
 
 ## Known holes / open
-- **Context-menu paste is probably not blocked**, though `PasswordTextField.disablePaste`'s dartdoc says it is: per the reference above the toolbar bypasses `PasteTextIntent`. From reading Flutter 3.41.9; not run. Tests only invoke the intent.
-- `_pasteKeyHeld` clears only on a `V` key-up; a paste triggered by a non-V shortcut (or the key-up lost to another window) leaves it set, swallowing the next warning. From reading.
+- **Accessibility paste is not blocked:** `_semanticsOnPaste` bypasses both routes (reference above). From reading 3.47.1; not run.
+- `_pasteKeyHeld` clears only on a `V` key-up; a keyboard-route paste with no `V` key-up (a non-V shortcut, macOS Edit-menu `paste:` via `performSelector`, a key-up lost to another window) leaves it set, swallowing the next keyboard warning. Context-menu pastes are unaffected since #17. From reading.
