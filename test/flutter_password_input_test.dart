@@ -1259,6 +1259,21 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    testWidgets('restores the Windows IME when disposed while focused',
+        (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+      expect(fake.calls, ['disableIME']);
+
+      await tester.pumpWidget(const SizedBox());
+
+      expect(fake.calls, ['disableIME', 'enableIME']);
+
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     testWidgets('cancels the Caps Lock subscription on dispose',
         (tester) async {
       await tester.pumpWidget(

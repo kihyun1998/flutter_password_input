@@ -23,11 +23,14 @@ From reading the source.
   undoes what was enforced, not what the flag now says.
 - **`forceEnglishInput` is a live switch while focused:** `didUpdateWidget`
   enforces or restores immediately (#18).
+- **Disposal restores too:** `KeyboardInputMonitor.dispose` calls
+  `restoreInput` first. The widget removes its focus listener before the node
+  goes, so a field unmounted while focused gets no blur.
 
 ## Code
 - `lib/src/keyboard_input_monitor.dart — KeyboardInputMonitor.enforceEnglishInput`, `restoreInput`, `dispose`
 - `lib/src/password_text_field.dart — _PasswordTextFieldState._onFocusChange`, `didUpdateWidget`
-- Tests: `toggles the Windows IME on focus and blur`, `re-forces the English keyboard on macOS…`, `turning forceEnglishInput off/on while focused…` (Windows ×2, macOS)
+- Tests: `toggles the Windows IME on focus and blur`, `re-forces the English keyboard on macOS…`, `turning forceEnglishInput off/on while focused…` (Windows ×2, macOS), `restores the Windows IME when disposed while focused`
 
 ## Reference behaviour
 - `flutter_ime` 3.0.0 `lib/flutter_ime.dart — disableIME`, `enableIME`, `setEnglishKeyboard`, `onInputSourceChanged`. 3.0.0 classifies Dvorak/Colemak/British etc. as English on macOS, where 2.x saw only ABC/US (CHANGELOG 0.7.0, upstream).

@@ -34,6 +34,8 @@
   leaked before) and never a node the caller supplied. Swapping while focused
   to an unfocused node now runs the usual focus-lost handling: Caps Lock
   reported `false`, IME restored (#18).
+- A field disposed while focused (for example on a route pop) restores the
+  input it enforced. Before, the Windows IME stayed disabled system-wide.
 
 ## 0.7.0
 

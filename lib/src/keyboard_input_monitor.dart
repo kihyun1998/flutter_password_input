@@ -77,8 +77,10 @@ class KeyboardInputMonitor {
     }
   }
 
-  /// Cancels all subscriptions. Call this when the owner is disposed.
+  /// Restores input if still enforcing and cancels all subscriptions. Call
+  /// this when the owner is disposed.
   void dispose() {
+    restoreInput();
     _capsLockSubscription?.cancel();
     _inputSourceSubscription?.cancel();
   }
