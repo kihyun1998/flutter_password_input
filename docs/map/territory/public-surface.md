@@ -11,8 +11,7 @@ de934a5 (`PasswordFieldWarning` → `PasswordFieldStatus`, `feat!`).
 ## Design model
 - The barrel exports `password_text_field.dart` and `password_text_field_theme.dart`
   whole, and `just_tooltip`'s `TooltipAlignment`, `TooltipAnimation`,
-  `TooltipDirection` only (`lib/flutter_password_input.dart`). `CLAUDE.md` says
-  "the barrel re-exports `just_tooltip`" — it re-exports these three, not the package.
+  `TooltipDirection` only (`lib/flutter_password_input.dart`) — these three, not the package.
 - Hence public: `PasswordTextField`, `WarningAlignment`, `PasswordFieldStatus`,
   `PasswordFieldWidgetBuilder`, `WarningDisplayMode`, `PasswordTextFieldTheme`,
   `WarningTooltipTheme`. `KeyboardInputMonitor`, `WarningMessageLayout`,

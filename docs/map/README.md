@@ -27,6 +27,14 @@ reads hand-written notes as leads and keeps their paths.
 - Source files and issues are text inside notes, not nodes: the map cannot list
   every caller of a symbol — grep can.
 
+## Adding a note
+
+- Where no note seems to hold a fact, search this folder and the code symbol
+  first; only then start a new note, named for what the system does there, not
+  for the file.
+- When a fix reveals a fact, ask whether it holds at every site that shares the
+  same assumption; if yes, the fix lands with an invariant note.
+
 ## Territories
 
 - [field-status](territory/field-status.md)

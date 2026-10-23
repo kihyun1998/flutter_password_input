@@ -18,7 +18,7 @@ driven from the same `_onFocusChange`. Neither reads the other's state.
 `flutter_ime` (6622807, #3). It is not an injection point —
 `_PasswordTextFieldState.initState` constructs it directly
 (maintainer, 2026-10-23: "monitor is import isolation, the seam is the platform
-interface"). `CLAUDE.md`'s "testable without the plugin" is wrong in that detail.
+interface").
 
 Tests drive both concepts by replacing `FlutterImePlatform.instance` with
 `_FakeImePlatform`, forcing platform policy through `debugSetPlatformSupport`

@@ -45,4 +45,4 @@ releases.
 - [public-surface](public-surface.md) — re-exported `just_tooltip` enums make an upstream enum change ours.
 
 ## Known holes / open
-- `CLAUDE.md` still states `flutter_ime (^2.1.4)`; `pubspec.yaml` is `^3.0.0` since a27fa38.
+**None.**
