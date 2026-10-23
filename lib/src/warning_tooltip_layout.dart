@@ -156,7 +156,7 @@ class _WarningTooltipLayoutState extends State<WarningTooltipLayout> {
       controller: controller,
       enableTap: false,
       enableHover: false,
-      interactive: tt.interactive!,
+      interactive: false,
       direction: direction,
       alignment: alignment,
       offset: tt.offset!,

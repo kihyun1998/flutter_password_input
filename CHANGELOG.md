@@ -14,6 +14,11 @@
   Paste, or after a `V` key-up was lost to another window) is always reported.
   Before, it could leave the key-repeat guard set and silently swallow the next
   blocked paste. Holding Ctrl+V/Cmd+V still reports once.
+- A warning tooltip with `showDuration` now hides on time even when the mouse
+  rests on or crosses it. Before, the pointer cancelled the auto-hide and the
+  tooltip stayed until the status changed. Warning tooltips are always built
+  non-interactive; `WarningTooltipTheme.interactive` is kept so existing themes
+  compile, and has no effect, as documented (#19).
 
 ## 0.7.0
 

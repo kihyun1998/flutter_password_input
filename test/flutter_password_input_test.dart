@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1333,6 +1334,84 @@ void main() {
       await tester.tap(find.text('Disable'));
       await tester.pump();
       expect(captured, PasswordFieldStatus.disabled);
+    });
+
+    group('warning tooltip auto-hide', () {
+      const capsWarning = 'Caps Lock is on';
+      const showFor = Duration(seconds: 1);
+
+      Future<void> showCapsTooltip(WidgetTester tester,
+          {Duration? showDuration = showFor}) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: PasswordTextField(
+                  forceEnglishInput: false,
+                  warningDisplayMode: WarningDisplayMode.tooltip,
+                  theme: PasswordTextFieldTheme(
+                    tooltipTheme: WarningTooltipTheme(
+                      interactive: true,
+                      showDuration: showDuration,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.byType(TextField));
+        await tester.pump();
+        fake.capsController.add(true);
+        await tester.pumpAndSettle();
+        expect(find.text(capsWarning), findsOneWidget,
+            reason: 'the tooltip must be showing before timing is asserted');
+      }
+
+      Future<TestGesture> mouseOnTooltip(WidgetTester tester) async {
+        final pointer =
+            await tester.createGesture(kind: PointerDeviceKind.mouse);
+        await pointer.addPointer(location: Offset.zero);
+        addTearDown(pointer.removePointer);
+        await pointer.moveTo(tester.getCenter(find.text(capsWarning)));
+        await tester.pump();
+        return pointer;
+      }
+
+      testWidgets('hides on time after the pointer crosses the tooltip',
+          (tester) async {
+        await showCapsTooltip(tester);
+
+        final pointer = await mouseOnTooltip(tester);
+        await pointer.moveTo(Offset.zero);
+        await tester.pump(const Duration(seconds: 3));
+        await tester.pumpAndSettle();
+
+        expect(find.text(capsWarning), findsNothing);
+      });
+
+      testWidgets('hides on time while the pointer rests on the tooltip',
+          (tester) async {
+        await showCapsTooltip(tester);
+
+        await mouseOnTooltip(tester);
+        await tester.pump(const Duration(seconds: 3));
+        await tester.pumpAndSettle();
+
+        expect(find.text(capsWarning), findsNothing);
+      });
+
+      testWidgets('stays while the status holds without showDuration',
+          (tester) async {
+        await showCapsTooltip(tester, showDuration: null);
+
+        final pointer = await mouseOnTooltip(tester);
+        await pointer.moveTo(Offset.zero);
+        await tester.pump(const Duration(seconds: 3));
+        await tester.pumpAndSettle();
+
+        expect(find.text(capsWarning), findsOneWidget);
+      });
     });
   });
 

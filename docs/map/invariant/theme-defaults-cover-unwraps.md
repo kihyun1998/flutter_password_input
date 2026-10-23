@@ -12,7 +12,7 @@ other; the only link is `merge(defaults)` at the call site. Two independent pair
   `_PasswordTextFieldState._buildOutlineBorder` (`theme.borderWidth!`, `theme.borderRadius!`).
 - `WarningTooltipTheme.defaults` (`backgroundColor`, `borderRadius`, `padding`,
   `elevation`, `borderWidth`, `showArrow`, `arrowBaseWidth`, `arrowLength`,
-  `arrowPositionRatio`, `interactive`, `offset`, `crossAxisOffset`, `screenMargin`,
+  `arrowPositionRatio`, `offset`, `crossAxisOffset`, `screenMargin`,
   `animationDuration`, `animation`, `fadeBegin`, `scaleBegin`, `slideOffset`,
   `rotationBegin`) ↔ `_WarningTooltipLayoutState._buildTooltipTheme`, `_buildTooltip`.
 

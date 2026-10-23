@@ -212,7 +212,7 @@ Used when `warningDisplayMode` is `WarningDisplayMode.tooltip`.
 | `waitDuration` | `Duration?` | `null` | **No effect** — see below |
 | `showDuration` | `Duration?` | `null` | Auto-hide after this duration |
 
-`interactive` and `waitDuration` are inert. Both are read by `just_tooltip` only along its hover path, and these warning tooltips are built with `enableHover: false` — they are driven entirely by a controller, so no pointer ever enters or leaves them. They are still accepted so the theme stays a superset of `just_tooltip`'s options, but setting them changes nothing. `showDuration` does work: a programmatic show starts the auto-hide countdown explicitly.
+`interactive` and `waitDuration` are inert. The warning tooltips are display-only: they are driven entirely by a controller, built with `enableHover: false`, and always non-interactive, so a pointer resting on one never holds it open. `waitDuration` is read by `just_tooltip` only when a hover enters the field, which never happens here. Both are still accepted so the theme stays a superset of `just_tooltip`'s options, but setting them changes nothing. `showDuration` does work: a programmatic show starts the auto-hide countdown, and it runs out on time wherever the pointer is.
 
 ## License
 
