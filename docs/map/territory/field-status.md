@@ -31,7 +31,7 @@ From reading the source; no record states it.
 ## Code
 - `lib/src/password_text_field.dart — PasswordFieldStatus`, `PasswordFieldWidgetBuilder`
 - `lib/src/password_text_field.dart — _PasswordTextFieldState._resolveActiveWarning`, `_statusColor`, `_StatusColors`, `build` (colour record), `_buildTextField` (`enabledBorderColor`)
-- `lib/src/password_text_field.dart — _PasswordTextFieldState.didUpdateWidget` (re-resolves on `enabled`, `hasCustomError`, `isChecked`)
+- `lib/src/password_text_field.dart — _PasswordTextFieldState.didUpdateWidget` (re-resolves on every widget input `_resolveActiveWarning` reads: `enabled`, `hasCustomError`, `showCapsLockWarning`, `isChecked`; a new input joins that condition)
 - Tests: `test/flutter_password_input_test.dart` groups `PasswordTextField checked state`, `PasswordTextField status priority`
 
 ## Reference behaviour
@@ -49,4 +49,3 @@ From reading the source; no record states it.
 
 ## Known holes / open
 - **The two display modes decide visibility differently** (maintainer: bug or undecided, 2026-10-23). Tooltip mode follows `_activeStatus`, so under `customError` the caps-lock tooltip hides and caps-lock and paste never show together. Message mode reads raw flags in `build` (`showCapsLockWarning && _isCapsLockOn && _hasFocus`, `_showPasteWarning`), so it shows caps-lock text during `customError` and both warnings at once.
-- `didUpdateWidget` does not re-resolve when `showCapsLockWarning` changes: turning it off while caps lock is on and focused leaves `_activeStatus == capsLock` (border colour, tooltip) until the next event. From reading; no test covers it.

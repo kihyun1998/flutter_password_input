@@ -395,13 +395,10 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         _keyboardMonitor.restoreInput();
       }
     }
-    if (oldWidget.enabled != widget.enabled) {
-      _resolveActiveWarning();
-    }
-    if (oldWidget.hasCustomError != widget.hasCustomError) {
-      _resolveActiveWarning();
-    }
-    if (oldWidget.isChecked != widget.isChecked) {
+    if (oldWidget.enabled != widget.enabled ||
+        oldWidget.hasCustomError != widget.hasCustomError ||
+        oldWidget.showCapsLockWarning != widget.showCapsLockWarning ||
+        oldWidget.isChecked != widget.isChecked) {
       _resolveActiveWarning();
     }
   }

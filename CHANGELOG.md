@@ -27,6 +27,9 @@
   earlier focus, is discarded. Before, a quick tab through the field could
   report `onCapsLockStateChanged(true)` after blur with no `false` following
   (#18).
+- Changing `showCapsLockWarning` at runtime re-resolves the field status at
+  once. Before, turning it off while Caps Lock was on left the border colour,
+  tooltip and builders in the caps-lock state until the next event (#18).
 
 ## 0.7.0
 

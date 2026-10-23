@@ -1155,6 +1155,36 @@ void main() {
       expect(reports, isEmpty);
     });
 
+    testWidgets('toggling showCapsLockWarning re-resolves the status',
+        (tester) async {
+      final statuses = <PasswordFieldStatus>[];
+      Widget fieldWith({required bool showCapsLockWarning}) => MaterialApp(
+            home: Scaffold(
+              body: PasswordTextField(
+                forceEnglishInput: false,
+                showCapsLockWarning: showCapsLockWarning,
+                prefixWidgetBuilder: (context, status) {
+                  statuses.add(status);
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          );
+
+      await tester.pumpWidget(fieldWith(showCapsLockWarning: true));
+      await tester.tap(find.byType(TextField));
+      await tester.pump();
+      fake.capsController.add(true);
+      await tester.pump();
+      expect(statuses.last, PasswordFieldStatus.capsLock);
+
+      await tester.pumpWidget(fieldWith(showCapsLockWarning: false));
+      expect(statuses.last, PasswordFieldStatus.none);
+
+      await tester.pumpWidget(fieldWith(showCapsLockWarning: true));
+      expect(statuses.last, PasswordFieldStatus.capsLock);
+    });
+
     Widget englishFieldWith({required bool forceEnglishInput}) {
       return MaterialApp(
         home: Scaffold(
