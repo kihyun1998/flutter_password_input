@@ -1,5 +1,14 @@
 # CLAUDE.md
 
+## Working discipline
+
+Substantive changes follow `thegraph`; its build is `docs/agents/thegraph.md`.
+
+- Commit to `main` directly; stage the touched paths by name, never `git add -A`.
+  End the message with `Fixes #n`. Push only when asked.
+- `flutter pub publish` is run by the maintainer, never by the agent; `--dry-run`
+  must show 0 warnings on a clean tree.
+
 ## Comments
 
 A comment says what the code is. Why it is this way, what it deliberately leaves
