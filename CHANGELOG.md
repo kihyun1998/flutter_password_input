@@ -30,6 +30,10 @@
 - Changing `showCapsLockWarning` at runtime re-resolves the field status at
   once. Before, turning it off while Caps Lock was on left the border colour,
   tooltip and builders in the caps-lock state until the next event (#18).
+- Swapping `focusNode` at runtime disposes the node the field created (it
+  leaked before) and never a node the caller supplied. Swapping while focused
+  to an unfocused node now runs the usual focus-lost handling: Caps Lock
+  reported `false`, IME restored (#18).
 
 ## 0.7.0
 

@@ -1398,6 +1398,120 @@ void main() {
           reason: 'autofocus focuses the field after the first frame');
     });
 
+    group('focusNode ownership', () {
+      late List<FocusNode> disposed;
+
+      void onAllocation(ObjectEvent event) {
+        final object = event.object;
+        if (object is FocusNode && event is ObjectDisposed) {
+          disposed.add(object);
+        }
+      }
+
+      setUp(() {
+        disposed = [];
+        FlutterMemoryAllocations.instance.addListener(onAllocation);
+      });
+
+      tearDown(() {
+        FlutterMemoryAllocations.instance.removeListener(onAllocation);
+      });
+
+      FocusNode fieldNode(WidgetTester tester) =>
+          tester.widget<TextField>(find.byType(TextField)).focusNode!;
+
+      Widget fieldWith(FocusNode? focusNode) => MaterialApp(
+            home: Scaffold(
+              body: PasswordTextField(
+                forceEnglishInput: false,
+                focusNode: focusNode,
+              ),
+            ),
+          );
+
+      testWidgets('disposes its own node when a caller node is supplied',
+          (tester) async {
+        final external = FocusNode();
+        addTearDown(external.dispose);
+
+        await tester.pumpWidget(fieldWith(null));
+        final owned = fieldNode(tester);
+        await tester.pumpWidget(fieldWith(external));
+        await tester.pump();
+
+        expect(fieldNode(tester), same(external));
+        expect(disposed, contains(owned));
+      });
+
+      testWidgets(
+          'creates and later disposes a fresh node when the caller '
+          'node is removed', (tester) async {
+        final external = FocusNode();
+        addTearDown(external.dispose);
+
+        await tester.pumpWidget(fieldWith(external));
+        await tester.pumpWidget(fieldWith(null));
+        final owned = fieldNode(tester);
+        expect(owned, isNot(same(external)));
+        expect(disposed, isNot(contains(owned)));
+
+        await tester.pumpWidget(const SizedBox());
+
+        expect(disposed, contains(owned));
+      });
+
+      testWidgets('never disposes a caller node', (tester) async {
+        final a = FocusNode();
+        final b = FocusNode();
+        addTearDown(a.dispose);
+        addTearDown(b.dispose);
+
+        await tester.pumpWidget(fieldWith(null));
+        await tester.pumpWidget(fieldWith(a));
+        await tester.pumpWidget(fieldWith(b));
+        await tester.pumpWidget(fieldWith(null));
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump();
+
+        expect(disposed, isNot(contains(a)));
+        expect(disposed, isNot(contains(b)));
+      });
+
+      testWidgets(
+          'swapping to an unfocused node while focused runs the '
+          'focus-lost transition', (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+        final reports = <bool>[];
+        final external = FocusNode();
+        addTearDown(external.dispose);
+        Widget windowsFieldWith(FocusNode? focusNode) => MaterialApp(
+              home: Scaffold(
+                body: PasswordTextField(
+                  focusNode: focusNode,
+                  onCapsLockStateChanged: reports.add,
+                ),
+              ),
+            );
+
+        await tester.pumpWidget(windowsFieldWith(null));
+        await tester.tap(find.byType(TextField));
+        await tester.pump();
+        fake.capsController.add(true);
+        await tester.pump();
+        expect(reports, [true]);
+        expect(fake.calls, ['disableIME']);
+
+        await tester.pumpWidget(windowsFieldWith(external));
+        await tester.pump();
+
+        expect(external.hasFocus, isFalse);
+        expect(reports, [true, false]);
+        expect(fake.calls, ['disableIME', 'enableIME']);
+
+        debugDefaultTargetPlatformOverride = null;
+      });
+    });
+
     testWidgets('rewires focus when the external focusNode is replaced',
         (tester) async {
       final nodeA = FocusNode();

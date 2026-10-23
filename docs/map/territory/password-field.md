@@ -17,8 +17,13 @@ From reading the source.
   `TextField` creates its own. The widget never reads the value — only
   `onChange` / `onSubmitted` forward it.
 - **FocusNode:** the widget creates one when `focusNode` is null and disposes
-  only that one (`dispose` checks `widget.focusNode == null`). A replaced
-  external node is rewired in `didUpdateWidget`.
+  only that one (`dispose` checks `widget.focusNode == null`). On a swap,
+  `didUpdateWidget` moves the listener to the new node at once, then in a
+  post-frame callback disposes the old node if the widget created it and runs
+  `_onFocusChange` to reconcile, so caps-lock state and IME enforcement follow
+  the new node (#18). Post-frame, because the `TextField` must have moved off
+  the old node before it is disposed, and focus callbacks (`onLostFocus`,
+  `onCapsLockStateChanged`) must not run during a build.
 - **Visibility toggle** is wrapped in `ExcludeFocus` so tapping it does not steal
   focus (which would clear caps-lock and paste state, see
   [caps-lock-detection](caps-lock-detection.md)); it is inert when `enabled == false`.
@@ -28,7 +33,7 @@ From reading the source.
 ## Code
 - `lib/src/password_text_field.dart — PasswordTextField` (constructor, fields)
 - `lib/src/password_text_field.dart — _PasswordTextFieldState.initState`, `didUpdateWidget`, `dispose`, `_toggleObscure`, `_buildSuffixIcon`, `_buildTextField`, `_buildOutlineBorder`
-- Tests: `test/flutter_password_input_test.dart` group `PasswordTextField` (render, toggle, callbacks, builders); `rewires focus when the external focusNode is replaced`, `autofocus requests focus after the first frame`
+- Tests: `test/flutter_password_input_test.dart` group `PasswordTextField` (render, toggle, callbacks, builders); `rewires focus when the external focusNode is replaced`, group `focusNode ownership` (disposal observed via `FlutterMemoryAllocations`), `autofocus requests focus after the first frame`
 
 ## Reference behaviour
 **None.**
@@ -43,4 +48,4 @@ From reading the source.
 - [field-theme](field-theme.md) — every style here comes from the merged theme.
 
 ## Known holes / open
-- `didUpdateWidget` switching from an internal node (`focusNode` null) to an external one never disposes the internal node — a leak. Switching while focused also leaves `_hasFocus` as it was for the old node. From reading; the existing test only swaps external → external.
+**None.**

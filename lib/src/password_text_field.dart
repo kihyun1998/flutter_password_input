@@ -384,9 +384,14 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   void didUpdateWidget(covariant PasswordTextField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.focusNode != widget.focusNode) {
-      _focusNode.removeListener(_onFocusChange);
+      final oldNode = _focusNode;
+      oldNode.removeListener(_onFocusChange);
       _focusNode = widget.focusNode ?? FocusNode();
       _focusNode.addListener(_onFocusChange);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (oldWidget.focusNode == null) oldNode.dispose();
+        if (mounted) _onFocusChange();
+      });
     }
     if (oldWidget.forceEnglishInput != widget.forceEnglishInput && _hasFocus) {
       if (widget.forceEnglishInput) {
