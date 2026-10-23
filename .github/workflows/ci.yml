@@ -7,7 +7,7 @@ on:
 
 # Pinned so CI does not drift with the runner's default Flutter.
 env:
-  FLUTTER_VERSION: "3.41.9"
+  FLUTTER_VERSION: "3.47.1"
 
 jobs:
   dart:
