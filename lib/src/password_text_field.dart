@@ -490,8 +490,10 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   }
 
   void _onKeyboardPasteBlocked() {
-    if (_pasteKeyHeld) return;
-    _pasteKeyHeld = true;
+    final vHeld = HardwareKeyboard.instance.logicalKeysPressed
+        .contains(LogicalKeyboardKey.keyV);
+    if (_pasteKeyHeld && vHeld) return;
+    _pasteKeyHeld = vHeld;
     _onPasteBlocked();
   }
 

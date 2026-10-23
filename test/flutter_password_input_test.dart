@@ -1437,6 +1437,71 @@ void main() {
     });
   });
 
+  group('PasswordTextField keyboard paste repeat', () {
+    Future<int Function()> pumpFocusedBlockedField(WidgetTester tester) async {
+      var blocked = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PasswordTextField(
+              disablePaste: true,
+              onPasteBlocked: () => blocked++,
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(TextField));
+      await tester.pump();
+      return () => blocked;
+    }
+
+    void invokePaste(WidgetTester tester) {
+      Actions.invoke(tester.element(find.byType(TextField)),
+          const PasteTextIntent(SelectionChangedCause.keyboard));
+    }
+
+    testWidgets('reports each paste that arrives without a held V',
+        (tester) async {
+      final blocked = await pumpFocusedBlockedField(tester);
+
+      invokePaste(tester);
+      await tester.pump();
+      invokePaste(tester);
+      await tester.pump();
+
+      expect(blocked(), 2);
+    });
+
+    testWidgets('holding Ctrl+V reports one blocked paste', (tester) async {
+      final blocked = await pumpFocusedBlockedField(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.keyV);
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.keyV);
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.keyV);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.keyV);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+      await tester.pump();
+
+      expect(blocked(), 1);
+    });
+
+    testWidgets('pressing Ctrl+V again after release reports again',
+        (tester) async {
+      final blocked = await pumpFocusedBlockedField(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.keyV);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.keyV);
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.keyV);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.keyV);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+      await tester.pump();
+
+      expect(blocked(), 2);
+    });
+  });
+
   group('PasswordTextField context-menu paste', () {
     setUp(() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger

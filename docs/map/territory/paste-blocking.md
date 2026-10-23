@@ -22,9 +22,11 @@ From reading the source.
   reaches the field (maintainer, 2026-10-23, over keeping the native menu, which
   needs `SystemContextMenu` and a Flutter floor of 3.24).
 - **Key repeat is collapsed to one block, on the keyboard route only:**
-  `_pasteKeyHeld` is set on the first block and cleared only by a `KeyUpEvent`
-  for `V` seen by a global `HardwareKeyboard` handler (`_onHardwareKey`)
-  (724f148). The context-menu route neither reads nor sets it.
+  `_pasteKeyHeld` is set when a block arrives while `V` is in
+  `HardwareKeyboard.logicalKeysPressed`, and cleared by a `KeyUpEvent` for `V`
+  seen by a global `HardwareKeyboard` handler (`_onHardwareKey`) (724f148). A
+  block with no `V` held (macOS Edit-menu `paste:`, a stale flag after a lost
+  key-up) is always reported. The context-menu route neither reads nor sets it.
 - The warning lasts `pasteWarningDuration` (default 3 s) via `_pasteWarningTimer`,
   and is cleared early by typing (`onChanged → _hidePasteWarning`) or blur.
 - In tooltip mode, a re-block while showing bumps `_pasteTooltipKey`, passed as
@@ -32,7 +34,7 @@ From reading the source.
 
 ## Code
 - `lib/src/password_text_field.dart — _PasswordTextFieldState._onPasteBlocked`, `_onKeyboardPasteBlocked`, `_buildPasteBlockedContextMenu`, `_defaultContextMenuBuilder`, `_hidePasteWarning`, `_onHardwareKey`, `_buildTextField` (`Actions`, `contextMenuBuilder`), `_onFocusChange` (blur clears)
-- Tests: group `PasswordTextField` — `calls onPasteBlocked…`, `shows default/custom paste warning…`, `hides paste warning after the specified duration`, `does not show paste warning when showPasteWarning is false`, `hides the paste warning when the user types`; `a blocked paste does not override an active customError`; group `PasswordTextField context-menu paste` (clipboard mocked on `SystemChannels.platform`, long-press, tap "Paste")
+- Tests: group `PasswordTextField` — `calls onPasteBlocked…`, `shows default/custom paste warning…`, `hides paste warning after the specified duration`, `does not show paste warning when showPasteWarning is false`, `hides the paste warning when the user types`; `a blocked paste does not override an active customError`; group `PasswordTextField keyboard paste repeat`; group `PasswordTextField context-menu paste` (clipboard mocked on `SystemChannels.platform`, long-press, tap "Paste")
 
 ## Reference behaviour
 - Flutter 3.41.9 `widgets/editable_text.dart — contextMenuButtonItems`: the toolbar's paste button calls `pasteText(SelectionChangedCause.toolbar)` directly, not through `PasteTextIntent`. Same in 3.47.1 (`_pasteTextWithReporting`).
@@ -50,4 +52,3 @@ From reading the source.
 
 ## Known holes / open
 - **Accessibility paste is not blocked:** `_semanticsOnPaste` bypasses both routes (reference above). From reading 3.47.1; not run.
-- `_pasteKeyHeld` clears only on a `V` key-up; a keyboard-route paste with no `V` key-up (a non-V shortcut, macOS Edit-menu `paste:` via `performSelector`, a key-up lost to another window) leaves it set, swallowing the next keyboard warning. Context-menu pastes are unaffected since #17. From reading.

@@ -10,6 +10,10 @@
 - With `disablePaste`, iOS shows the Flutter-rendered context menu instead of
   the native system menu, whose Paste the platform handles out of the field's
   reach. Fields without `disablePaste` are unchanged.
+- A blocked keyboard paste that arrives without `V` held (macOS Edit menu
+  Paste, or after a `V` key-up was lost to another window) is always reported.
+  Before, it could leave the key-repeat guard set and silently swallow the next
+  blocked paste. Holding Ctrl+V/Cmd+V still reports once.
 
 ## 0.7.0
 
