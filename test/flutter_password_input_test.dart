@@ -24,12 +24,16 @@ class _FakeImePlatform extends FlutterImePlatform {
       StreamController<bool>.broadcast();
   bool capsLockValue = false;
 
+  /// When set, [isCapsLockOn] waits on this instead of answering at once.
+  Completer<bool>? pendingCapsLockRead;
+
   /// Ordered log of IME-enforcement calls, e.g. 'disableIME', 'enableIME',
   /// 'setEnglishKeyboard'.
   final List<String> calls = [];
 
   @override
-  Future<bool> isCapsLockOn() async => capsLockValue;
+  Future<bool> isCapsLockOn() =>
+      pendingCapsLockRead?.future ?? Future.value(capsLockValue);
 
   @override
   Stream<bool> get onCapsLockChanged => capsController.stream;
@@ -1077,6 +1081,78 @@ void main() {
           reason: 'a non-English switch while focused must be reverted');
 
       debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('discards a Caps Lock read that resolves after blur',
+        (tester) async {
+      final reports = <bool>[];
+      final statuses = <PasswordFieldStatus>[];
+      fake.pendingCapsLockRead = Completer<bool>();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                PasswordTextField(
+                  forceEnglishInput: false,
+                  onCapsLockStateChanged: reports.add,
+                  prefixWidgetBuilder: (context, status) {
+                    statuses.add(status);
+                    return const SizedBox.shrink();
+                  },
+                ),
+                const TextField(key: Key('other')),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('other')));
+      await tester.pump();
+
+      fake.pendingCapsLockRead!.complete(true);
+      await tester.pump();
+
+      expect(reports, isNot(contains(true)));
+      expect(statuses.last, PasswordFieldStatus.none);
+    });
+
+    testWidgets('discards a Caps Lock read from an earlier focus',
+        (tester) async {
+      final reports = <bool>[];
+      final firstRead = Completer<bool>();
+      fake.pendingCapsLockRead = firstRead;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                PasswordTextField(
+                  forceEnglishInput: false,
+                  onCapsLockStateChanged: reports.add,
+                ),
+                const TextField(key: Key('other')),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('other')));
+      await tester.pump();
+      fake.pendingCapsLockRead = Completer<bool>();
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+
+      firstRead.complete(true);
+      await tester.pump();
+
+      expect(reports, isEmpty);
     });
 
     Widget englishFieldWith({required bool forceEnglishInput}) {

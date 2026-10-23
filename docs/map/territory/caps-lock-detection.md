@@ -13,6 +13,9 @@ From reading the source and `flutter_ime` 3.0.0.
 
 - On focus gained: one read through `KeyboardInputMonitor.isCapsLockOn`.
   Afterwards the stream from `ime.onCapsLockChanged()` updates it.
+- **The read is tied to the focus that requested it:** `_focusGeneration` is
+  bumped on each read; a result is dropped unless the field is still focused
+  and no newer focus has begun (#18).
 - **Focus gating is the widget's**, not the monitor's: the monitor forwards
   every event; `_onCapsLockChanged` drops events while unfocused
   (monitor dartdoc says so).
@@ -28,7 +31,7 @@ From reading the source and `flutter_ime` 3.0.0.
 ## Code
 - `lib/src/keyboard_input_monitor.dart — KeyboardInputMonitor` (constructor subscription), `isCapsLockOn`, `dispose`
 - `lib/src/password_text_field.dart — _PasswordTextFieldState._onFocusChange`, `_checkCapsLockState`, `_onCapsLockChanged`, `_applyCapsLockState`
-- Tests: `test/flutter_password_input_test.dart` group `PasswordTextField keyboard integration` — `reports Caps Lock changes…`, `picks up Caps Lock already on…`, `clears the Caps Lock warning and notifies false on blur`, `cancels the Caps Lock subscription on dispose`
+- Tests: `test/flutter_password_input_test.dart` group `PasswordTextField keyboard integration` — `reports Caps Lock changes…`, `picks up Caps Lock already on…`, `clears the Caps Lock warning and notifies false on blur`, `cancels the Caps Lock subscription on dispose`, `discards a Caps Lock read that resolves after blur` / `from an earlier focus` (fake's `pendingCapsLockRead`)
 
 ## Reference behaviour
 - `flutter_ime` 3.0.0 `lib/flutter_ime.dart — onCapsLockChanged`: emits only changes, not the starting state; empty stream on unsupported platforms; on macOS a language switch toggles the lock for ~12 ms and is reported (upstream dartdoc; also CHANGELOG 0.7.0).
@@ -43,4 +46,3 @@ From reading the source and `flutter_ime` 3.0.0.
 
 ## Known holes / open
 - macOS flicker on language switch is upstream behaviour this package does not filter (CHANGELOG 0.7.0: "no state that separates the two, only duration").
-- `_checkCapsLockState` is async: a focus-lost before it resolves can apply a stale `true` after blur (it checks `mounted`, not `_hasFocus`). From reading; untested.

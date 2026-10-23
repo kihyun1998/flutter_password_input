@@ -23,6 +23,10 @@
   and leaving the field always undoes what was enforced. Before, turning it off
   while focused skipped the restore on blur, leaving the Windows IME disabled
   system-wide and the macOS English-forcing watcher running (#18).
+- A Caps Lock reading that arrives after the field lost focus, or from an
+  earlier focus, is discarded. Before, a quick tab through the field could
+  report `onCapsLockStateChanged(true)` after blur with no `false` following
+  (#18).
 
 ## 0.7.0
 

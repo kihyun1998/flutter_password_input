@@ -341,6 +341,10 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   bool _isObscured = true;
   bool _isCapsLockOn = false;
   bool _hasFocus = false;
+
+  /// Bumped on every focus gain; a Caps Lock read applies only within the
+  /// focus that requested it.
+  int _focusGeneration = 0;
   bool _showPasteWarning = false;
   PasswordFieldStatus _activeStatus = PasswordFieldStatus.none;
   Timer? _pasteWarningTimer;
@@ -453,9 +457,10 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   ///
   /// Updates the internal state and notifies listeners if the state has changed.
   Future<void> _checkCapsLockState() async {
+    final generation = ++_focusGeneration;
     final capsLockOn = await _keyboardMonitor.isCapsLockOn();
 
-    if (!mounted) return;
+    if (!mounted || !_hasFocus || generation != _focusGeneration) return;
 
     if (capsLockOn != _isCapsLockOn) {
       _applyCapsLockState(capsLockOn);
