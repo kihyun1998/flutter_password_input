@@ -37,6 +37,12 @@
 - A field disposed while focused (for example on a route pop) restores the
   input it enforced. Before, the Windows IME stayed disabled system-wide.
 
+**Docs**
+
+- `disablePaste` now states that a screen reader's paste action (TalkBack,
+  VoiceOver) is not blocked: Flutter performs it inside `EditableText` with no
+  hook the field can intercept (#20).
+
 ## 0.7.0
 
 **DEPS**

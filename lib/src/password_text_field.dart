@@ -276,6 +276,11 @@ class PasswordTextField extends StatefulWidget {
   /// paste operations will be blocked. The context menu is the
   /// Flutter-rendered one on every platform, including iOS where [TextField]
   /// would otherwise show the native system menu.
+  ///
+  /// The paste action a screen reader offers (TalkBack, VoiceOver) is **not**
+  /// blocked: Flutter performs it inside [EditableText] without a
+  /// [PasteTextIntent] or the context menu, so the field has nothing to
+  /// intercept.
   /// Defaults to false.
   final bool disablePaste;
 

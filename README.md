@@ -134,7 +134,7 @@ A tooltip aims at the **visible** part of its field, so it re-aims whenever a su
 | `showCapsLockWarning` | `bool` | `true` | Show Caps Lock warning |
 | `capsLockWarningText` | `String?` | `'Caps Lock is on'` | Caps Lock warning message |
 | `capsLockWarningAlignment` | `WarningAlignment` | `bottomLeft` | Caps Lock warning position |
-| `disablePaste` | `bool` | `false` | Block paste functionality |
+| `disablePaste` | `bool` | `false` | Block keyboard and context-menu paste (not a screen reader's paste action) |
 | `showPasteWarning` | `bool` | `true` | Show paste blocked warning |
 | `pasteWarningText` | `String?` | `'Paste is disabled'` | Paste warning message |
 | `pasteWarningDuration` | `Duration` | `3 seconds` | Auto-hide duration for paste warning |
