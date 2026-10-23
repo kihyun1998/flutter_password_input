@@ -8,10 +8,8 @@ import 'package:flutter_ime/flutter_ime.dart' as ime;
 /// that uses it never references the plugin directly.
 ///
 /// The monitor owns the Caps Lock and input-source stream subscriptions and
-/// the per-platform branching. It is intentionally stateless about
-/// `forceEnglishInput`: callers pass the current value on each focus change so
-/// a runtime change is reflected on the next focus, matching the field's
-/// original behavior.
+/// the per-platform branching. It tracks whether English input is currently
+/// enforced, so [restoreInput] undoes exactly what [enforceEnglishInput] did.
 ///
 /// Focus gating for Caps Lock is deliberately left to the caller: this monitor
 /// forwards every raw stream event through [onCapsLockChanged], and the caller
@@ -26,18 +24,20 @@ class KeyboardInputMonitor {
 
   StreamSubscription<bool>? _capsLockSubscription;
   StreamSubscription<bool>? _inputSourceSubscription;
+  bool _enforcing = false;
 
   /// Reads the current Caps Lock state.
   Future<bool> isCapsLockOn() => ime.isCapsLockOn();
 
-  /// Enforces English input when the field gains focus.
+  /// Enforces English input. A no-op while already enforcing.
   ///
   /// - **Windows**: disables the IME entirely.
   /// - **macOS**: switches to the English keyboard and watches the input
-  ///   source, re-forcing English if the user switches away while focused.
+  ///   source, re-forcing English if the user switches away.
   /// - **Other platforms**: no-op.
-  void handleFocusGained({required bool forceEnglishInput}) {
-    if (!forceEnglishInput) return;
+  void enforceEnglishInput() {
+    if (_enforcing) return;
+    _enforcing = true;
 
     switch (defaultTargetPlatform) {
       case TargetPlatform.windows:
@@ -47,8 +47,6 @@ class KeyboardInputMonitor {
         ime.setEnglishKeyboard();
         _inputSourceSubscription =
             ime.onInputSourceChanged().listen((isEnglish) {
-          // The subscription only exists while focused, so no focus check is
-          // needed here.
           if (!isEnglish) ime.setEnglishKeyboard();
         });
         break;
@@ -57,13 +55,14 @@ class KeyboardInputMonitor {
     }
   }
 
-  /// Restores normal input when the field loses focus.
+  /// Undoes [enforceEnglishInput]. A no-op while not enforcing.
   ///
   /// - **Windows**: re-enables the IME.
   /// - **macOS**: stops watching the input source.
   /// - **Other platforms**: no-op.
-  void handleFocusLost({required bool forceEnglishInput}) {
-    if (!forceEnglishInput) return;
+  void restoreInput() {
+    if (!_enforcing) return;
+    _enforcing = false;
 
     switch (defaultTargetPlatform) {
       case TargetPlatform.windows:

@@ -16,14 +16,18 @@ From reading the source.
   subscription that re-forces English whenever the user switches away; it is
   cancelled on blur and in `dispose`.
 - **Other platforms:** no-op.
-- The monitor holds no copy of `forceEnglishInput`; the widget passes the
-  current value on each focus change, so a runtime change applies on the next
-  focus (monitor dartdoc).
+- **Enforcement is tracked, restore undoes it.** The monitor keeps whether it
+  is enforcing (`_enforcing`); `enforceEnglishInput` and `restoreInput` are
+  no-ops when already in that state. Focus gained enforces when
+  `forceEnglishInput` is set; focus lost always calls `restoreInput`, so it
+  undoes what was enforced, not what the flag now says.
+- **`forceEnglishInput` is a live switch while focused:** `didUpdateWidget`
+  enforces or restores immediately (#18).
 
 ## Code
-- `lib/src/keyboard_input_monitor.dart — KeyboardInputMonitor.handleFocusGained`, `handleFocusLost`, `dispose`
-- `lib/src/password_text_field.dart — _PasswordTextFieldState._onFocusChange`
-- Tests: `toggles the Windows IME on focus and blur`, `cancels the macOS input-source subscription on blur`
+- `lib/src/keyboard_input_monitor.dart — KeyboardInputMonitor.enforceEnglishInput`, `restoreInput`, `dispose`
+- `lib/src/password_text_field.dart — _PasswordTextFieldState._onFocusChange`, `didUpdateWidget`
+- Tests: `toggles the Windows IME on focus and blur`, `re-forces the English keyboard on macOS…`, `turning forceEnglishInput off/on while focused…` (Windows ×2, macOS)
 
 ## Reference behaviour
 - `flutter_ime` 3.0.0 `lib/flutter_ime.dart — disableIME`, `enableIME`, `setEnglishKeyboard`, `onInputSourceChanged`. 3.0.0 classifies Dvorak/Colemak/British etc. as English on macOS, where 2.x saw only ABC/US (CHANGELOG 0.7.0, upstream).
@@ -36,5 +40,4 @@ From reading the source.
 - [keyboard-integration](keyboard-integration.md) — platform branching is tested only via `debugSetPlatformSupport` + `debugDefaultTargetPlatformOverride`.
 
 ## Known holes / open
-- `forceEnglishInput` flipped from true to false **while focused** skips the restore in `handleFocusLost` (it returns early on the new value), leaving the Windows IME disabled / macOS subscription live until dispose. From reading; untested.
 - Two fields: blur of A restores IME after focus of B disabled it? Order depends on focus listener ordering. Not investigated.

@@ -1079,6 +1079,80 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    Widget englishFieldWith({required bool forceEnglishInput}) {
+      return MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              PasswordTextField(
+                labelText: 'Password',
+                forceEnglishInput: forceEnglishInput,
+              ),
+              const TextField(key: Key('other')),
+            ],
+          ),
+        ),
+      );
+    }
+
+    testWidgets(
+        'turning forceEnglishInput off while focused restores the Windows IME '
+        'once', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+
+      await tester.pumpWidget(englishFieldWith(forceEnglishInput: false));
+      expect(fake.calls, ['disableIME', 'enableIME']);
+
+      await tester.tap(find.byKey(const Key('other')));
+      await tester.pump();
+      expect(fake.calls, ['disableIME', 'enableIME']);
+
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets(
+        'turning forceEnglishInput on while focused disables the Windows IME '
+        'and blur restores it', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      await tester.pumpWidget(englishFieldWith(forceEnglishInput: false));
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+      expect(fake.calls, isEmpty);
+
+      await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
+      expect(fake.calls, ['disableIME']);
+
+      await tester.tap(find.byKey(const Key('other')));
+      await tester.pump();
+      expect(fake.calls, ['disableIME', 'enableIME']);
+
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets(
+        'turning forceEnglishInput off while focused stops forcing English on '
+        'macOS', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      debugSetPlatformSupport(const _ForceSupport(windows: false));
+      await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
+      await tester.tap(find.byType(TextField).first);
+      await tester.pump();
+
+      await tester.pumpWidget(englishFieldWith(forceEnglishInput: false));
+      await tester.tap(find.byKey(const Key('other')));
+      await tester.pump();
+      fake.calls.clear();
+      fake.inputSourceController.add(false);
+      await tester.pump();
+
+      expect(fake.calls, isEmpty);
+
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     testWidgets('cancels the Caps Lock subscription on dispose',
         (tester) async {
       await tester.pumpWidget(

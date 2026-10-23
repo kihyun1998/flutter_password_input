@@ -19,6 +19,10 @@
   tooltip stayed until the status changed. Warning tooltips are always built
   non-interactive; `WarningTooltipTheme.interactive` is kept so existing themes
   compile, and has no effect, as documented (#19).
+- Changing `forceEnglishInput` while the field is focused takes effect at once,
+  and leaving the field always undoes what was enforced. Before, turning it off
+  while focused skipped the restore on blur, leaving the Windows IME disabled
+  system-wide and the macOS English-forcing watcher running (#18).
 
 ## 0.7.0
 

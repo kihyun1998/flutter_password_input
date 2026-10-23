@@ -384,6 +384,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       _focusNode = widget.focusNode ?? FocusNode();
       _focusNode.addListener(_onFocusChange);
     }
+    if (oldWidget.forceEnglishInput != widget.forceEnglishInput && _hasFocus) {
+      if (widget.forceEnglishInput) {
+        _keyboardMonitor.enforceEnglishInput();
+      } else {
+        _keyboardMonitor.restoreInput();
+      }
+    }
     if (oldWidget.enabled != widget.enabled) {
       _resolveActiveWarning();
     }
@@ -419,8 +426,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         // Check Caps Lock state when focus is gained
         _checkCapsLockState();
         // Handle English input enforcement
-        _keyboardMonitor.handleFocusGained(
-            forceEnglishInput: widget.forceEnglishInput);
+        if (widget.forceEnglishInput) _keyboardMonitor.enforceEnglishInput();
         widget.onFocus?.call();
       } else {
         // Hide Caps Lock warning when focus is lost
@@ -437,8 +443,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           _resolveActiveWarning();
         });
         // Restore IME on focus lost
-        _keyboardMonitor.handleFocusLost(
-            forceEnglishInput: widget.forceEnglishInput);
+        _keyboardMonitor.restoreInput();
         widget.onLostFocus?.call();
       }
     }
