@@ -16,7 +16,7 @@ import 'package:just_tooltip/just_tooltip.dart';
 /// A test double for the flutter_ime platform channel. Replacing
 /// [FlutterImePlatform.instance] with this lets us drive Caps Lock / input
 /// source streams and observe IME-enforcement calls without touching real
-/// platform code — the genuine external boundary of the keyboard integration.
+/// platform code.
 class _FakeImePlatform extends FlutterImePlatform {
   final StreamController<bool> capsController =
       StreamController<bool>.broadcast();
@@ -193,7 +193,7 @@ void main() {
         ),
       );
 
-      // Use .first because IconButton internally creates additional SizedBoxes
+      // .first is deliberate (docs/map/territory/field-theme.md).
       final sizedBox = tester.widget<SizedBox>(
         find
             .descendant(
@@ -571,7 +571,6 @@ void main() {
 
     testWidgets('uses custom capsLockWarningText', (tester) async {
       // Verifies the widget accepts a custom caps lock warning text without error.
-      // Actual display requires caps lock to be active (platform-dependent).
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -1046,8 +1045,8 @@ void main() {
       expect(fake.calls, contains('enableIME'),
           reason: 'losing focus on Windows must re-enable the IME');
 
-      // Reset before the test body ends; flutter_test asserts foundation debug
-      // vars are unset at that point (before tearDown runs).
+      // Reset inside the body, not in tearDown
+      // (docs/map/territory/keyboard-integration.md).
       debugDefaultTargetPlatformOverride = null;
     });
 

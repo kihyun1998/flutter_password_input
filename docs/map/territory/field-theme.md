@@ -22,6 +22,8 @@ From reading the source.
 - Test design: a no-argument `copyWith()` that must equal the original covers
   every `?? this.x` right operand at once (lessons.md, 2026-07-13) — but with no
   `==`, that equality has to be field-by-field.
+- `applies theme styles` finds the field's `SizedBox` with `.first`, because
+  `IconButton` internally creates additional `SizedBox`es.
 
 ## Code
 - `lib/src/password_text_field_theme.dart — PasswordTextFieldTheme` (fields, `defaults`, `merge`, `copyWith`)

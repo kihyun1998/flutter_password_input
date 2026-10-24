@@ -10,7 +10,8 @@ upgrade PRs.
 ## Design model
 From `.github/workflows/ci.yml` and `.github/dependabot.yml`.
 
-- Flutter pinned (`FLUTTER_VERSION`); steps: `flutter pub get` → `dart format
+- Flutter pinned (`FLUTTER_VERSION`) so CI does not drift with the runner's
+  default Flutter; steps: `flutter pub get` → `dart format
   --set-exit-if-changed .` → `flutter analyze` → `flutter test`.
 - **Format runs after `pub get`** because `dart format` reads the language
   version from `package_config`; without it the whole repo reformats. This never

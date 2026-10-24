@@ -130,7 +130,8 @@ class PasswordTextField extends StatefulWidget {
 
   /// Controls the text being edited.
   ///
-  /// If null, this widget will create its own [TextEditingController].
+  /// If null, the underlying [TextField] creates its own
+  /// [TextEditingController].
   final TextEditingController? controller;
 
   /// Defines the keyboard focus for this widget.
@@ -278,9 +279,8 @@ class PasswordTextField extends StatefulWidget {
   /// would otherwise show the native system menu.
   ///
   /// The paste action a screen reader offers (TalkBack, VoiceOver) is **not**
-  /// blocked: Flutter performs it inside [EditableText] without a
-  /// [PasteTextIntent] or the context menu, so the field has nothing to
-  /// intercept.
+  /// blocked.
+  ///
   /// Defaults to false.
   final bool disablePaste;
 
@@ -313,7 +313,7 @@ class PasswordTextField extends StatefulWidget {
   /// Controls how warnings are displayed.
   ///
   /// When [WarningDisplayMode.message], warnings appear as text above/below
-  /// the text field (original behavior).
+  /// the text field.
   /// When [WarningDisplayMode.tooltip], warnings appear in a tooltip
   /// anchored to the text field, and inline messages are hidden.
   /// Each warning uses its own alignment ([capsLockWarningAlignment],
@@ -372,7 +372,6 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
 
     _resolveActiveWarning();
 
-    // Isolate all Caps Lock / IME interaction behind the keyboard monitor.
     _keyboardMonitor =
         KeyboardInputMonitor(onCapsLockChanged: _onCapsLockChanged);
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
@@ -434,26 +433,21 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       });
 
       if (hasFocus) {
-        // Check Caps Lock state when focus is gained
         _checkCapsLockState();
-        // Handle English input enforcement
         if (widget.forceEnglishInput) _keyboardMonitor.enforceEnglishInput();
         widget.onFocus?.call();
       } else {
-        // Hide Caps Lock warning when focus is lost
         if (_isCapsLockOn) {
           setState(() {
             _isCapsLockOn = false;
           });
           widget.onCapsLockStateChanged?.call(false);
         }
-        // Hide paste warning when focus is lost
         _pasteWarningTimer?.cancel();
         setState(() {
           _showPasteWarning = false;
           _resolveActiveWarning();
         });
-        // Restore IME on focus lost
         _keyboardMonitor.restoreInput();
         widget.onLostFocus?.call();
       }
@@ -522,8 +516,6 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     _pasteWarningTimer?.cancel();
     if (_showPasteWarning &&
         widget.warningDisplayMode == WarningDisplayMode.tooltip) {
-      // A paste warning is already showing: bump the generation so
-      // WarningTooltipLayout replays the tooltip animation.
       _pasteTooltipKey++;
     }
     setState(() {
@@ -552,11 +544,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   /// internal focus/caps-lock/paste state).
   ///
   /// This is the single source of truth for [_activeStatus] — it is the only
-  /// method that assigns it. Event handlers update their own primitive state
-  /// (e.g. `_showPasteWarning = true`) and then call this, rather than setting
-  /// a status directly, so the priority order below can never be bypassed.
-  ///
-  /// Priority: disabled > customError > capsLock > pasteBlocked > checked/unchecked > none.
+  /// method that assigns it (docs/map/territory/field-status.md).
   void _resolveActiveWarning() {
     if (widget.enabled == false) {
       _activeStatus = PasswordFieldStatus.disabled;

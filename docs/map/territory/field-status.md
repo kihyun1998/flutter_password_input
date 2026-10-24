@@ -17,7 +17,8 @@ From reading the source; no record states it.
 
 - `_resolveActiveWarning` is the **only** assignment to `_activeStatus`. Event
   handlers set their own primitive (`_isCapsLockOn`, `_showPasteWarning`) and
-  call it; its dartdoc says so (`password_text_field.dart — _resolveActiveWarning`).
+  call it, rather than setting a status directly, so the priority order can never
+  be bypassed (`password_text_field.dart — _resolveActiveWarning`).
 - Priority, first match wins: `disabled > customError > capsLock > pasteBlocked >
   checked > unchecked > none`. `capsLock` additionally needs `_hasFocus` and
   `showCapsLockWarning`.

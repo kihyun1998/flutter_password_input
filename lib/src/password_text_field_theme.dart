@@ -4,8 +4,8 @@ import 'package:just_tooltip/just_tooltip.dart'
 
 /// A theme class that defines the visual styling for warning tooltips.
 ///
-/// Used when [WarningDisplayMode.tooltip] is active. All properties
-/// map directly to [JustTooltip] widget parameters.
+/// Used when [WarningDisplayMode.tooltip] is active. Properties map to
+/// [JustTooltip] widget parameters, except [interactive], which has no effect.
 ///
 /// Example usage:
 /// ```dart
@@ -85,7 +85,8 @@ class WarningTooltipTheme {
   /// The default text style for tooltip content.
   ///
   /// If null, individual warning styles
-  /// ([capsLockWarningStyle], [pasteWarningStyle]) are used instead.
+  /// ([PasswordTextFieldTheme.capsLockWarningStyle],
+  /// [PasswordTextFieldTheme.pasteWarningStyle]) are used instead.
   final TextStyle? textStyle;
 
   /// Which side the tooltip appears on.
@@ -146,16 +147,13 @@ class WarningTooltipTheme {
 
   /// Whether the tooltip content is interactive.
   ///
-  /// **Has no effect.** Warning tooltips are display-only and always built
-  /// non-interactive, so a pointer resting on one never suspends its
-  /// [showDuration] auto-hide.
+  /// **Has no effect.** Warning tooltips are always built non-interactive.
   /// If null, defaults to true.
   final bool? interactive;
 
   /// The delay before the tooltip appears.
   ///
-  /// **Has no effect.** `just_tooltip` applies this only when hover opens the
-  /// tooltip; a controller-driven show — the only kind here — is immediate.
+  /// **Has no effect.**
   final Duration? waitDuration;
 
   /// The duration after which the tooltip auto-hides.
@@ -194,9 +192,6 @@ class WarningTooltipTheme {
   final double? rotationBegin;
 
   /// The default theme values used when properties are not specified.
-  ///
-  /// Fields without defaults (boxShadow, borderColor, textStyle, direction,
-  /// alignment, waitDuration, showDuration, animationCurve) remain null.
   static const WarningTooltipTheme defaults = WarningTooltipTheme(
     backgroundColor: Color(0xFF616161),
     borderRadius: BorderRadius.all(Radius.circular(6)),
@@ -455,7 +450,7 @@ class PasswordTextFieldTheme {
 
   /// The text style for the floating label when focused.
   ///
-  /// If null, uses [focusBorderColor] or [errorBorderColor] based on state.
+  /// If null, uses the border color of the current field status.
   final TextStyle? floatingLabelStyle;
 
   /// The text style for the Caps Lock warning message.
@@ -465,7 +460,7 @@ class PasswordTextFieldTheme {
 
   /// The text style for the paste warning message.
   ///
-  /// If null, uses [errorBorderColor] with font size 12.
+  /// If null, uses [pasteWarningBorderColor] with font size 12.
   final TextStyle? pasteWarningStyle;
 
   /// The color of the visibility toggle icon.
@@ -485,14 +480,6 @@ class PasswordTextFieldTheme {
   final WarningTooltipTheme? tooltipTheme;
 
   /// The default theme values used when properties are not specified.
-  ///
-  /// Contains the following defaults:
-  /// - width: 250
-  /// - height: 48
-  /// - borderWidth: 1
-  /// - borderRadius: 8
-  /// - contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14)
-  /// - visibilityIconSize: 20
   static const PasswordTextFieldTheme defaults = PasswordTextFieldTheme(
     width: 250,
     height: 48,

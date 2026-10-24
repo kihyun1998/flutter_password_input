@@ -24,7 +24,9 @@ Tests drive both concepts by replacing `FlutterImePlatform.instance` with
 `_FakeImePlatform`, forcing platform policy through `debugSetPlatformSupport`
 with a `_ForceSupport` subclass of `PlatformSupport`, and setting
 `debugDefaultTargetPlatformOverride` for the Windows/macOS branches
-(`test/flutter_password_input_test.dart`). `PlatformSupport` is imported from
+(`test/flutter_password_input_test.dart`). The override is reset before the test
+body ends: flutter_test asserts foundation debug vars are unset at that point,
+before `tearDown` runs. `PlatformSupport` is imported from
 `package:flutter_ime/src/platform_support.dart` under
 `// ignore: implementation_imports` — a private path a `flutter_ime` release may
 move without a major bump. CHANGELOG 0.7.0 says these tests passed unchanged

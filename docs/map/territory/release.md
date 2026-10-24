@@ -12,13 +12,14 @@ releases.
 - **Archive contents:** a present `.pubignore` disables pub's git-based listing,
   so `.gitignore` stops applying. `coverage/lcov.info` shipped for that reason
   until 305e7d3; any directory CI or a local run creates must be listed in
-  `.pubignore` itself (`.pubignore` comments say so).
+  `.pubignore` itself. `build/` is listed because `.gitignore` excludes only the
+  root `/build/`, not `example/build/`.
 - **Floors:** Dart `>=3.4.0` because `flutter_ime` 3.0.0 needs
-  `NativeCallable.keepIsolateAlive` (a27fa38); Flutter `>=3.13.0` because
+  `NativeCallable.keepIsolateAlive` on macOS (a27fa38); Flutter `>=3.13.0` because
   `just_tooltip` 0.4.2+ walks `RenderObject.parent` and calls
   `describeApproximatePaintClip` (0.4.4 `just_tooltip.dart`), which `AbstractNode?`
-  lacked before 3.13 (8375aa0). The reasons live in `pubspec.yaml` comments and
-  README "Requirements". Raising a floor is breaking for consumers.
+  lacked before 3.13 (8375aa0). README "Requirements" gives the same reasons to
+  consumers. Raising a floor is breaking for consumers.
 - **Dependency upgrades:** read the new version's real source, not its
   CHANGELOG — `just_tooltip` 0.3.0 and 0.4.0 were consecutive breaking
   migrations (e143183, 74637ef). See [`docs/agents/thegraph.md`](../../agents/thegraph.md) References.

@@ -11,15 +11,10 @@ import 'package:just_tooltip/just_tooltip.dart' as jt;
 /// wraps the field — and drives both from controllers, with hover and tap
 /// disabled.
 ///
-/// `just_tooltip` 0.4.0 lets a nested tooltip suppress its ancestors, but only
-/// a tooltip with `enableHover` claims its ancestors, and only a claimed
-/// ancestor is suppressed. Both tooltips here disable hover, so the inner one
-/// never claims and the suppression path is unreachable — a programmatic
-/// `controller.show()` on the outer one always wins.
-///
-/// The tests below therefore guard the two facts that keep it unreachable —
-/// the nesting order and `enableHover: false` — alongside which tooltip each
-/// status shows. Asserting only the latter would still pass if the inner
+/// The tests below guard the two facts that keep `just_tooltip`'s nested
+/// suppression unreachable — the nesting order and `enableHover: false`, see
+/// docs/map/territory/warning-tooltip-mode.md — alongside which tooltip
+/// each status shows. Asserting only the latter would still pass if the inner
 /// tooltip started claiming.
 void main() {
   const capsLock = 'CAPS LOCK ON';
@@ -146,9 +141,8 @@ void main() {
     });
   });
 
-  /// `just_tooltip` 0.4.2 anchors a tooltip to the *visible* part of its child
-  /// and re-aims it whenever the child moves. Both warnings are shown through a
-  /// controller with hover disabled, so they inherit that tracking wholesale.
+  /// Both warnings follow `just_tooltip`'s visible-part anchoring and re-aiming
+  /// (docs/map/territory/warning-tooltip-mode.md).
   group('WarningTooltipLayout tracks a scrolling field', () {
     Widget scrollableLayout(ScrollController scroll) {
       return MaterialApp(

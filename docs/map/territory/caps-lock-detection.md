@@ -18,7 +18,7 @@ From reading the source and `flutter_ime` 3.0.0.
   and no newer focus has begun (#18).
 - **Focus gating is the widget's**, not the monitor's: the monitor forwards
   every event; `_onCapsLockChanged` drops events while unfocused
-  (monitor dartdoc says so).
+  (the monitor's dartdoc points here).
 - On focus lost: `_isCapsLockOn` is forced false and `onCapsLockStateChanged(false)`
   fires, so the callback reads "warning shown", not "key state".
 - The stream subscription is opened in the monitor's constructor — i.e. at

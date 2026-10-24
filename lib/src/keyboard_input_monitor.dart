@@ -4,16 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_ime/flutter_ime.dart' as ime;
 
 /// Isolates all `flutter_ime` interaction — Caps Lock detection and
-/// English-input (IME) enforcement — behind a narrow interface, so the widget
-/// that uses it never references the plugin directly.
+/// English-input (IME) enforcement — behind a narrow interface.
 ///
 /// The monitor owns the Caps Lock and input-source stream subscriptions and
 /// the per-platform branching. It tracks whether English input is currently
 /// enforced, so [restoreInput] undoes exactly what [enforceEnglishInput] did.
 ///
-/// Focus gating for Caps Lock is deliberately left to the caller: this monitor
-/// forwards every raw stream event through [onCapsLockChanged], and the caller
-/// decides whether to act on it (e.g. only while focused).
+/// Forwards every raw Caps Lock event through [onCapsLockChanged]; focus gating
+/// is deliberately the caller's (docs/map/territory/caps-lock-detection.md).
 class KeyboardInputMonitor {
   KeyboardInputMonitor({required ValueChanged<bool> onCapsLockChanged})
       : _onCapsLockChanged = onCapsLockChanged {

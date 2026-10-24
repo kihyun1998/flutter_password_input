@@ -19,9 +19,8 @@ class WarningMessage {
 /// positioned above or below it, according to each warning's
 /// [WarningAlignment].
 ///
-/// This is the `WarningDisplayMode.message` presentation, extracted so the
-/// field widget only decides *which* warnings are active and delegates *how*
-/// they are rendered here.
+/// This is the `WarningDisplayMode.message` presentation; the field widget
+/// decides *which* warnings are active.
 class WarningMessageLayout extends StatelessWidget {
   const WarningMessageLayout({
     super.key,
