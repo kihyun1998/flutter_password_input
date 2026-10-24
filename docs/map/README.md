@@ -1,5 +1,5 @@
 <!-- grill-map build stamp: (not a git checkout) -->
-<!-- grill-map synced at: ef67dc5 (2026-10-23) -->
+<!-- grill-map synced at: 537caa2 (2026-10-24) -->
 
 # Territory map — flutter_password_input
 
@@ -71,6 +71,7 @@ rules ([field-status](territory/field-status.md)).
 
 In: everything under `lib/`, `test/`, `example/`, `.github/`, and the release
 files at the root. Out: `docs/agents/` (agent configuration, not the system);
-`example/` platform runners (generated). No open backlog at ef67dc5 and no
-roadmap, so no not-yet-built territory exists. A territory appears when
+`example/` platform runners (generated). The open backlog is #20, a hole in
+[paste-blocking](territory/paste-blocking.md); there is no roadmap, so no
+not-yet-built territory exists. A territory appears when
 something in the repo commits to it — code, an issue with a design, a decision record.

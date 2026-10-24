@@ -13,13 +13,15 @@
 - `example/pubspec.lock` is committed and pins the transitive `just_tooltip` /
   `flutter_ime` (0.4.4 / 3.0.0 at a27fa38); the package root's `pubspec.lock` is
   git-ignored (`.gitignore`). A dependency bump should leave both resolving the
-  same version (theflow.md Step 6, maintainer, 2026-07-13).
+  same version (theflow.md Step 6, maintainer, 2026-07-13). The lockfile also
+  carries SDK-pinned packages (`meta`, `test_api`, `vector_math`, `matcher`) that
+  change with the Flutter version, so it follows [ci](ci.md)'s pin (1348584).
 - Not built or run by CI: `ci.yml` runs from the root only. `dart format .`
   there does walk `example/`.
 
 ## Code
 - `example/lib/main.dart`
-- `example/pubspec.yaml`, `example/pubspec.lock`
+- `example/pubspec.yaml`, `example/pubspec.lock`, `example/analysis_options.yaml`
 
 ## Reference behaviour
 **None.**
