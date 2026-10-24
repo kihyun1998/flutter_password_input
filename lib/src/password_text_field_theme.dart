@@ -439,7 +439,8 @@ class PasswordTextFieldTheme {
 
   /// The text style for the input text when the field is disabled.
   ///
-  /// If null, falls back to [textStyle] with the theme's disabled color.
+  /// If null, uses [textStyle] (or the theme's `bodyMedium`) in
+  /// [ThemeData.disabledColor].
   final TextStyle? disabledTextStyle;
 
   /// The text style for the label text.

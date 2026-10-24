@@ -168,7 +168,7 @@ A tooltip aims at the **visible** part of its field, so it re-aims whenever a su
 | `uncheckedBorderColor` | `Color?` | `null` | Border color when `isChecked` is `false` (falls back to `errorBorderColor`) |
 | `disabledBorderColor` | `Color?` | `null` | Border color (disabled, falls back to `borderColor` with 50% opacity) |
 | `textStyle` | `TextStyle?` | `null` | Input text style |
-| `disabledTextStyle` | `TextStyle?` | `null` | Text style when disabled (falls back to `textStyle`) |
+| `disabledTextStyle` | `TextStyle?` | `null` | Text style when disabled (falls back to `textStyle` in the theme's disabled color) |
 | `labelStyle` | `TextStyle?` | `null` | Label text style |
 | `hintStyle` | `TextStyle?` | `null` | Hint text style |
 | `floatingLabelStyle` | `TextStyle?` | `null` | Floating label style |

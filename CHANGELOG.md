@@ -36,6 +36,10 @@
   reported `false`, IME restored (#18).
 - A field disposed while focused (for example on a route pop) restores the
   input it enforced. Before, the Windows IME stayed disabled system-wide.
+- A disabled field's text is drawn in the theme's disabled colour when
+  `disabledTextStyle` is not set, as documented. Before, the text kept its
+  `textStyle` (or `bodyMedium`) colour and looked the same as an enabled field.
+  Set `disabledTextStyle` to choose another look.
 
 **Docs**
 

@@ -678,8 +678,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         inputFormatters: widget.inputFormatters,
         style: widget.enabled == false
             ? (theme.disabledTextStyle ??
-                theme.textStyle ??
-                appTheme.textTheme.bodyMedium)
+                (theme.textStyle ?? appTheme.textTheme.bodyMedium)
+                    ?.copyWith(color: appTheme.disabledColor))
             : (theme.textStyle ?? appTheme.textTheme.bodyMedium),
         onChanged: (value) {
           _hidePasteWarning();

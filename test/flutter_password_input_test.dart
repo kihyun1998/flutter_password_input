@@ -207,6 +207,55 @@ void main() {
       expect(sizedBox.height, 60);
     });
 
+    group('disabled text style', () {
+      final appTheme = ThemeData();
+
+      Future<TextStyle> disabledStyle(
+          WidgetTester tester, PasswordTextFieldTheme theme) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: appTheme,
+            home: Scaffold(
+              body: PasswordTextField(enabled: false, theme: theme),
+            ),
+          ),
+        );
+        return tester.widget<EditableText>(find.byType(EditableText)).style;
+      }
+
+      testWidgets('uses the theme disabled color by default', (tester) async {
+        final style =
+            await disabledStyle(tester, const PasswordTextFieldTheme());
+
+        expect(style.color, appTheme.disabledColor);
+      });
+
+      testWidgets('applies the theme disabled color over textStyle',
+          (tester) async {
+        final style = await disabledStyle(
+          tester,
+          const PasswordTextFieldTheme(
+            textStyle: TextStyle(color: Colors.red, fontSize: 20),
+          ),
+        );
+
+        expect(style.color, appTheme.disabledColor);
+        expect(style.fontSize, 20);
+      });
+
+      testWidgets('uses disabledTextStyle as given', (tester) async {
+        final style = await disabledStyle(
+          tester,
+          const PasswordTextFieldTheme(
+            textStyle: TextStyle(color: Colors.red),
+            disabledTextStyle: TextStyle(color: Colors.blue),
+          ),
+        );
+
+        expect(style.color, Colors.blue);
+      });
+    });
+
     testWidgets('calls onLostFocus when focus is lost', (tester) async {
       bool lostFocusCalled = false;
 

@@ -27,13 +27,18 @@ From reading the source.
 - **Visibility toggle** is wrapped in `ExcludeFocus` so tapping it does not steal
   focus (which would clear caps-lock and paste state, see
   [caps-lock-detection](caps-lock-detection.md)); it is inert when `enabled == false`.
+- **Disabled text** is `disabledTextStyle`, else `textStyle ?? bodyMedium` recoloured
+  to `ThemeData.disabledColor`. The recolour is needed because `TextField` merges
+  `style` over its own disabled-state style, so any colour in the style passed
+  wins over Material's dimming (measured on 3.47.1: `bodyMedium` kept full
+  `onSurface`; a colourless style got `onSurface` at 0.38).
 - Suffix composition: builder widget first, then the toggle, in a `Row`.
 - `autofocus` is also re-requested in a post-frame callback in `initState`.
 
 ## Code
 - `lib/src/password_text_field.dart — PasswordTextField` (constructor, fields)
 - `lib/src/password_text_field.dart — _PasswordTextFieldState.initState`, `didUpdateWidget`, `dispose`, `_toggleObscure`, `_buildSuffixIcon`, `_buildTextField`, `_buildOutlineBorder`
-- Tests: `test/flutter_password_input_test.dart` group `PasswordTextField` (render, toggle, callbacks, builders); `rewires focus when the external focusNode is replaced`, group `focusNode ownership` (disposal observed via `FlutterMemoryAllocations`), `autofocus requests focus after the first frame`
+- Tests: `test/flutter_password_input_test.dart` group `PasswordTextField` (render, toggle, callbacks, builders); `rewires focus when the external focusNode is replaced`, group `focusNode ownership` (disposal observed via `FlutterMemoryAllocations`), `autofocus requests focus after the first frame`, group `disabled text style`
 
 ## Reference behaviour
 **None.**
