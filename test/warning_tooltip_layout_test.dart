@@ -44,31 +44,34 @@ void main() {
   }
 
   Finder tooltipWith(String message) => find.byWidgetPredicate(
-        (w) => w is jt.JustTooltip && w.message == message,
-      );
+    (w) => w is jt.JustTooltip && w.message == message,
+  );
 
   group('WarningTooltipLayout', () {
     testWidgets('the caps-lock status shows the outer tooltip', (tester) async {
       await tester.pumpWidget(layoutWith(PasswordFieldStatus.capsLock));
       await tester.pumpAndSettle();
 
-      expect(find.text(capsLock), findsOneWidget,
-          reason: 'the outer tooltip of the nested pair is controller-driven '
-              'and must not be suppressed by the inner one');
+      expect(
+        find.text(capsLock),
+        findsOneWidget,
+        reason:
+            'the outer tooltip of the nested pair is controller-driven '
+            'and must not be suppressed by the inner one',
+      );
       expect(find.text(paste), findsNothing);
     });
 
-    testWidgets('the caps-lock tooltip encloses the paste tooltip',
-        (tester) async {
+    testWidgets('the caps-lock tooltip encloses the paste tooltip', (
+      tester,
+    ) async {
       await tester.pumpWidget(layoutWith(PasswordFieldStatus.none));
 
       expect(
-        find.ancestor(
-          of: tooltipWith(paste),
-          matching: tooltipWith(capsLock),
-        ),
+        find.ancestor(of: tooltipWith(paste), matching: tooltipWith(capsLock)),
         findsOneWidget,
-        reason: 'suppression runs inner-to-outer, so which tooltip is the '
+        reason:
+            'suppression runs inner-to-outer, so which tooltip is the '
             'ancestor decides which one could be suppressed',
       );
     });
@@ -78,11 +81,18 @@ void main() {
 
       for (final message in [capsLock, paste]) {
         final tooltip = tester.widget<jt.JustTooltip>(tooltipWith(message));
-        expect(tooltip.enableHover, isFalse,
-            reason: 'a tooltip with hover claims its ancestors, which is the '
-                'only way the caps-lock tooltip could ever be suppressed');
-        expect(tooltip.tap ?? jt.TooltipTap.none, jt.TooltipTap.none,
-            reason: 'a null tap with enableTap left unset is no tap trigger');
+        expect(
+          tooltip.enableHover,
+          isFalse,
+          reason:
+              'a tooltip with hover claims its ancestors, which is the '
+              'only way the caps-lock tooltip could ever be suppressed',
+        );
+        expect(
+          tooltip.tap ?? jt.TooltipTap.none,
+          jt.TooltipTap.none,
+          reason: 'a null tap with enableTap left unset is no tap trigger',
+        );
       }
 
       final pointer = await tester.createGesture(kind: PointerDeviceKind.mouse);
@@ -95,8 +105,9 @@ void main() {
       expect(find.text(paste), findsNothing);
     });
 
-    testWidgets('a warning not on screen is not on the semantics tree',
-        (tester) async {
+    testWidgets('a warning not on screen is not on the semantics tree', (
+      tester,
+    ) async {
       final semantics = tester.ensureSemantics();
 
       final shownBy = {
@@ -109,27 +120,34 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(
-          find.semantics.byPredicate((node) =>
-              node.tooltip.contains(capsLock) || node.tooltip.contains(paste)),
+          find.semantics.byPredicate(
+            (node) =>
+                node.tooltip.contains(capsLock) || node.tooltip.contains(paste),
+          ),
           findsNothing,
-          reason: 'just_tooltip puts a tooltip\'s text on its child; the '
+          reason:
+              'just_tooltip puts a tooltip\'s text on its child; the '
               'field would be read as a warning while the status is '
               '${status.name}',
         );
         for (final message in [capsLock, paste]) {
           if (message == shown) continue;
-          expect(find.bySemanticsLabel(RegExp(RegExp.escape(message))),
-              findsNothing,
-              reason: '"$message" is not on screen while the status is '
-                  '${status.name}');
+          expect(
+            find.bySemanticsLabel(RegExp(RegExp.escape(message))),
+            findsNothing,
+            reason:
+                '"$message" is not on screen while the status is '
+                '${status.name}',
+          );
         }
       }
 
       semantics.dispose();
     });
 
-    testWidgets('bumping pasteGeneration replays the paste tooltip',
-        (tester) async {
+    testWidgets('bumping pasteGeneration replays the paste tooltip', (
+      tester,
+    ) async {
       await tester.pumpWidget(layoutWith(PasswordFieldStatus.pasteBlocked));
       await tester.pumpAndSettle();
       expect(find.text(paste), findsOneWidget);
@@ -139,13 +157,18 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text(paste), findsOneWidget,
-          reason: 'a repeated paste swaps in a fresh controller to replay the '
-              'animation; the tooltip must end up shown again, not lost');
+      expect(
+        find.text(paste),
+        findsOneWidget,
+        reason:
+            'a repeated paste swaps in a fresh controller to replay the '
+            'animation; the tooltip must end up shown again, not lost',
+      );
     });
 
-    testWidgets('the paste-blocked status shows the inner tooltip',
-        (tester) async {
+    testWidgets('the paste-blocked status shows the inner tooltip', (
+      tester,
+    ) async {
       await tester.pumpWidget(layoutWith(PasswordFieldStatus.pasteBlocked));
       await tester.pumpAndSettle();
 
@@ -161,8 +184,9 @@ void main() {
       expect(find.text(paste), findsNothing);
     });
 
-    testWidgets('switching status swaps which tooltip is shown',
-        (tester) async {
+    testWidgets('switching status swaps which tooltip is shown', (
+      tester,
+    ) async {
       await tester.pumpWidget(layoutWith(PasswordFieldStatus.pasteBlocked));
       await tester.pumpAndSettle();
       expect(find.text(paste), findsOneWidget);
@@ -170,8 +194,11 @@ void main() {
       await tester.pumpWidget(layoutWith(PasswordFieldStatus.capsLock));
       await tester.pumpAndSettle();
       expect(find.text(capsLock), findsOneWidget);
-      expect(find.text(paste), findsNothing,
-          reason: 'exactly one warning is ever active');
+      expect(
+        find.text(paste),
+        findsNothing,
+        reason: 'exactly one warning is ever active',
+      );
     });
   });
 
@@ -203,7 +230,10 @@ void main() {
                     pasteAlignment: WarningAlignment.bottomLeft,
                     pasteGeneration: 0,
                     child: const SizedBox(
-                        key: Key('field'), width: 200, height: 40),
+                      key: Key('field'),
+                      width: 200,
+                      height: 40,
+                    ),
                   ),
                   const SizedBox(width: 600),
                 ],
@@ -228,14 +258,21 @@ void main() {
       scroll.jumpTo(60);
       await tester.pumpAndSettle();
 
-      expect(find.text(capsLock), findsOneWidget,
-          reason: 'part of the field still shows');
-      expect(warningCentre(tester), isNot(before),
-          reason: 'it must not stay where the field used to be');
+      expect(
+        find.text(capsLock),
+        findsOneWidget,
+        reason: 'part of the field still shows',
+      );
+      expect(
+        warningCentre(tester),
+        isNot(before),
+        reason: 'it must not stay where the field used to be',
+      );
     });
 
-    testWidgets('the warning hides once the field is scrolled out of sight',
-        (tester) async {
+    testWidgets('the warning hides once the field is scrolled out of sight', (
+      tester,
+    ) async {
       final scroll = ScrollController();
       addTearDown(scroll.dispose);
 
@@ -248,8 +285,11 @@ void main() {
       scroll.jumpTo(330);
       await tester.pumpAndSettle();
 
-      expect(find.text(capsLock), findsNothing,
-          reason: 'no visible target, no warning');
+      expect(
+        find.text(capsLock),
+        findsNothing,
+        reason: 'no visible target, no warning',
+      );
     });
   });
 }

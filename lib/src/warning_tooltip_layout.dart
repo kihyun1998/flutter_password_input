@@ -96,20 +96,17 @@ class _WarningTooltipLayoutState extends State<WarningTooltipLayout> {
   }
 
   ({jt.TooltipDirection direction, jt.TooltipAlignment alignment})
-      _mapAlignment(WarningAlignment warningAlignment) {
+  _mapAlignment(WarningAlignment warningAlignment) {
     final direction = WarningMessageLayout.isTopAlignment(warningAlignment)
         ? jt.TooltipDirection.top
         : jt.TooltipDirection.bottom;
     final alignment = switch (warningAlignment) {
       WarningAlignment.topLeft ||
-      WarningAlignment.bottomLeft =>
-        jt.TooltipAlignment.start,
+      WarningAlignment.bottomLeft => jt.TooltipAlignment.start,
       WarningAlignment.topCenter ||
-      WarningAlignment.bottomCenter =>
-        jt.TooltipAlignment.center,
+      WarningAlignment.bottomCenter => jt.TooltipAlignment.center,
       WarningAlignment.topRight ||
-      WarningAlignment.bottomRight =>
-        jt.TooltipAlignment.end,
+      WarningAlignment.bottomRight => jt.TooltipAlignment.end,
       WarningAlignment.topStartTargetCenter ||
       WarningAlignment.bottomStartTargetCenter =>
         jt.TooltipAlignment.startTargetCenter,
@@ -176,10 +173,14 @@ class _WarningTooltipLayoutState extends State<WarningTooltipLayout> {
 
   @override
   Widget build(BuildContext context) {
-    _updateVisibility(_capsLockController,
-        widget.activeStatus == PasswordFieldStatus.capsLock);
-    _updateVisibility(_pasteController,
-        widget.activeStatus == PasswordFieldStatus.pasteBlocked);
+    _updateVisibility(
+      _capsLockController,
+      widget.activeStatus == PasswordFieldStatus.capsLock,
+    );
+    _updateVisibility(
+      _pasteController,
+      widget.activeStatus == PasswordFieldStatus.pasteBlocked,
+    );
 
     final tt = widget.tooltipTheme;
     final capsLockMapping = _mapAlignment(widget.capsLockAlignment);
@@ -206,10 +207,6 @@ class _WarningTooltipLayoutState extends State<WarningTooltipLayout> {
       child: child,
     );
 
-    return Container(
-      margin: widget.margin,
-      width: widget.width,
-      child: child,
-    );
+    return Container(margin: widget.margin, width: widget.width, child: child);
   }
 }
