@@ -70,11 +70,7 @@ void main() {
     testWidgets('renders correctly', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: PasswordTextField(
-              labelText: 'Password',
-            ),
-          ),
+          home: Scaffold(body: PasswordTextField(labelText: 'Password')),
         ),
       );
 
@@ -85,11 +81,7 @@ void main() {
     testWidgets('shows hint text', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: PasswordTextField(
-              hintText: 'Enter password',
-            ),
-          ),
+          home: Scaffold(body: PasswordTextField(hintText: 'Enter password')),
         ),
       );
 
@@ -99,11 +91,7 @@ void main() {
     testWidgets('toggles password visibility', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: PasswordTextField(
-              labelText: 'Password',
-            ),
-          ),
+          home: Scaffold(body: PasswordTextField(labelText: 'Password')),
         ),
       );
 
@@ -185,10 +173,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: PasswordTextField(
-              labelText: 'Password',
-              theme: theme,
-            ),
+            body: PasswordTextField(labelText: 'Password', theme: theme),
           ),
         ),
       );
@@ -211,7 +196,9 @@ void main() {
       final appTheme = ThemeData();
 
       Future<TextStyle> disabledStyle(
-          WidgetTester tester, PasswordTextFieldTheme theme) async {
+        WidgetTester tester,
+        PasswordTextFieldTheme theme,
+      ) async {
         await tester.pumpWidget(
           MaterialApp(
             theme: appTheme,
@@ -224,14 +211,17 @@ void main() {
       }
 
       testWidgets('uses the theme disabled color by default', (tester) async {
-        final style =
-            await disabledStyle(tester, const PasswordTextFieldTheme());
+        final style = await disabledStyle(
+          tester,
+          const PasswordTextFieldTheme(),
+        );
 
         expect(style.color, appTheme.disabledColor);
       });
 
-      testWidgets('applies the theme disabled color over textStyle',
-          (tester) async {
+      testWidgets('applies the theme disabled color over textStyle', (
+        tester,
+      ) async {
         final style = await disabledStyle(
           tester,
           const PasswordTextFieldTheme(
@@ -305,8 +295,9 @@ void main() {
       expect(submittedValue, 'mypassword');
     });
 
-    testWidgets('uses labelText as hintText when useFloatingLabel is false',
-        (tester) async {
+    testWidgets('uses labelText as hintText when useFloatingLabel is false', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -327,10 +318,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: PasswordTextField(
-              labelText: 'Password',
-              maxLength: 16,
-            ),
+            body: PasswordTextField(labelText: 'Password', maxLength: 16),
           ),
         ),
       );
@@ -362,8 +350,9 @@ void main() {
       expect(find.byIcon(Icons.lock), findsNothing);
     });
 
-    testWidgets('calls prefixWidgetBuilder with none warning initially',
-        (tester) async {
+    testWidgets('calls prefixWidgetBuilder with none warning initially', (
+      tester,
+    ) async {
       PasswordFieldStatus? capturedWarning;
 
       await tester.pumpWidget(
@@ -384,8 +373,9 @@ void main() {
       expect(find.byIcon(Icons.person), findsOneWidget);
     });
 
-    testWidgets('shows suffixWidgetBuilder alongside visibility toggle',
-        (tester) async {
+    testWidgets('shows suffixWidgetBuilder alongside visibility toggle', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -418,28 +408,30 @@ void main() {
 
       final element = tester.element(find.byType(TextField));
       Actions.invoke(
-          element, const PasteTextIntent(SelectionChangedCause.keyboard));
+        element,
+        const PasteTextIntent(SelectionChangedCause.keyboard),
+      );
       await tester.pump();
 
       expect(pasteCalled, isTrue);
     });
 
-    testWidgets('shows default paste warning when paste is blocked',
-        (tester) async {
+    testWidgets('shows default paste warning when paste is blocked', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: PasswordTextField(
-              labelText: 'Password',
-              disablePaste: true,
-            ),
+            body: PasswordTextField(labelText: 'Password', disablePaste: true),
           ),
         ),
       );
 
       final element = tester.element(find.byType(TextField));
       Actions.invoke(
-          element, const PasteTextIntent(SelectionChangedCause.keyboard));
+        element,
+        const PasteTextIntent(SelectionChangedCause.keyboard),
+      );
       await tester.pump();
 
       expect(find.text('Paste is disabled'), findsOneWidget);
@@ -462,14 +454,17 @@ void main() {
 
       final element = tester.element(find.byType(TextField));
       Actions.invoke(
-          element, const PasteTextIntent(SelectionChangedCause.keyboard));
+        element,
+        const PasteTextIntent(SelectionChangedCause.keyboard),
+      );
       await tester.pump();
 
       expect(find.text(customWarning), findsOneWidget);
     });
 
-    testWidgets('hides paste warning after the specified duration',
-        (tester) async {
+    testWidgets('hides paste warning after the specified duration', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -484,7 +479,9 @@ void main() {
 
       final element = tester.element(find.byType(TextField));
       Actions.invoke(
-          element, const PasteTextIntent(SelectionChangedCause.keyboard));
+        element,
+        const PasteTextIntent(SelectionChangedCause.keyboard),
+      );
       await tester.pump();
 
       expect(find.text('Paste is disabled'), findsOneWidget);
@@ -494,8 +491,9 @@ void main() {
       expect(find.text('Paste is disabled'), findsNothing);
     });
 
-    testWidgets('does not show paste warning when showPasteWarning is false',
-        (tester) async {
+    testWidgets('does not show paste warning when showPasteWarning is false', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -510,99 +508,104 @@ void main() {
 
       final element = tester.element(find.byType(TextField));
       Actions.invoke(
-          element, const PasteTextIntent(SelectionChangedCause.keyboard));
+        element,
+        const PasteTextIntent(SelectionChangedCause.keyboard),
+      );
       await tester.pump();
 
       expect(find.text('Paste is disabled'), findsNothing);
     });
 
     testWidgets(
-        'passes customError warning to builder when hasCustomError becomes true',
-        (tester) async {
-      PasswordFieldStatus? capturedWarning;
-      bool hasError = false;
+      'passes customError warning to builder when hasCustomError becomes true',
+      (tester) async {
+        PasswordFieldStatus? capturedWarning;
+        bool hasError = false;
 
-      await tester.pumpWidget(
-        StatefulBuilder(
-          builder: (context, setState) => MaterialApp(
-            home: Scaffold(
-              body: Column(
-                children: [
-                  PasswordTextField(
-                    labelText: 'Password',
-                    hasCustomError: hasError,
-                    prefixWidgetBuilder: (context, warning) {
-                      capturedWarning = warning;
-                      return const Icon(Icons.person);
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => hasError = true),
-                    child: const Text('Set Error'),
-                  ),
-                ],
+        await tester.pumpWidget(
+          StatefulBuilder(
+            builder: (context, setState) => MaterialApp(
+              home: Scaffold(
+                body: Column(
+                  children: [
+                    PasswordTextField(
+                      labelText: 'Password',
+                      hasCustomError: hasError,
+                      prefixWidgetBuilder: (context, warning) {
+                        capturedWarning = warning;
+                        return const Icon(Icons.person);
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () => setState(() => hasError = true),
+                      child: const Text('Set Error'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(capturedWarning, PasswordFieldStatus.none);
+        expect(capturedWarning, PasswordFieldStatus.none);
 
-      await tester.tap(find.text('Set Error'));
-      await tester.pump();
+        await tester.tap(find.text('Set Error'));
+        await tester.pump();
 
-      expect(capturedWarning, PasswordFieldStatus.customError);
-    });
+        expect(capturedWarning, PasswordFieldStatus.customError);
+      },
+    );
 
     testWidgets(
-        'clears customError warning in builder when hasCustomError becomes false',
-        (tester) async {
-      // Transition false → true → false to exercise both the set and the
-      // clear path of the customError status.
-      PasswordFieldStatus? capturedWarning;
-      bool hasError = false;
+      'clears customError warning in builder when hasCustomError becomes false',
+      (tester) async {
+        // Transition false → true → false to exercise both the set and the
+        // clear path of the customError status.
+        PasswordFieldStatus? capturedWarning;
+        bool hasError = false;
 
-      await tester.pumpWidget(
-        StatefulBuilder(
-          builder: (context, setState) => MaterialApp(
-            home: Scaffold(
-              body: Column(
-                children: [
-                  PasswordTextField(
-                    labelText: 'Password',
-                    hasCustomError: hasError,
-                    prefixWidgetBuilder: (context, warning) {
-                      capturedWarning = warning;
-                      return const Icon(Icons.person);
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => hasError = !hasError),
-                    child: const Text('Toggle Error'),
-                  ),
-                ],
+        await tester.pumpWidget(
+          StatefulBuilder(
+            builder: (context, setState) => MaterialApp(
+              home: Scaffold(
+                body: Column(
+                  children: [
+                    PasswordTextField(
+                      labelText: 'Password',
+                      hasCustomError: hasError,
+                      prefixWidgetBuilder: (context, warning) {
+                        capturedWarning = warning;
+                        return const Icon(Icons.person);
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () => setState(() => hasError = !hasError),
+                      child: const Text('Toggle Error'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(capturedWarning, PasswordFieldStatus.none);
+        expect(capturedWarning, PasswordFieldStatus.none);
 
-      // false → true
-      await tester.tap(find.text('Toggle Error'));
-      await tester.pump();
-      expect(capturedWarning, PasswordFieldStatus.customError);
+        // false → true
+        await tester.tap(find.text('Toggle Error'));
+        await tester.pump();
+        expect(capturedWarning, PasswordFieldStatus.customError);
 
-      // true → false
-      await tester.tap(find.text('Toggle Error'));
-      await tester.pump();
-      expect(capturedWarning, PasswordFieldStatus.none);
-    });
+        // true → false
+        await tester.tap(find.text('Toggle Error'));
+        await tester.pump();
+        expect(capturedWarning, PasswordFieldStatus.none);
+      },
+    );
 
-    testWidgets('renders in tooltip display mode without error',
-        (tester) async {
+    testWidgets('renders in tooltip display mode without error', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -636,8 +639,9 @@ void main() {
   });
 
   group('WarningMessageLayout', () {
-    testWidgets('places a bottom-aligned warning below the field',
-        (tester) async {
+    testWidgets('places a bottom-aligned warning below the field', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -657,8 +661,11 @@ void main() {
 
       final fieldY = tester.getTopLeft(find.byKey(const Key('field'))).dy;
       final warnY = tester.getTopLeft(find.text('warn')).dy;
-      expect(warnY, greaterThan(fieldY),
-          reason: 'a bottom-aligned warning renders below the field');
+      expect(
+        warnY,
+        greaterThan(fieldY),
+        reason: 'a bottom-aligned warning renders below the field',
+      );
     });
 
     testWidgets('places a top-aligned warning above the field', (tester) async {
@@ -681,12 +688,16 @@ void main() {
 
       final fieldY = tester.getTopLeft(find.byKey(const Key('field'))).dy;
       final warnY = tester.getTopLeft(find.text('warn')).dy;
-      expect(warnY, lessThan(fieldY),
-          reason: 'a top-aligned warning renders above the field');
+      expect(
+        warnY,
+        lessThan(fieldY),
+        reason: 'a top-aligned warning renders above the field',
+      );
     });
 
-    testWidgets('center alignment horizontally centers the warning',
-        (tester) async {
+    testWidgets('center alignment horizontally centers the warning', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -708,12 +719,16 @@ void main() {
 
       final fieldCenter = tester.getCenter(find.byKey(const Key('field'))).dx;
       final warnCenter = tester.getCenter(find.text('warn')).dx;
-      expect(warnCenter, moreOrLessEquals(fieldCenter, epsilon: 1.0),
-          reason: 'center alignment horizontally centers the warning');
+      expect(
+        warnCenter,
+        moreOrLessEquals(fieldCenter, epsilon: 1.0),
+        reason: 'center alignment horizontally centers the warning',
+      );
     });
 
-    testWidgets('maps each alignment to its horizontal placement',
-        (tester) async {
+    testWidgets('maps each alignment to its horizontal placement', (
+      tester,
+    ) async {
       // Expected placement per the alignment spec: start/left values hug the
       // left edge, end/right values hug the right edge.
       const cases = <WarningAlignment, String>{
@@ -738,8 +753,11 @@ void main() {
                     style: const TextStyle(fontSize: 12),
                     alignment: entry.key,
                   ),
-                  child:
-                      const SizedBox(key: Key('field'), width: 250, height: 40),
+                  child: const SizedBox(
+                    key: Key('field'),
+                    width: 250,
+                    height: 40,
+                  ),
                 ),
               ),
             ),
@@ -749,19 +767,24 @@ void main() {
         final field = find.byKey(const Key('field'));
         final warn = find.text('warn');
         if (entry.value == 'left') {
-          expect(tester.getTopLeft(warn).dx,
-              moreOrLessEquals(tester.getTopLeft(field).dx, epsilon: 1.0),
-              reason: '${entry.key} should align to the left edge');
+          expect(
+            tester.getTopLeft(warn).dx,
+            moreOrLessEquals(tester.getTopLeft(field).dx, epsilon: 1.0),
+            reason: '${entry.key} should align to the left edge',
+          );
         } else {
-          expect(tester.getTopRight(warn).dx,
-              moreOrLessEquals(tester.getTopRight(field).dx, epsilon: 1.0),
-              reason: '${entry.key} should align to the right edge');
+          expect(
+            tester.getTopRight(warn).dx,
+            moreOrLessEquals(tester.getTopRight(field).dx, epsilon: 1.0),
+            reason: '${entry.key} should align to the right edge',
+          );
         }
       }
     });
 
-    testWidgets('renders a bottom-aligned caps-lock warning below the field',
-        (tester) async {
+    testWidgets('renders a bottom-aligned caps-lock warning below the field', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -782,12 +805,16 @@ void main() {
       expect(find.text('caps'), findsOneWidget);
       final fieldY = tester.getTopLeft(find.byKey(const Key('field'))).dy;
       final capsY = tester.getTopLeft(find.text('caps')).dy;
-      expect(capsY, greaterThan(fieldY),
-          reason: 'a bottom-aligned caps-lock warning renders below the field');
+      expect(
+        capsY,
+        greaterThan(fieldY),
+        reason: 'a bottom-aligned caps-lock warning renders below the field',
+      );
     });
 
-    testWidgets('renders a top-aligned caps-lock warning above the field',
-        (tester) async {
+    testWidgets('renders a top-aligned caps-lock warning above the field', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -807,45 +834,50 @@ void main() {
 
       final fieldY = tester.getTopLeft(find.byKey(const Key('field'))).dy;
       final capsY = tester.getTopLeft(find.text('caps')).dy;
-      expect(capsY, lessThan(fieldY),
-          reason: 'a top-aligned caps-lock warning renders above the field');
+      expect(
+        capsY,
+        lessThan(fieldY),
+        reason: 'a top-aligned caps-lock warning renders above the field',
+      );
     });
   });
 
   group('WarningTooltipLayout', () {
-    testWidgets('maps warning alignment to tooltip direction and alignment',
-        (tester) async {
-      final tt =
-          const WarningTooltipTheme().merge(WarningTooltipTheme.defaults);
+    testWidgets('maps warning alignment to tooltip direction and alignment', (
+      tester,
+    ) async {
+      final tt = const WarningTooltipTheme().merge(
+        WarningTooltipTheme.defaults,
+      );
 
       // Expected (direction, tooltip-alignment) per the alignment spec.
       const cases =
           <WarningAlignment, ({TooltipDirection dir, TooltipAlignment align})>{
-        WarningAlignment.topLeft: (
-          dir: TooltipDirection.top,
-          align: TooltipAlignment.start
-        ),
-        WarningAlignment.bottomCenter: (
-          dir: TooltipDirection.bottom,
-          align: TooltipAlignment.center
-        ),
-        WarningAlignment.topRight: (
-          dir: TooltipDirection.top,
-          align: TooltipAlignment.end
-        ),
-        WarningAlignment.bottomStartTargetCenter: (
-          dir: TooltipDirection.bottom,
-          align: TooltipAlignment.startTargetCenter
-        ),
-        WarningAlignment.topEndTargetCenter: (
-          dir: TooltipDirection.top,
-          align: TooltipAlignment.endTargetCenter
-        ),
-        WarningAlignment.bottomEndTargetCenter: (
-          dir: TooltipDirection.bottom,
-          align: TooltipAlignment.endTargetCenter
-        ),
-      };
+            WarningAlignment.topLeft: (
+              dir: TooltipDirection.top,
+              align: TooltipAlignment.start,
+            ),
+            WarningAlignment.bottomCenter: (
+              dir: TooltipDirection.bottom,
+              align: TooltipAlignment.center,
+            ),
+            WarningAlignment.topRight: (
+              dir: TooltipDirection.top,
+              align: TooltipAlignment.end,
+            ),
+            WarningAlignment.bottomStartTargetCenter: (
+              dir: TooltipDirection.bottom,
+              align: TooltipAlignment.startTargetCenter,
+            ),
+            WarningAlignment.topEndTargetCenter: (
+              dir: TooltipDirection.top,
+              align: TooltipAlignment.endTargetCenter,
+            ),
+            WarningAlignment.bottomEndTargetCenter: (
+              dir: TooltipDirection.bottom,
+              align: TooltipAlignment.endTargetCenter,
+            ),
+          };
 
       for (final entry in cases.entries) {
         await tester.pumpWidget(
@@ -872,44 +904,57 @@ void main() {
         final caps = tester
             .widgetList<JustTooltip>(find.byType(JustTooltip))
             .firstWhere((t) => t.message == 'caps');
-        expect(caps.direction, entry.value.dir,
-            reason: '${entry.key} → direction');
-        expect(caps.alignment, entry.value.align,
-            reason: '${entry.key} → alignment');
+        expect(
+          caps.direction,
+          entry.value.dir,
+          reason: '${entry.key} → direction',
+        );
+        expect(
+          caps.alignment,
+          entry.value.align,
+          reason: '${entry.key} → alignment',
+        );
       }
     });
   });
 
   group('PasswordTextField checked state', () {
-    testWidgets('reports checked status and a green border when isChecked true',
-        (tester) async {
-      PasswordFieldStatus? captured;
+    testWidgets(
+      'reports checked status and a green border when isChecked true',
+      (tester) async {
+        PasswordFieldStatus? captured;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: PasswordTextField(
-              labelText: 'Password',
-              isChecked: true,
-              prefixWidgetBuilder: (context, status) {
-                captured = status;
-                return const Icon(Icons.person);
-              },
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: PasswordTextField(
+                labelText: 'Password',
+                isChecked: true,
+                prefixWidgetBuilder: (context, status) {
+                  captured = status;
+                  return const Icon(Icons.person);
+                },
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(captured, PasswordFieldStatus.checked);
+        expect(captured, PasswordFieldStatus.checked);
 
-      final textField = tester.widget<TextField>(find.byType(TextField));
-      final border = textField.decoration!.enabledBorder as OutlineInputBorder;
-      expect(border.borderSide.color, Colors.green,
-          reason: 'checked defaults to a green border');
-    });
+        final textField = tester.widget<TextField>(find.byType(TextField));
+        final border =
+            textField.decoration!.enabledBorder as OutlineInputBorder;
+        expect(
+          border.borderSide.color,
+          Colors.green,
+          reason: 'checked defaults to a green border',
+        );
+      },
+    );
 
-    testWidgets('reports unchecked status when isChecked false',
-        (tester) async {
+    testWidgets('reports unchecked status when isChecked false', (
+      tester,
+    ) async {
       PasswordFieldStatus? captured;
 
       await tester.pumpWidget(
@@ -932,8 +977,9 @@ void main() {
   });
 
   group('PasswordTextField status priority', () {
-    testWidgets('a blocked paste does not override an active customError',
-        (tester) async {
+    testWidgets('a blocked paste does not override an active customError', (
+      tester,
+    ) async {
       PasswordFieldStatus? captured;
       bool hasError = false;
 
@@ -971,54 +1017,63 @@ void main() {
       // Block a paste while customError is active.
       final element = tester.element(find.byType(TextField));
       Actions.invoke(
-          element, const PasteTextIntent(SelectionChangedCause.keyboard));
+        element,
+        const PasteTextIntent(SelectionChangedCause.keyboard),
+      );
       await tester.pump();
 
-      expect(captured, PasswordFieldStatus.customError,
-          reason: 'customError outranks pasteBlocked in the priority order');
+      expect(
+        captured,
+        PasswordFieldStatus.customError,
+        reason: 'customError outranks pasteBlocked in the priority order',
+      );
     });
 
     testWidgets(
-        'a disabled field reports disabled even when hasCustomError sets',
-        (tester) async {
-      PasswordFieldStatus? captured;
-      bool hasError = false;
+      'a disabled field reports disabled even when hasCustomError sets',
+      (tester) async {
+        PasswordFieldStatus? captured;
+        bool hasError = false;
 
-      await tester.pumpWidget(
-        StatefulBuilder(
-          builder: (context, setState) => MaterialApp(
-            home: Scaffold(
-              body: Column(
-                children: [
-                  PasswordTextField(
-                    labelText: 'Password',
-                    enabled: false,
-                    hasCustomError: hasError,
-                    prefixWidgetBuilder: (context, status) {
-                      captured = status;
-                      return const Icon(Icons.person);
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => hasError = true),
-                    child: const Text('Set Error'),
-                  ),
-                ],
+        await tester.pumpWidget(
+          StatefulBuilder(
+            builder: (context, setState) => MaterialApp(
+              home: Scaffold(
+                body: Column(
+                  children: [
+                    PasswordTextField(
+                      labelText: 'Password',
+                      enabled: false,
+                      hasCustomError: hasError,
+                      prefixWidgetBuilder: (context, status) {
+                        captured = status;
+                        return const Icon(Icons.person);
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () => setState(() => hasError = true),
+                      child: const Text('Set Error'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(captured, PasswordFieldStatus.disabled);
+        expect(captured, PasswordFieldStatus.disabled);
 
-      // Toggle hasCustomError on; disabled must still win.
-      await tester.tap(find.text('Set Error'));
-      await tester.pump();
+        // Toggle hasCustomError on; disabled must still win.
+        await tester.tap(find.text('Set Error'));
+        await tester.pump();
 
-      expect(captured, PasswordFieldStatus.disabled,
-          reason: 'disabled outranks customError in the priority order');
-    });
+        expect(
+          captured,
+          PasswordFieldStatus.disabled,
+          reason: 'disabled outranks customError in the priority order',
+        );
+      },
+    );
   });
 
   group('PasswordTextField keyboard integration', () {
@@ -1038,8 +1093,9 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets('reports Caps Lock changes from the IME stream while focused',
-        (tester) async {
+    testWidgets('reports Caps Lock changes from the IME stream while focused', (
+      tester,
+    ) async {
       bool? capsState;
 
       await tester.pumpWidget(
@@ -1086,13 +1142,19 @@ void main() {
 
       await tester.tap(find.byType(TextField).first);
       await tester.pump();
-      expect(fake.calls, contains('disableIME'),
-          reason: 'gaining focus on Windows must disable the IME');
+      expect(
+        fake.calls,
+        contains('disableIME'),
+        reason: 'gaining focus on Windows must disable the IME',
+      );
 
       await tester.tap(find.byKey(const Key('other')));
       await tester.pump();
-      expect(fake.calls, contains('enableIME'),
-          reason: 'losing focus on Windows must re-enable the IME');
+      expect(
+        fake.calls,
+        contains('enableIME'),
+        reason: 'losing focus on Windows must re-enable the IME',
+      );
 
       // Reset inside the body, not in tearDown
       // (docs/map/territory/keyboard-integration.md).
@@ -1100,39 +1162,47 @@ void main() {
     });
 
     testWidgets(
-        're-forces the English keyboard on macOS when the input source changes',
-        (tester) async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
-      debugSetPlatformSupport(const _ForceSupport(windows: false));
+      're-forces the English keyboard on macOS when the input source changes',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+        debugSetPlatformSupport(const _ForceSupport(windows: false));
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: PasswordTextField(
-              labelText: 'Password',
-              forceEnglishInput: true,
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: PasswordTextField(
+                labelText: 'Password',
+                forceEnglishInput: true,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.tap(find.byType(TextField));
-      await tester.pump();
-      expect(fake.calls, contains('setEnglishKeyboard'),
-          reason: 'gaining focus on macOS must force the English keyboard');
+        await tester.tap(find.byType(TextField));
+        await tester.pump();
+        expect(
+          fake.calls,
+          contains('setEnglishKeyboard'),
+          reason: 'gaining focus on macOS must force the English keyboard',
+        );
 
-      // The user switches to a non-English input source while focused.
-      fake.calls.clear();
-      fake.inputSourceController.add(false);
-      await tester.pump();
-      expect(fake.calls, contains('setEnglishKeyboard'),
-          reason: 'a non-English switch while focused must be reverted');
+        // The user switches to a non-English input source while focused.
+        fake.calls.clear();
+        fake.inputSourceController.add(false);
+        await tester.pump();
+        expect(
+          fake.calls,
+          contains('setEnglishKeyboard'),
+          reason: 'a non-English switch while focused must be reverted',
+        );
 
-      debugDefaultTargetPlatformOverride = null;
-    });
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
 
-    testWidgets('discards a Caps Lock read that resolves after blur',
-        (tester) async {
+    testWidgets('discards a Caps Lock read that resolves after blur', (
+      tester,
+    ) async {
       final reports = <bool>[];
       final statuses = <PasswordFieldStatus>[];
       fake.pendingCapsLockRead = Completer<bool>();
@@ -1168,8 +1238,9 @@ void main() {
       expect(statuses.last, PasswordFieldStatus.none);
     });
 
-    testWidgets('discards a Caps Lock read from an earlier focus',
-        (tester) async {
+    testWidgets('discards a Caps Lock read from an earlier focus', (
+      tester,
+    ) async {
       final reports = <bool>[];
       final firstRead = Completer<bool>();
       fake.pendingCapsLockRead = firstRead;
@@ -1203,21 +1274,22 @@ void main() {
       expect(reports, isEmpty);
     });
 
-    testWidgets('toggling showCapsLockWarning re-resolves the status',
-        (tester) async {
+    testWidgets('toggling showCapsLockWarning re-resolves the status', (
+      tester,
+    ) async {
       final statuses = <PasswordFieldStatus>[];
       Widget fieldWith({required bool showCapsLockWarning}) => MaterialApp(
-            home: Scaffold(
-              body: PasswordTextField(
-                forceEnglishInput: false,
-                showCapsLockWarning: showCapsLockWarning,
-                prefixWidgetBuilder: (context, status) {
-                  statuses.add(status);
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
-          );
+        home: Scaffold(
+          body: PasswordTextField(
+            forceEnglishInput: false,
+            showCapsLockWarning: showCapsLockWarning,
+            prefixWidgetBuilder: (context, status) {
+              statuses.add(status);
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
 
       await tester.pumpWidget(fieldWith(showCapsLockWarning: true));
       await tester.tap(find.byType(TextField));
@@ -1250,65 +1322,72 @@ void main() {
     }
 
     testWidgets(
-        'turning forceEnglishInput off while focused restores the Windows IME '
-        'once', (tester) async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
-      await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
-      await tester.tap(find.byType(TextField).first);
-      await tester.pump();
+      'turning forceEnglishInput off while focused restores the Windows IME '
+      'once',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+        await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
+        await tester.tap(find.byType(TextField).first);
+        await tester.pump();
 
-      await tester.pumpWidget(englishFieldWith(forceEnglishInput: false));
-      expect(fake.calls, ['disableIME', 'enableIME']);
+        await tester.pumpWidget(englishFieldWith(forceEnglishInput: false));
+        expect(fake.calls, ['disableIME', 'enableIME']);
 
-      await tester.tap(find.byKey(const Key('other')));
-      await tester.pump();
-      expect(fake.calls, ['disableIME', 'enableIME']);
+        await tester.tap(find.byKey(const Key('other')));
+        await tester.pump();
+        expect(fake.calls, ['disableIME', 'enableIME']);
 
-      debugDefaultTargetPlatformOverride = null;
-    });
-
-    testWidgets(
-        'turning forceEnglishInput on while focused disables the Windows IME '
-        'and blur restores it', (tester) async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
-      await tester.pumpWidget(englishFieldWith(forceEnglishInput: false));
-      await tester.tap(find.byType(TextField).first);
-      await tester.pump();
-      expect(fake.calls, isEmpty);
-
-      await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
-      expect(fake.calls, ['disableIME']);
-
-      await tester.tap(find.byKey(const Key('other')));
-      await tester.pump();
-      expect(fake.calls, ['disableIME', 'enableIME']);
-
-      debugDefaultTargetPlatformOverride = null;
-    });
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
 
     testWidgets(
-        'turning forceEnglishInput off while focused stops forcing English on '
-        'macOS', (tester) async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
-      debugSetPlatformSupport(const _ForceSupport(windows: false));
-      await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
-      await tester.tap(find.byType(TextField).first);
-      await tester.pump();
+      'turning forceEnglishInput on while focused disables the Windows IME '
+      'and blur restores it',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+        await tester.pumpWidget(englishFieldWith(forceEnglishInput: false));
+        await tester.tap(find.byType(TextField).first);
+        await tester.pump();
+        expect(fake.calls, isEmpty);
 
-      await tester.pumpWidget(englishFieldWith(forceEnglishInput: false));
-      await tester.tap(find.byKey(const Key('other')));
-      await tester.pump();
-      fake.calls.clear();
-      fake.inputSourceController.add(false);
-      await tester.pump();
+        await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
+        expect(fake.calls, ['disableIME']);
 
-      expect(fake.calls, isEmpty);
+        await tester.tap(find.byKey(const Key('other')));
+        await tester.pump();
+        expect(fake.calls, ['disableIME', 'enableIME']);
 
-      debugDefaultTargetPlatformOverride = null;
-    });
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
 
-    testWidgets('restores the Windows IME when disposed while focused',
-        (tester) async {
+    testWidgets(
+      'turning forceEnglishInput off while focused stops forcing English on '
+      'macOS',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+        debugSetPlatformSupport(const _ForceSupport(windows: false));
+        await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
+        await tester.tap(find.byType(TextField).first);
+        await tester.pump();
+
+        await tester.pumpWidget(englishFieldWith(forceEnglishInput: false));
+        await tester.tap(find.byKey(const Key('other')));
+        await tester.pump();
+        fake.calls.clear();
+        fake.inputSourceController.add(false);
+        await tester.pump();
+
+        expect(fake.calls, isEmpty);
+
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('restores the Windows IME when disposed while focused', (
+      tester,
+    ) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.windows;
       await tester.pumpWidget(englishFieldWith(forceEnglishInput: true));
       await tester.tap(find.byType(TextField).first);
@@ -1322,8 +1401,9 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets('cancels the Caps Lock subscription on dispose',
-        (tester) async {
+    testWidgets('cancels the Caps Lock subscription on dispose', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -1335,18 +1415,25 @@ void main() {
         ),
       );
       await tester.pump();
-      expect(fake.capsController.hasListener, isTrue,
-          reason: 'the field subscribes to Caps Lock changes while mounted');
+      expect(
+        fake.capsController.hasListener,
+        isTrue,
+        reason: 'the field subscribes to Caps Lock changes while mounted',
+      );
 
       await tester.pumpWidget(
         const MaterialApp(home: Scaffold(body: SizedBox())),
       );
-      expect(fake.capsController.hasListener, isFalse,
-          reason: 'the Caps Lock subscription must be cancelled on dispose');
+      expect(
+        fake.capsController.hasListener,
+        isFalse,
+        reason: 'the Caps Lock subscription must be cancelled on dispose',
+      );
     });
 
-    testWidgets('picks up Caps Lock already on when focus is gained',
-        (tester) async {
+    testWidgets('picks up Caps Lock already on when focus is gained', (
+      tester,
+    ) async {
       fake.capsLockValue = true;
       bool? capsState;
 
@@ -1366,12 +1453,16 @@ void main() {
       await tester.pump(); // focus change
       await tester.pump(); // async isCapsLockOn() resolves
 
-      expect(capsState, isTrue,
-          reason: 'the on-focus check reports Caps Lock that was already on');
+      expect(
+        capsState,
+        isTrue,
+        reason: 'the on-focus check reports Caps Lock that was already on',
+      );
     });
 
-    testWidgets('clears the Caps Lock warning and notifies false on blur',
-        (tester) async {
+    testWidgets('clears the Caps Lock warning and notifies false on blur', (
+      tester,
+    ) async {
       fake.capsLockValue = true;
       final states = <bool>[];
 
@@ -1399,12 +1490,16 @@ void main() {
 
       await tester.tap(find.byKey(const Key('other')));
       await tester.pump();
-      expect(states.last, isFalse,
-          reason: 'losing focus clears Caps Lock and notifies false');
+      expect(
+        states.last,
+        isFalse,
+        reason: 'losing focus clears Caps Lock and notifies false',
+      );
     });
 
-    testWidgets('cancels the macOS input-source subscription on blur',
-        (tester) async {
+    testWidgets('cancels the macOS input-source subscription on blur', (
+      tester,
+    ) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
       debugSetPlatformSupport(const _ForceSupport(windows: false));
 
@@ -1426,19 +1521,26 @@ void main() {
 
       await tester.tap(find.byType(TextField).first);
       await tester.pump();
-      expect(fake.inputSourceController.hasListener, isTrue,
-          reason: 'focus subscribes to input-source changes on macOS');
+      expect(
+        fake.inputSourceController.hasListener,
+        isTrue,
+        reason: 'focus subscribes to input-source changes on macOS',
+      );
 
       await tester.tap(find.byKey(const Key('other')));
       await tester.pump();
-      expect(fake.inputSourceController.hasListener, isFalse,
-          reason: 'blur cancels the macOS input-source subscription');
+      expect(
+        fake.inputSourceController.hasListener,
+        isFalse,
+        reason: 'blur cancels the macOS input-source subscription',
+      );
 
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets('autofocus requests focus after the first frame',
-        (tester) async {
+    testWidgets('autofocus requests focus after the first frame', (
+      tester,
+    ) async {
       bool focused = false;
 
       await tester.pumpWidget(
@@ -1457,8 +1559,11 @@ void main() {
       await tester.pump(); // post-frame callback requests focus
       await tester.pump();
 
-      expect(focused, isTrue,
-          reason: 'autofocus focuses the field after the first frame');
+      expect(
+        focused,
+        isTrue,
+        reason: 'autofocus focuses the field after the first frame',
+      );
     });
 
     group('focusNode ownership', () {
@@ -1484,16 +1589,17 @@ void main() {
           tester.widget<TextField>(find.byType(TextField)).focusNode!;
 
       Widget fieldWith(FocusNode? focusNode) => MaterialApp(
-            home: Scaffold(
-              body: PasswordTextField(
-                forceEnglishInput: false,
-                focusNode: focusNode,
-              ),
-            ),
-          );
+        home: Scaffold(
+          body: PasswordTextField(
+            forceEnglishInput: false,
+            focusNode: focusNode,
+          ),
+        ),
+      );
 
-      testWidgets('disposes its own node when a caller node is supplied',
-          (tester) async {
+      testWidgets('disposes its own node when a caller node is supplied', (
+        tester,
+      ) async {
         final external = FocusNode();
         addTearDown(external.dispose);
 
@@ -1506,8 +1612,7 @@ void main() {
         expect(disposed, contains(owned));
       });
 
-      testWidgets(
-          'creates and later disposes a fresh node when the caller '
+      testWidgets('creates and later disposes a fresh node when the caller '
           'node is removed', (tester) async {
         final external = FocusNode();
         addTearDown(external.dispose);
@@ -1540,21 +1645,20 @@ void main() {
         expect(disposed, isNot(contains(b)));
       });
 
-      testWidgets(
-          'swapping to an unfocused node while focused runs the '
+      testWidgets('swapping to an unfocused node while focused runs the '
           'focus-lost transition', (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.windows;
         final reports = <bool>[];
         final external = FocusNode();
         addTearDown(external.dispose);
         Widget windowsFieldWith(FocusNode? focusNode) => MaterialApp(
-              home: Scaffold(
-                body: PasswordTextField(
-                  focusNode: focusNode,
-                  onCapsLockStateChanged: reports.add,
-                ),
-              ),
-            );
+          home: Scaffold(
+            body: PasswordTextField(
+              focusNode: focusNode,
+              onCapsLockStateChanged: reports.add,
+            ),
+          ),
+        );
 
         await tester.pumpWidget(windowsFieldWith(null));
         await tester.tap(find.byType(TextField));
@@ -1575,8 +1679,9 @@ void main() {
       });
     });
 
-    testWidgets('rewires focus when the external focusNode is replaced',
-        (tester) async {
+    testWidgets('rewires focus when the external focusNode is replaced', (
+      tester,
+    ) async {
       final nodeA = FocusNode();
       final nodeB = FocusNode();
       addTearDown(nodeA.dispose);
@@ -1613,8 +1718,11 @@ void main() {
       nodeB.requestFocus();
       await tester.pump();
       await tester.pump();
-      expect(nodeB.hasFocus, isTrue,
-          reason: 'the field tracks the replacement focusNode');
+      expect(
+        nodeB.hasFocus,
+        isTrue,
+        reason: 'the field tracks the replacement focusNode',
+      );
     });
 
     testWidgets('hides the paste warning when the user types', (tester) async {
@@ -1632,73 +1740,81 @@ void main() {
 
       final element = tester.element(find.byType(TextField));
       Actions.invoke(
-          element, const PasteTextIntent(SelectionChangedCause.keyboard));
+        element,
+        const PasteTextIntent(SelectionChangedCause.keyboard),
+      );
       await tester.pump();
       expect(find.text('Paste is disabled'), findsOneWidget);
 
       await tester.enterText(find.byType(TextField), 'x');
       await tester.pump();
-      expect(find.text('Paste is disabled'), findsNothing,
-          reason: 'typing hides the paste warning');
+      expect(
+        find.text('Paste is disabled'),
+        findsNothing,
+        reason: 'typing hides the paste warning',
+      );
     });
 
     testWidgets(
-        're-resolves status when isChecked and enabled change at runtime',
-        (tester) async {
-      PasswordFieldStatus? captured;
-      bool enabled = true;
-      bool? checked;
+      're-resolves status when isChecked and enabled change at runtime',
+      (tester) async {
+        PasswordFieldStatus? captured;
+        bool enabled = true;
+        bool? checked;
 
-      await tester.pumpWidget(
-        StatefulBuilder(
-          builder: (context, setState) => MaterialApp(
-            home: Scaffold(
-              body: Column(
-                children: [
-                  PasswordTextField(
-                    labelText: 'Password',
-                    forceEnglishInput: false,
-                    enabled: enabled,
-                    isChecked: checked,
-                    prefixWidgetBuilder: (context, status) {
-                      captured = status;
-                      return const Icon(Icons.person);
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => checked = true),
-                    child: const Text('Check'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => enabled = false),
-                    child: const Text('Disable'),
-                  ),
-                ],
+        await tester.pumpWidget(
+          StatefulBuilder(
+            builder: (context, setState) => MaterialApp(
+              home: Scaffold(
+                body: Column(
+                  children: [
+                    PasswordTextField(
+                      labelText: 'Password',
+                      forceEnglishInput: false,
+                      enabled: enabled,
+                      isChecked: checked,
+                      prefixWidgetBuilder: (context, status) {
+                        captured = status;
+                        return const Icon(Icons.person);
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () => setState(() => checked = true),
+                      child: const Text('Check'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => setState(() => enabled = false),
+                      child: const Text('Disable'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(captured, PasswordFieldStatus.none);
+        expect(captured, PasswordFieldStatus.none);
 
-      // isChecked null -> true resolves to checked.
-      await tester.tap(find.text('Check'));
-      await tester.pump();
-      expect(captured, PasswordFieldStatus.checked);
+        // isChecked null -> true resolves to checked.
+        await tester.tap(find.text('Check'));
+        await tester.pump();
+        expect(captured, PasswordFieldStatus.checked);
 
-      // enabled true -> false resolves to disabled (higher priority).
-      await tester.tap(find.text('Disable'));
-      await tester.pump();
-      expect(captured, PasswordFieldStatus.disabled);
-    });
+        // enabled true -> false resolves to disabled (higher priority).
+        await tester.tap(find.text('Disable'));
+        await tester.pump();
+        expect(captured, PasswordFieldStatus.disabled);
+      },
+    );
 
     group('warning tooltip auto-hide', () {
       const capsWarning = 'Caps Lock is on';
       const showFor = Duration(seconds: 1);
 
-      Future<void> showCapsTooltip(WidgetTester tester,
-          {Duration? showDuration = showFor}) async {
+      Future<void> showCapsTooltip(
+        WidgetTester tester, {
+        Duration? showDuration = showFor,
+      }) async {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -1721,13 +1837,17 @@ void main() {
         await tester.pump();
         fake.capsController.add(true);
         await tester.pumpAndSettle();
-        expect(find.text(capsWarning), findsOneWidget,
-            reason: 'the tooltip must be showing before timing is asserted');
+        expect(
+          find.text(capsWarning),
+          findsOneWidget,
+          reason: 'the tooltip must be showing before timing is asserted',
+        );
       }
 
       Future<TestGesture> mouseOnTooltip(WidgetTester tester) async {
-        final pointer =
-            await tester.createGesture(kind: PointerDeviceKind.mouse);
+        final pointer = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
         await pointer.addPointer(location: Offset.zero);
         addTearDown(pointer.removePointer);
         await pointer.moveTo(tester.getCenter(find.text(capsWarning)));
@@ -1735,8 +1855,9 @@ void main() {
         return pointer;
       }
 
-      testWidgets('hides on time after the pointer crosses the tooltip',
-          (tester) async {
+      testWidgets('hides on time after the pointer crosses the tooltip', (
+        tester,
+      ) async {
         await showCapsTooltip(tester);
 
         final pointer = await mouseOnTooltip(tester);
@@ -1747,8 +1868,9 @@ void main() {
         expect(find.text(capsWarning), findsNothing);
       });
 
-      testWidgets('hides on time while the pointer rests on the tooltip',
-          (tester) async {
+      testWidgets('hides on time while the pointer rests on the tooltip', (
+        tester,
+      ) async {
         await showCapsTooltip(tester);
 
         await mouseOnTooltip(tester);
@@ -1758,8 +1880,9 @@ void main() {
         expect(find.text(capsWarning), findsNothing);
       });
 
-      testWidgets('stays while the status holds without showDuration',
-          (tester) async {
+      testWidgets('stays while the status holds without showDuration', (
+        tester,
+      ) async {
         await showCapsTooltip(tester, showDuration: null);
 
         final pointer = await mouseOnTooltip(tester);
@@ -1793,10 +1916,7 @@ void main() {
     });
 
     test('merge combines two themes', () {
-      const theme1 = PasswordTextFieldTheme(
-        width: 300,
-        borderRadius: 12,
-      );
+      const theme1 = PasswordTextFieldTheme(width: 300, borderRadius: 12);
 
       const theme2 = PasswordTextFieldTheme(
         width: 200, // theme1 takes priority
@@ -1819,10 +1939,7 @@ void main() {
         borderRadius: 8,
       );
 
-      final copied = original.copyWith(
-        width: 400,
-        borderWidth: 2,
-      );
+      final copied = original.copyWith(width: 400, borderWidth: 2);
 
       expect(copied.width, 400);
       expect(copied.height, 50); // keeps original
@@ -1892,12 +2009,15 @@ void main() {
     }
 
     void invokePaste(WidgetTester tester) {
-      Actions.invoke(tester.element(find.byType(TextField)),
-          const PasteTextIntent(SelectionChangedCause.keyboard));
+      Actions.invoke(
+        tester.element(find.byType(TextField)),
+        const PasteTextIntent(SelectionChangedCause.keyboard),
+      );
     }
 
-    testWidgets('reports each paste that arrives without a held V',
-        (tester) async {
+    testWidgets('reports each paste that arrives without a held V', (
+      tester,
+    ) async {
       final blocked = await pumpFocusedBlockedField(tester);
 
       invokePaste(tester);
@@ -1922,8 +2042,9 @@ void main() {
       expect(blocked(), 1);
     });
 
-    testWidgets('pressing Ctrl+V again after release reports again',
-        (tester) async {
+    testWidgets('pressing Ctrl+V again after release reports again', (
+      tester,
+    ) async {
       final blocked = await pumpFocusedBlockedField(tester);
 
       await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
@@ -1942,10 +2063,12 @@ void main() {
     setUp(() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (call) async {
-        if (call.method == 'Clipboard.getData') return {'text': 'clipboard'};
-        if (call.method == 'Clipboard.hasStrings') return {'value': true};
-        return null;
-      });
+            if (call.method == 'Clipboard.getData') {
+              return {'text': 'clipboard'};
+            }
+            if (call.method == 'Clipboard.hasStrings') return {'value': true};
+            return null;
+          });
     });
 
     tearDown(() {
@@ -1960,8 +2083,9 @@ void main() {
       await tester.pump();
     }
 
-    testWidgets('blocks a context-menu paste like a keyboard paste',
-        (tester) async {
+    testWidgets('blocks a context-menu paste like a keyboard paste', (
+      tester,
+    ) async {
       final controller = TextEditingController();
       addTearDown(controller.dispose);
       var blocked = 0;
@@ -2008,8 +2132,9 @@ void main() {
       return () => blocked;
     }
 
-    testWidgets('reports every context-menu paste as a new attempt',
-        (tester) async {
+    testWidgets('reports every context-menu paste as a new attempt', (
+      tester,
+    ) async {
       final blocked = await pumpBlockedField(tester);
 
       await pasteFromContextMenu(tester);
@@ -2018,20 +2143,24 @@ void main() {
       expect(blocked(), 2);
     });
 
-    testWidgets('a keyboard paste after a context-menu paste is reported',
-        (tester) async {
+    testWidgets('a keyboard paste after a context-menu paste is reported', (
+      tester,
+    ) async {
       final blocked = await pumpBlockedField(tester);
 
       await pasteFromContextMenu(tester);
-      Actions.invoke(tester.element(find.byType(TextField)),
-          const PasteTextIntent(SelectionChangedCause.keyboard));
+      Actions.invoke(
+        tester.element(find.byType(TextField)),
+        const PasteTextIntent(SelectionChangedCause.keyboard),
+      );
       await tester.pump();
 
       expect(blocked(), 2);
     });
 
-    testWidgets('showPasteWarning: false reports without a warning',
-        (tester) async {
+    testWidgets('showPasteWarning: false reports without a warning', (
+      tester,
+    ) async {
       final blocked = await pumpBlockedField(tester, showPasteWarning: false);
 
       await pasteFromContextMenu(tester);
@@ -2040,10 +2169,13 @@ void main() {
       expect(find.text('Paste is disabled'), findsNothing);
     });
 
-    testWidgets('shows the paste warning tooltip in tooltip mode',
-        (tester) async {
-      await pumpBlockedField(tester,
-          warningDisplayMode: WarningDisplayMode.tooltip);
+    testWidgets('shows the paste warning tooltip in tooltip mode', (
+      tester,
+    ) async {
+      await pumpBlockedField(
+        tester,
+        warningDisplayMode: WarningDisplayMode.tooltip,
+      );
       expect(find.text('Paste is disabled'), findsNothing);
 
       await pasteFromContextMenu(tester);
@@ -2077,8 +2209,10 @@ void main() {
       await tester.tap(find.text('Select all'));
       await tester.pump();
 
-      expect(controller.selection,
-          const TextSelection(baseOffset: 0, extentOffset: 6));
+      expect(
+        controller.selection,
+        const TextSelection(baseOffset: 0, extentOffset: 6),
+      );
     });
 
     testWidgets('pastes normally when disablePaste is false', (tester) async {
@@ -2086,9 +2220,7 @@ void main() {
       addTearDown(controller.dispose);
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: PasswordTextField(controller: controller),
-          ),
+          home: Scaffold(body: PasswordTextField(controller: controller)),
         ),
       );
 
@@ -2098,8 +2230,9 @@ void main() {
       expect(controller.text, 'clipboard');
     });
 
-    testWidgets('blocks paste on iOS where the native menu is supported',
-        (tester) async {
+    testWidgets('blocks paste on iOS where the native menu is supported', (
+      tester,
+    ) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       final controller = TextEditingController();
       addTearDown(controller.dispose);
@@ -2109,8 +2242,9 @@ void main() {
         MaterialApp(
           home: Builder(
             builder: (context) => MediaQuery(
-              data: MediaQuery.of(context)
-                  .copyWith(supportsShowingSystemContextMenu: true),
+              data: MediaQuery.of(
+                context,
+              ).copyWith(supportsShowingSystemContextMenu: true),
               child: Scaffold(
                 body: PasswordTextField(
                   controller: controller,

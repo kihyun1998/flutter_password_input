@@ -17,10 +17,10 @@ A password text field with Caps Lock detection and visibility toggle.
 
 | | Minimum |
 |---|---|
-| Flutter | `3.13.0` |
-| Dart | `3.4.0` |
+| Flutter | `3.32.0` |
+| Dart | `3.8.0` |
 
-Dart floor raised in `0.7.0`: `flutter_ime` 3.0.0 is a pure-Dart FFI package and its macOS observer needs `NativeCallable.keepIsolateAlive`, added in Dart 3.4. The Flutter floor is unchanged — it was raised in `0.6.1` because `just_tooltip` 0.4.2 walks `RenderObject.parent`, which was `AbstractNode?` (a type without `describeApproximatePaintClip`) before Flutter 3.13.
+Both floors come from `just_tooltip` 0.5: it positions a tooltip during layout through `OverlayPortal.overlayChildLayoutBuilder`, which needs Flutter 3.32 (Dart 3.8). They were Flutter 3.13 / Dart 3.4 with `just_tooltip` 0.4.4; an app on an older Flutter stays on `flutter_password_input` 0.7.0.
 
 ## Install
 
@@ -105,6 +105,8 @@ PasswordTextField(
 ```
 
 A tooltip aims at the **visible** part of its field, so it re-aims whenever a surrounding view scrolls, resizes, or reflows — it does not move rigidly with the field, because it is still clamped by `screenMargin`. A field that scrolls entirely out of view hides its tooltip; showing it again is a fresh warning.
+
+A warning tooltip is not put on the field's semantics, so a screen reader does not read the field as a warning while none is showing; the bubble's text is on the semantics tree only while it is on screen, and showing it is not announced. Escape closes a warning tooltip that is on screen. It stays closed while the warning holds, until the warning fires again or the field rebuilds for another reason (a rebuild of the widget above it, for example), which shows it again.
 
 ## Properties
 
@@ -212,7 +214,7 @@ Used when `warningDisplayMode` is `WarningDisplayMode.tooltip`.
 | `waitDuration` | `Duration?` | `null` | **No effect** — see below |
 | `showDuration` | `Duration?` | `null` | Auto-hide after this duration |
 
-`interactive` and `waitDuration` are inert. The warning tooltips are display-only: they are driven entirely by a controller, built with `enableHover: false`, and always non-interactive, so a pointer resting on one never holds it open. `waitDuration` is read by `just_tooltip` only when a hover enters the field, which never happens here. Both are still accepted so the theme stays a superset of `just_tooltip`'s options, but setting them changes nothing. `showDuration` does work: a programmatic show starts the auto-hide countdown, and it runs out on time wherever the pointer is.
+`interactive` and `waitDuration` are inert. The warning tooltips are display-only: they are driven entirely by a controller, built with `enableHover: false`, and always non-interactive, so a pointer resting on one never holds it open. `waitDuration` is read by `just_tooltip` only when a hover or keyboard focus triggers the tooltip, and neither is enabled here. Both are still accepted so the theme stays a superset of `just_tooltip`'s options, but setting them changes nothing. `showDuration` does work: a programmatic show starts the auto-hide countdown, and it runs out on time wherever the pointer is.
 
 ## License
 

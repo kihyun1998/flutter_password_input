@@ -11,7 +11,7 @@
 - Depends on the working tree (`example/pubspec.yaml — path: ../`), so it builds
   against unreleased code.
 - `example/pubspec.lock` is committed and pins the transitive `just_tooltip` /
-  `flutter_ime` (0.4.4 / 3.0.0 at a27fa38); the package root's `pubspec.lock` is
+  `flutter_ime` (0.5.1 / 3.0.0 on `deps/just-tooltip-0.5.1`); the package root's `pubspec.lock` is
   git-ignored (`.gitignore`). A dependency bump should leave both resolving the
   same version (theflow.md Step 6, maintainer, 2026-07-13). The lockfile also
   carries SDK-pinned packages (`meta`, `test_api`, `vector_math`, `matcher`) that

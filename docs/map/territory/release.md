@@ -14,12 +14,15 @@ releases.
   until 305e7d3; any directory CI or a local run creates must be listed in
   `.pubignore` itself. `build/` is listed because `.gitignore` excludes only the
   root `/build/`, not `example/build/`.
-- **Floors:** Dart `>=3.4.0` because `flutter_ime` 3.0.0 needs
-  `NativeCallable.keepIsolateAlive` on macOS (a27fa38); Flutter `>=3.13.0` because
-  `just_tooltip` 0.4.2+ walks `RenderObject.parent` and calls
-  `describeApproximatePaintClip` (0.4.4 `just_tooltip.dart`), which `AbstractNode?`
-  lacked before 3.13 (8375aa0). README "Requirements" gives the same reasons to
-  consumers. Raising a floor is breaking for consumers.
+- **Floors:** Flutter `>=3.32.0` / Dart `>=3.8.0` because `just_tooltip` 0.5.0
+  positions through `OverlayPortal.overlayChildLayoutBuilder` (0.5.1 `pubspec.yaml`
+  states the same floor; maintainer, 2026-10-26). The earlier reasons are now
+  subsumed: Dart 3.4 for `flutter_ime` 3.0.0's `NativeCallable.keepIsolateAlive`
+  (a27fa38), Flutter 3.13 for `just_tooltip` 0.4.2's `RenderObject.parent` walk
+  (8375aa0). README "Requirements" gives the reason to consumers. Raising a floor
+  is breaking for consumers. The Dart 3.8 language version changes `dart format`
+  output (tall style), so a floor rise past 3.7 lands with a style-only
+  reformat commit.
 - **Dependency upgrades:** read the new version's real source, not its
   CHANGELOG — `just_tooltip` 0.3.0 and 0.4.0 were consecutive breaking
   migrations (e143183, 74637ef). See [`docs/agents/thegraph.md`](../../agents/thegraph.md) References.
@@ -33,7 +36,7 @@ releases.
 - `pubspec.yaml`, `.pubignore`, `CHANGELOG.md`, `README.md`, `LICENSE`
 
 ## Reference behaviour
-- `just_tooltip` 0.4.4 `lib/src/just_tooltip.dart` — the ancestor clip walk behind the Flutter floor.
+- `just_tooltip` 0.5.1 `pubspec.yaml` (`flutter: ">=3.32.0"`) and `lib/src/just_tooltip.dart` — `overlayChildLayoutBuilder`, behind the Flutter floor.
 - `flutter_ime` 3.0.0 — CHANGELOG 0.7.0 records its API as unchanged from 2.x.
 
 ## Cross-cutting invariants
