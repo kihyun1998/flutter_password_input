@@ -81,7 +81,8 @@ void main() {
         expect(tooltip.enableHover, isFalse,
             reason: 'a tooltip with hover claims its ancestors, which is the '
                 'only way the caps-lock tooltip could ever be suppressed');
-        expect(tooltip.enableTap, isFalse);
+        expect(tooltip.tap ?? jt.TooltipTap.none, jt.TooltipTap.none,
+            reason: 'a null tap with enableTap left unset is no tap trigger');
       }
 
       final pointer = await tester.createGesture(kind: PointerDeviceKind.mouse);
@@ -92,6 +93,39 @@ void main() {
 
       expect(find.text(capsLock), findsNothing);
       expect(find.text(paste), findsNothing);
+    });
+
+    testWidgets('a warning not on screen is not on the semantics tree',
+        (tester) async {
+      final semantics = tester.ensureSemantics();
+
+      final shownBy = {
+        PasswordFieldStatus.none: null,
+        PasswordFieldStatus.capsLock: capsLock,
+        PasswordFieldStatus.pasteBlocked: paste,
+      };
+      for (final MapEntry(key: status, value: shown) in shownBy.entries) {
+        await tester.pumpWidget(layoutWith(status));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.semantics.byPredicate((node) =>
+              node.tooltip.contains(capsLock) || node.tooltip.contains(paste)),
+          findsNothing,
+          reason: 'just_tooltip puts a tooltip\'s text on its child; the '
+              'field would be read as a warning while the status is '
+              '${status.name}',
+        );
+        for (final message in [capsLock, paste]) {
+          if (message == shown) continue;
+          expect(find.bySemanticsLabel(RegExp(RegExp.escape(message))),
+              findsNothing,
+              reason: '"$message" is not on screen while the status is '
+                  '${status.name}');
+        }
+      }
+
+      semantics.dispose();
     });
 
     testWidgets('bumping pasteGeneration replays the paste tooltip',

@@ -25,7 +25,7 @@ de934a5 (`PasswordFieldWarning` → `PasswordFieldStatus`, `feat!`).
 - the exported declarations listed above
 
 ## Reference behaviour
-- `just_tooltip` 0.4.4 `lib/src/enums.dart` — the re-exported enums.
+- `just_tooltip` 0.5.1 `lib/src/enums.dart` — the re-exported enums (values unchanged from 0.4.4).
 
 ## Cross-cutting invariants
 - [warning-alignment-meaning](../invariant/warning-alignment-meaning.md) — `WarningAlignment`'s values are its subject.

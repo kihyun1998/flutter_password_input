@@ -151,9 +151,9 @@ class _WarningTooltipLayoutState extends State<WarningTooltipLayout> {
     return jt.JustTooltip(
       key: key,
       controller: controller,
-      enableTap: false,
       enableHover: false,
       interactive: false,
+      excludeFromSemantics: true,
       direction: direction,
       alignment: alignment,
       offset: tt.offset!,
