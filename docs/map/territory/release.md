@@ -23,11 +23,8 @@ releases.
 - **Dependency upgrades:** read the new version's real source, not its
   CHANGELOG — `just_tooltip` 0.3.0 and 0.4.0 were consecutive breaking
   migrations (e143183, 74637ef). See [`docs/agents/thegraph.md`](../../agents/thegraph.md) References.
-- **CHANGELOG:** pub.dev snapshots it at publish; open a new version, never
-  edit a published one (theflow.md Step 6, maintainer, 2026-07-13).
-- **Publishing is the maintainer's:** `flutter pub publish` is irreversible and
-  the agent does not run it. Dry-run must show 0 warnings on a clean tree. Tag
-  after the docs land; an unpublished tag may move (theflow.md Step 7, maintainer, 2026-07-13).
+- **Release bar:** before a release, run `pub-ready`. An unpublished tag may
+  move (theflow.md Step 7, maintainer, 2026-07-13).
 
 ## Code
 - `pubspec.yaml`, `.pubignore`, `CHANGELOG.md`, `README.md`, `LICENSE`
