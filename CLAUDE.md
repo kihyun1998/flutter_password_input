@@ -8,15 +8,18 @@ Substantive changes follow `thegraph`. Before designing one, or writing against
 
 - Commit to `main` directly; stage the touched paths by name, never `git add -A`.
   End the message with `Fixes #n`. Push only when asked.
-- `flutter pub publish` is the maintainer's, never the agent's. Before a release,
-  read [`docs/map/territory/release.md`](docs/map/territory/release.md).
+- Before a release, run `pub-ready`, and read
+  [`docs/map/territory/release.md`](docs/map/territory/release.md).
 
 ## Comments
 
 A comment says what the code is. Why it is this way, what it deliberately leaves
 out, the trap and the measured value go to the territory note under `docs/map/`.
-History goes to the commit message. Before removing a comment's why, move it into
-the map (`decant`).
+Where none seems to hold it, search the folder and the code symbol first; only
+then start a new note, named for what the system does there, not for the file.
+History goes to the commit message. Comments written before this rule still
+carry the rest: never delete one whose content the map does not yet hold — move
+it there first (`decant`).
 
 ## Territory map
 

@@ -10,3 +10,7 @@ A Flutter password text field package whose caps-lock / status warning shows as 
 |---|---|---|---|
 | just_tooltip | how it works | its source tree in the pub cache, at the resolved version — raw | binding |
 | flutter_ime | how it works | its source tree in the pub cache, at the resolved version — raw | binding |
+
+## Release
+
+pub-ready
