@@ -26,7 +26,7 @@ Both floors come from `just_tooltip` 0.5: it positions a tooltip during layout t
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.7.0
+  flutter_password_input: ^0.8.0
 ```
 
 ## Usage

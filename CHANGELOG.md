@@ -1,4 +1,4 @@
-## Unreleased
+## 0.8.0
 
 **Breaking — SDK floor**
 
@@ -44,8 +44,6 @@
   its sign.
 - A tap on a warning tooltip reaches the widget beneath it; the
   non-interactive bubble is transparent to the pointer.
-
-## 0.7.1
 
 **Fix**
 
