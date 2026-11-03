@@ -37,10 +37,8 @@ enum PasswordFieldStatus {
 }
 
 /// Builder typedef for prefix/suffix widgets that receive the current field status.
-typedef PasswordFieldWidgetBuilder = Widget Function(
-  BuildContext context,
-  PasswordFieldStatus status,
-);
+typedef PasswordFieldWidgetBuilder =
+    Widget Function(BuildContext context, PasswordFieldStatus status);
 
 /// Controls how warning messages (Caps Lock, paste) are displayed.
 enum WarningDisplayMode {
@@ -361,8 +359,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   int _pasteTooltipKey = 0;
 
   PasswordTextFieldTheme get _theme =>
-      (widget.theme ?? const PasswordTextFieldTheme())
-          .merge(PasswordTextFieldTheme.defaults);
+      (widget.theme ?? const PasswordTextFieldTheme()).merge(
+        PasswordTextFieldTheme.defaults,
+      );
 
   @override
   void initState() {
@@ -372,8 +371,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
 
     _resolveActiveWarning();
 
-    _keyboardMonitor =
-        KeyboardInputMonitor(onCapsLockChanged: _onCapsLockChanged);
+    _keyboardMonitor = KeyboardInputMonitor(
+      onCapsLockChanged: _onCapsLockChanged,
+    );
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -501,8 +501,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   }
 
   void _onKeyboardPasteBlocked() {
-    final vHeld = HardwareKeyboard.instance.logicalKeysPressed
-        .contains(LogicalKeyboardKey.keyV);
+    final vHeld = HardwareKeyboard.instance.logicalKeysPressed.contains(
+      LogicalKeyboardKey.keyV,
+    );
     if (_pasteKeyHeld && vHeld) return;
     _pasteKeyHeld = vHeld;
     _onPasteBlocked();
@@ -577,7 +578,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   }
 
   OutlineInputBorder _buildOutlineBorder(
-      PasswordTextFieldTheme theme, Color color) {
+    PasswordTextFieldTheme theme,
+    Color color,
+  ) {
     return OutlineInputBorder(
       borderSide: theme.borderWidth == 0
           ? BorderSide.none
@@ -601,17 +604,19 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
               onPressed: widget.enabled == false ? null : _toggleObscure,
               icon: _isObscured
                   ? (widget.visibilityOffIcon ??
-                      Icon(
-                        Icons.visibility_off,
-                        color: theme.visibilityIconColor ?? appTheme.hintColor,
-                        size: theme.visibilityIconSize,
-                      ))
+                        Icon(
+                          Icons.visibility_off,
+                          color:
+                              theme.visibilityIconColor ?? appTheme.hintColor,
+                          size: theme.visibilityIconSize,
+                        ))
                   : (widget.visibilityOnIcon ??
-                      Icon(
-                        Icons.visibility,
-                        color: theme.visibilityIconColor ?? appTheme.hintColor,
-                        size: theme.visibilityIconSize,
-                      )),
+                        Icon(
+                          Icons.visibility,
+                          color:
+                              theme.visibilityIconColor ?? appTheme.hintColor,
+                          size: theme.visibilityIconSize,
+                        )),
             ),
           )
         : null;
@@ -623,10 +628,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     if (hasSuffixBuilder && hasVisibilityToggle) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          suffixWidget!,
-          visibilityButton!,
-        ],
+        children: [suffixWidget!, visibilityButton!],
       );
     }
 
@@ -639,16 +641,20 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
 
   /// The Flutter-rendered context menu with its Paste item blocked.
   Widget _buildPasteBlockedContextMenu(
-      BuildContext context, EditableTextState editableTextState) {
+    BuildContext context,
+    EditableTextState editableTextState,
+  ) {
     return AdaptiveTextSelectionToolbar.buttonItems(
       anchors: editableTextState.contextMenuAnchors,
       buttonItems: [
         for (final item in editableTextState.contextMenuButtonItems)
           if (item.type == ContextMenuButtonType.paste)
-            item.copyWith(onPressed: () {
-              editableTextState.hideToolbar();
-              _onPasteBlocked();
-            })
+            item.copyWith(
+              onPressed: () {
+                editableTextState.hideToolbar();
+                _onPasteBlocked();
+              },
+            )
           else
             item,
       ],
@@ -656,7 +662,10 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   }
 
   Widget _buildTextField(
-      ThemeData appTheme, PasswordTextFieldTheme theme, _StatusColors colors) {
+    ThemeData appTheme,
+    PasswordTextFieldTheme theme,
+    _StatusColors colors,
+  ) {
     final activeColor = _statusColor(colors);
     final enabledBorderColor = switch (_activeStatus) {
       PasswordFieldStatus.customError => colors.customError,
@@ -678,8 +687,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         inputFormatters: widget.inputFormatters,
         style: widget.enabled == false
             ? (theme.disabledTextStyle ??
-                (theme.textStyle ?? appTheme.textTheme.bodyMedium)
-                    ?.copyWith(color: appTheme.disabledColor))
+                  (theme.textStyle ?? appTheme.textTheme.bodyMedium)?.copyWith(
+                    color: appTheme.disabledColor,
+                  ))
             : (theme.textStyle ?? appTheme.textTheme.bodyMedium),
         onChanged: (value) {
           _hidePasteWarning();
@@ -712,8 +722,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           disabledBorder: _buildOutlineBorder(
             theme,
             theme.disabledBorderColor ??
-                (theme.borderColor ?? appTheme.dividerColor)
-                    .withValues(alpha: 0.5),
+                (theme.borderColor ?? appTheme.dividerColor).withValues(
+                  alpha: 0.5,
+                ),
           ),
         ),
       ),
@@ -737,20 +748,26 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   }
 
   Widget _buildTooltipMode(
-      Widget textField, PasswordTextFieldTheme theme, _StatusColors colors) {
-    final tt = (theme.tooltipTheme ?? const WarningTooltipTheme())
-        .merge(WarningTooltipTheme.defaults);
+    Widget textField,
+    PasswordTextFieldTheme theme,
+    _StatusColors colors,
+  ) {
+    final tt = (theme.tooltipTheme ?? const WarningTooltipTheme()).merge(
+      WarningTooltipTheme.defaults,
+    );
     return WarningTooltipLayout(
       activeStatus: _activeStatus,
       margin: widget.margin,
       width: theme.width,
       tooltipTheme: tt,
       capsLockMessage: widget.capsLockWarningText ?? _kDefaultCapsLockWarning,
-      capsLockTextStyle: theme.capsLockWarningStyle ??
+      capsLockTextStyle:
+          theme.capsLockWarningStyle ??
           TextStyle(color: colors.error, fontSize: 12),
       capsLockAlignment: widget.capsLockWarningAlignment,
       pasteMessage: widget.pasteWarningText ?? _kDefaultPasteWarning,
-      pasteTextStyle: theme.pasteWarningStyle ??
+      pasteTextStyle:
+          theme.pasteWarningStyle ??
           TextStyle(color: colors.pasteWarning, fontSize: 12),
       pasteAlignment: widget.pasteWarningAlignment,
       pasteGeneration: _pasteTooltipKey,
@@ -758,15 +775,20 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     );
   }
 
-  Widget _buildMessageMode(Widget textField, PasswordTextFieldTheme theme,
-      _StatusColors colors, bool showCapsLockWarning) {
+  Widget _buildMessageMode(
+    Widget textField,
+    PasswordTextFieldTheme theme,
+    _StatusColors colors,
+    bool showCapsLockWarning,
+  ) {
     return WarningMessageLayout(
       margin: widget.margin,
       width: theme.width,
       capsLockWarning: showCapsLockWarning
           ? WarningMessage(
               text: widget.capsLockWarningText ?? _kDefaultCapsLockWarning,
-              style: theme.capsLockWarningStyle ??
+              style:
+                  theme.capsLockWarningStyle ??
                   TextStyle(color: colors.error, fontSize: 12),
               alignment: widget.capsLockWarningAlignment,
             )
@@ -774,7 +796,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       pasteWarning: _showPasteWarning
           ? WarningMessage(
               text: widget.pasteWarningText ?? _kDefaultPasteWarning,
-              style: theme.pasteWarningStyle ??
+              style:
+                  theme.pasteWarningStyle ??
                   TextStyle(color: colors.pasteWarning, fontSize: 12),
               alignment: widget.pasteWarningAlignment,
             )

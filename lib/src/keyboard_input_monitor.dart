@@ -14,7 +14,7 @@ import 'package:flutter_ime/flutter_ime.dart' as ime;
 /// is deliberately the caller's (docs/map/territory/caps-lock-detection.md).
 class KeyboardInputMonitor {
   KeyboardInputMonitor({required ValueChanged<bool> onCapsLockChanged})
-      : _onCapsLockChanged = onCapsLockChanged {
+    : _onCapsLockChanged = onCapsLockChanged {
     _capsLockSubscription = ime.onCapsLockChanged().listen(_onCapsLockChanged);
   }
 
@@ -43,8 +43,9 @@ class KeyboardInputMonitor {
         break;
       case TargetPlatform.macOS:
         ime.setEnglishKeyboard();
-        _inputSourceSubscription =
-            ime.onInputSourceChanged().listen((isEnglish) {
+        _inputSourceSubscription = ime.onInputSourceChanged().listen((
+          isEnglish,
+        ) {
           if (!isEnglish) ime.setEnglishKeyboard();
         });
         break;

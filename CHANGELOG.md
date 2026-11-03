@@ -1,3 +1,50 @@
+## Unreleased
+
+**Breaking — SDK floor**
+
+- **Flutter floor raised `3.13.0` → `3.32.0`, Dart floor `3.4.0` → `3.8.0`.**
+  `just_tooltip` 0.5.0 positions a tooltip during layout through
+  `OverlayPortal.overlayChildLayoutBuilder`, which needs Flutter 3.32. An app on
+  an older Flutter cannot resolve this release and stays on 0.7.0. This is the
+  breaking part of the upgrade: the release that ships it is not a patch.
+
+**DEPS**
+
+- `just_tooltip: ^0.5.1` (was `^0.4.4`). 0.5.0 deprecates `enableTap`; the
+  warning tooltips no longer pass it and still have no tap trigger. No API of
+  this package changed.
+
+**Behaviour change — tooltip mode only**
+
+- A screen reader does not hear a warning tooltip on the field. `just_tooltip`
+  0.5.1 puts a tooltip's text on its child's semantics even while it is not
+  shown, which would have made the field read as "Paste is disabled" at all
+  times. Both warning tooltips are built with `excludeFromSemantics: true`, so
+  the field reads as it did. The cost: showing a warning is not announced
+  (`just_tooltip` announces a shown tooltip, honoured on Android). The bubble's
+  text is on the semantics tree while it is on screen.
+- Escape closes a warning tooltip that is on screen (`just_tooltip` 0.5.1). The
+  field holds focus inside the tooltip, so that Escape is consumed: an enclosing
+  dialog or route closes on the next press, not this one. The warning stays
+  closed while it holds, until it fires again (another blocked paste) or the
+  field rebuilds for another reason — a rebuild of the widget above it, for
+  example — which shows it again.
+- A warning tooltip follows a scrolling or resizing field in the same frame; it
+  was re-aimed one frame late.
+- A warning tooltip now draws with the `Directionality`, `Theme`,
+  `DefaultTextStyle` and `MediaQuery` around the field, not those above the
+  app's `Overlay`: an RTL section mirrors it and a local text scale reaches its
+  text.
+- In RTL, with `showArrow`, the arrow of a warning aligned to a left or right
+  edge (`topLeft`, `bottomRight`, …) now points at the field; it pointed past it.
+- A positive `WarningTooltipTheme.crossAxisOffset` now moves a
+  `topEndTargetCenter` / `bottomEndTargetCenter` warning inward, as it does for
+  `topRight` / `bottomRight` (in RTL this includes the `StartTargetCenter`
+  ones). A value tuned against the old direction now shifts the other way: flip
+  its sign.
+- A tap on a warning tooltip reaches the widget beneath it; the
+  non-interactive bubble is transparent to the pointer.
+
 ## 0.7.1
 
 **Fix**

@@ -25,6 +25,15 @@ A caller switching `warningDisplayMode` sees the warning jump sides. Note the
 existing, accepted asymmetry: `*StartTargetCenter` / `*EndTargetCenter` mean
 "arrow at target centre" in tooltips and collapse to left/right in text.
 
+Not held under RTL: `_mapAlignment` maps Left/Right to `TooltipAlignment.start` /
+`end`, which `just_tooltip` swaps for a top/bottom tooltip when the
+`Directionality` is RTL (0.5.1 `tooltip_position_utils.dart —
+resolveTooltipAlignment`), while `_toAlignment` returns absolute `Alignment`s. So
+`topLeft` sits on the right in tooltip mode and on the left in message mode. It
+held for an RTL app under 0.4.4 too (the `Overlay`'s `Directionality`); since
+0.5.0 an RTL `Directionality` around the field alone is enough. Unresolved
+(reading, 2026-10-26).
+
 ## Discovery history
 - Reading at ef67dc5 (grill-map, 2026-10-23). The target-centre values arrived together in 7b697ef (just_tooltip 0.2.5).
 

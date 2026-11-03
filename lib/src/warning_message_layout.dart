@@ -75,10 +75,7 @@ class WarningMessageLayout extends StatelessWidget {
   Widget _buildWarning(WarningMessage warning) {
     final isTop = isTopAlignment(warning.alignment);
     return Padding(
-      padding: EdgeInsets.only(
-        top: isTop ? 0 : 4,
-        bottom: isTop ? 4 : 0,
-      ),
+      padding: EdgeInsets.only(top: isTop ? 0 : 4, bottom: isTop ? 4 : 0),
       child: Align(
         alignment: _toAlignment(warning.alignment),
         child: Text(warning.text, style: warning.style),
