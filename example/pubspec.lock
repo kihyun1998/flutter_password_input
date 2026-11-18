@@ -94,10 +94,10 @@ packages:
     dependency: transitive
     description:
       name: just_tooltip
-      sha256: ff43dbf34d59a92c9657b1049b3929b952f7f52e7b57997bc93aa1620fbd25cf
+      sha256: "783625990d0c8b59d233fb28c008d4e9ec1c8419664f3aff5d78fc864373aea5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.1"
+    version: "0.6.0"
   leak_tracker:
     dependency: transitive
     description:

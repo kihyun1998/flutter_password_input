@@ -1,3 +1,5 @@
+import 'dart:async' show unawaited;
+
 import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'package:flutter/material.dart';
 import 'package:flutter_password_input/src/password_text_field.dart'
@@ -200,6 +202,52 @@ void main() {
         reason: 'exactly one warning is ever active',
       );
     });
+  });
+
+  /// `just_tooltip` hides a tooltip while a route covers it and keeps it
+  /// closed after the route pops; the layout shows it again once its route
+  /// is current (docs/map/territory/warning-tooltip-mode.md).
+  group('WarningTooltipLayout under a covering route', () {
+    final shownBy = {
+      PasswordFieldStatus.capsLock: capsLock,
+      PasswordFieldStatus.pasteBlocked: paste,
+    };
+    for (final MapEntry(key: status, value: message) in shownBy.entries) {
+      testWidgets('the ${status.name} warning returns when the route pops', (
+        tester,
+      ) async {
+        await tester.pumpWidget(layoutWith(status));
+        await tester.pumpAndSettle();
+        expect(find.text(message), findsOneWidget);
+
+        final context = tester.element(find.byKey(const Key('field')));
+        // A route that leaves focus where it was: nothing in the field
+        // changes, so nothing above the layout rebuilds it on the pop.
+        unawaited(
+          showDialog<void>(
+            context: context,
+            requestFocus: false,
+            builder: (_) => const AlertDialog(content: Text('covering')),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.text(message),
+          findsNothing,
+          reason: 'a covered tooltip hides',
+        );
+
+        Navigator.of(context).pop();
+        await tester.pumpAndSettle();
+        expect(
+          find.text(message),
+          findsOneWidget,
+          reason:
+              'the status still holds once the route is current again, '
+              'with no rebuild from the field',
+        );
+      });
+    }
   });
 
   /// Both warnings follow `just_tooltip`'s visible-part anchoring and re-aiming

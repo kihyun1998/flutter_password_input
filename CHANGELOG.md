@@ -1,3 +1,22 @@
+## Unreleased
+
+**DEPS**
+
+- `just_tooltip: ^0.6.0` (was `^0.5.1`). No API of this package changed, and
+  the SDK floors stay Flutter `3.32.0` / Dart `3.8.0`.
+
+**Behaviour change — tooltip mode only**
+
+- A warning tooltip hides while a route (a dialog, a page, a sheet) covers the
+  field (`just_tooltip` 0.6.0 `hideWhenCovered`, on by default). A route that
+  takes focus already cleared both warnings through the field losing focus, so
+  only a route that leaves focus in the field (`showDialog(requestFocus:
+  false)`) changes what is seen: the warning used to stay drawn over it. It
+  comes back when that route is popped, while the warning still holds.
+- A warning closed with Escape also comes back when the field rebuilds while
+  it is still fading out; before, only a rebuild after the fade brought it
+  back.
+
 ## 0.8.0
 
 **Breaking — SDK floor**

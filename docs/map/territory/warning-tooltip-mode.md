@@ -8,10 +8,11 @@ tooltips anchored to the field, styled by `WarningTooltipTheme`.
 **None.** Extracted in d734978 (#4); migrated across two breaking `just_tooltip`
 releases, 0.3.0 (e143183, #8/#9) and 0.4.0 (74637ef, #10), then 0.4.2 (8375aa0, #11)
 and 0.5.1 (`deps/just-tooltip-0.5.1`; maintainer, 2026-10-26, for the semantics
-and floor calls below).
+and floor calls below), then 0.6.0 (maintainer, 2026-11-18, for the covering-route
+call below).
 
 ## Design model
-From reading the source and `just_tooltip` 0.5.1.
+From reading the source and `just_tooltip` 0.6.0.
 
 - Two nested tooltips: caps-lock outside, paste inside; visibility is driven only
   from `activeStatus` (`capsLock` / `pasteBlocked`) through controllers, in a
@@ -42,22 +43,38 @@ From reading the source and `just_tooltip` 0.5.1.
   `SemanticsService.tooltip` announcement, which `_show` makes only for a heard
   tooltip (maintainer, 2026-10-26). The bubble's own text is on the semantics
   tree while it is shown.
-- Escape closes the most recently shown tooltip (0.5.1, `_handleKey`). Focus is
+- Escape closes the most recently shown tooltip (since 0.5.1;
+  `tooltip_key_dismissal.dart — _handleKey` in 0.6.0). Focus is
   in the field, inside both tooltips' child, so the press is left to
   `_DismissTooltipAction`, which consumes it: an enclosing `DismissIntent`
-  action (a dialog) runs only on the next press. `_dismissed` gates only the
+  action (a dialog) runs only on the next press. The Escape close gates only the
   trigger path, and `_updateVisibility` calls `controller.show()` on every
   `build`, so the warning comes back on the next rebuild of
-  `WarningTooltipLayout` once the hide animation has finished; a rebuild during
-  it does not (`_show` returns while `_isShowing`). With no rebuild it stays
-  hidden while the status holds. Measured in widget tests on this branch
-  (paste via `PasteTextIntent`, `pasteWarningDuration` 30 s): hidden after
-  Escape and still 10 s later; shown again after a parent `setState`; shown
-  again by a new blocked paste. Not acted on (maintainer, 2026-10-26).
+  `WarningTooltipLayout`. Since 0.6.0 that includes a rebuild during the hide
+  animation: `controller.show()` on a fading tooltip turns it back (#101 in
+  `just_tooltip`); under 0.5.1 it did not. Measured with the caps-lock warning,
+  a parent `setState` 50 ms into the 150 ms fade: shown on 0.6.0, hidden on
+  0.5.1. With no rebuild it stays hidden while the status holds. Measured in
+  widget tests under 0.5.1 (paste via `PasteTextIntent`,
+  `pasteWarningDuration` 30 s): hidden after Escape and still 10 s later; shown
+  again after a parent `setState`; shown again by a new blocked paste. Not acted
+  on (maintainer, 2026-10-26).
+- A route covering the field hides both warnings (`hideWhenCovered`, on by
+  default since 0.6.0; left at the default). While covered, `controller.show()`
+  is ignored, and once the route is current again `just_tooltip` keeps the
+  tooltip closed until something shows it. The field drops both warnings when it
+  loses focus (`_onFocusChange`) and rebuilds when focus returns, so a route
+  that takes focus changes nothing visible. A route that leaves focus where it
+  was (`showDialog(requestFocus: false)`) triggers no rebuild on the pop, and
+  the warning stayed hidden with caps lock still on (measured on 0.6.0 with the
+  real field; on 0.5.1 the warning stayed drawn over the dialog). `build` calls
+  `ModalRoute.isCurrentOf`, which makes the layout depend on the route's
+  current state, so the pop rebuilds it and `_updateVisibility` shows the
+  warning again (maintainer, 2026-11-18).
 - A `pasteGeneration` change gets a new paste controller and a new `ValueKey`, so
   the tooltip rebuilds and replays.
 - Controllers are not disposed: since `just_tooltip` 0.3.0, `JustTooltipController`
-  holds only a target reference and a pending flag (0.5.1 `just_tooltip_controller.dart`).
+  holds only a target reference and a pending flag (0.6.0 `just_tooltip_controller.dart`).
   The leak fixed in 9f21d51 (#1/#5) was a 0.2.x `ChangeNotifier`.
 - `WarningTooltipLayout` keeps the controller lifecycle, so the field widget
   (`password_text_field.dart`) does not reference `just_tooltip` at all.
@@ -65,20 +82,21 @@ From reading the source and `just_tooltip` 0.5.1.
   `JustTooltipTheme`, except `interactive` (above); `tt.direction` /
   `tt.alignment`, when set, override the per-warning `WarningAlignment` mapping
   for **both** tooltips.
-- `waitDuration` has no effect: 0.5.1 reads it only in `TooltipVisibilityScheduler.onChildEnter`, reached from a hover or keyboard-focus trigger, neither enabled here.
+- `waitDuration` has no effect: 0.6.0 reads it only in `TooltipVisibilityScheduler.onChildEnter`, reached through `onShowIntentSet` from a hover or keyboard-focus trigger, neither enabled here.
 
 ## Code
 - `lib/src/warning_tooltip_layout.dart — WarningTooltipLayout`, `_WarningTooltipLayoutState.didUpdateWidget`, `_updateVisibility`, `_mapAlignment`, `_buildTooltipTheme`, `_buildTooltip`, `build`
 - `lib/src/password_text_field_theme.dart — WarningTooltipTheme` (fields, `defaults`, `merge`, `copyWith`)
 - `lib/src/password_text_field.dart — _PasswordTextFieldState._buildTooltipMode`
-- Tests: `test/warning_tooltip_layout_test.dart` (nesting, no hover or tap, not on the semantics tree, replay, scroll tracking, hide when scrolled out); `test/flutter_password_input_test.dart` groups `WarningTooltipLayout`, `WarningTooltipTheme`, `warning tooltip auto-hide` (in `PasswordTextField keyboard integration`; mouse on the tooltip vs `showDuration`)
+- Tests: `test/warning_tooltip_layout_test.dart` (nesting, no hover or tap, not on the semantics tree, replay, back after a covering route pops, scroll tracking, hide when scrolled out); `test/flutter_password_input_test.dart` groups `WarningTooltipLayout`, `WarningTooltipTheme`, `warning tooltip auto-hide` (in `PasswordTextField keyboard integration`; mouse on the tooltip vs `showDuration`)
 
 ## Reference behaviour
-- `just_tooltip` 0.5.1 `lib/src/tooltip_visibility_scheduler.dart` — `onChildEnter` (`waitDuration`), `startAutoHide` (`showDuration`, also started on a controller show via `just_tooltip.dart — showTooltip`), `onTooltipEnter` / `onTooltipExit` (`interactive`).
-- `just_tooltip` 0.5.1 `lib/src/just_tooltip.dart — _buildOverlayChild`: the tooltip body's `MouseRegion` is attached regardless of `enableHover`, inside `IgnorePointer(ignoring: !interactive)`.
-- `just_tooltip` 0.5.1 `lib/src/just_tooltip.dart — _syncSuppression`: claims ancestors only while `_pointerInside` (set only by the child `MouseRegion` built under `enableHover`) or under `enableFocus` with keyboard focus inside.
-- `just_tooltip` 0.5.1 `lib/src/just_tooltip.dart — _semanticText`, `_SemanticTooltip`, `_show`: the child's semantics tooltip and the show-time announcement, both off under `excludeFromSemantics`.
-- `just_tooltip` 0.5.1 `lib/src/just_tooltip.dart — _handleKey`, `_dismissByUser`, `_DismissTooltipAction`: Escape.
+- `just_tooltip` 0.6.0 `lib/src/tooltip_visibility_scheduler.dart` — `onChildEnter` (`waitDuration`), `startAutoHide` (`showDuration`, also started on a controller show via `just_tooltip.dart — showTooltip`), `onTooltipEnter` / `onTooltipExit` (`interactive`).
+- `just_tooltip` 0.6.0 `lib/src/just_tooltip.dart — _buildOverlayChild`: the tooltip body's `MouseRegion` is attached regardless of `enableHover`, inside `IgnorePointer(ignoring: !interactive)`.
+- `just_tooltip` 0.6.0 `lib/src/just_tooltip.dart — _syncSuppression`: claims ancestors only while `_pointerInside` (set only by the child `MouseRegion` built under `enableHover`) or under `enableFocus` with keyboard focus inside.
+- `just_tooltip` 0.6.0 `lib/src/just_tooltip.dart — _semanticText`, `_SemanticTooltip`, `_show`: the child's semantics tooltip and the show-time announcement, both off under `excludeFromSemantics`.
+- `just_tooltip` 0.6.0 `lib/src/tooltip_key_dismissal.dart — _handleKey`, `lib/src/just_tooltip.dart — _dismissByUser`, `_DismissTooltipAction`: Escape.
+- `just_tooltip` 0.6.0 `lib/src/just_tooltip.dart — hideWhenCovered`, `_covered` (`!_route.isCurrent`): a covering route.
 - `just_tooltip` 0.5.1 `lib/src/just_tooltip.dart` — the target a tooltip is positioned against is the visible part of its child (since 0.4.2), positioned during layout so it follows the child in the same frame (since 0.5.0).
 
 ## Cross-cutting invariants
@@ -89,7 +107,7 @@ From reading the source and `just_tooltip` 0.5.1.
 - [field-status](field-status.md) — the only visibility input; a status reorder changes which tooltip shows.
 - [paste-blocking](paste-blocking.md) — owns `pasteGeneration`'s bumping.
 - [field-theme](field-theme.md) — `PasswordTextFieldTheme.merge` nests `tooltipTheme.merge`.
-- [release](release.md) — a `just_tooltip` bump has broken this three times (0.3.0, 0.4.0, 0.5.0's deprecation and floor); read the new source before raising the constraint.
+- [release](release.md) — a `just_tooltip` bump has broken this four times (0.3.0, 0.4.0, 0.5.0's deprecation and floor, 0.6.0's `hideWhenCovered` default); read the new source before raising the constraint.
 - [public-surface](public-surface.md) — `TooltipDirection` / `TooltipAlignment` / `TooltipAnimation` are re-exported for this theme.
 
 ## Known holes / open

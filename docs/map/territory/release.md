@@ -15,7 +15,7 @@ releases.
   `.pubignore` itself. `build/` is listed because `.gitignore` excludes only the
   root `/build/`, not `example/build/`.
 - **Floors:** Flutter `>=3.32.0` / Dart `>=3.8.0` because `just_tooltip` 0.5.0
-  positions through `OverlayPortal.overlayChildLayoutBuilder` (0.5.1 `pubspec.yaml`
+  positions through `OverlayPortal.overlayChildLayoutBuilder` (0.6.0 `pubspec.yaml`
   states the same floor; maintainer, 2026-10-26). The earlier reasons are now
   subsumed: Dart 3.4 for `flutter_ime` 3.0.0's `NativeCallable.keepIsolateAlive`
   (a27fa38), Flutter 3.13 for `just_tooltip` 0.4.2's `RenderObject.parent` walk
@@ -33,7 +33,7 @@ releases.
 - `pubspec.yaml`, `.pubignore`, `CHANGELOG.md`, `README.md`, `LICENSE`
 
 ## Reference behaviour
-- `just_tooltip` 0.5.1 `pubspec.yaml` (`flutter: ">=3.32.0"`) and `lib/src/just_tooltip.dart` — `overlayChildLayoutBuilder`, behind the Flutter floor.
+- `just_tooltip` 0.6.0 `pubspec.yaml` (`flutter: ">=3.32.0"`) and `lib/src/just_tooltip.dart` — `overlayChildLayoutBuilder`, behind the Flutter floor.
 - `flutter_ime` 3.0.0 — CHANGELOG 0.7.0 records its API as unchanged from 2.x.
 
 ## Cross-cutting invariants

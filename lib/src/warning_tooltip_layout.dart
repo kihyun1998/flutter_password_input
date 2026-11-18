@@ -173,6 +173,9 @@ class _WarningTooltipLayoutState extends State<WarningTooltipLayout> {
 
   @override
   Widget build(BuildContext context) {
+    // Depends on whether the enclosing route is current; a change rebuilds
+    // this layout.
+    ModalRoute.isCurrentOf(context);
     _updateVisibility(
       _capsLockController,
       widget.activeStatus == PasswordFieldStatus.capsLock,
