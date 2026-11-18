@@ -26,7 +26,7 @@ Both floors come from `just_tooltip` 0.5: it positions a tooltip during layout t
 
 ```yaml
 dependencies:
-  flutter_password_input: ^0.8.0
+  flutter_password_input: ^0.9.0
 ```
 
 ## Usage
@@ -106,7 +106,7 @@ PasswordTextField(
 
 A tooltip aims at the **visible** part of its field, so it re-aims whenever a surrounding view scrolls, resizes, or reflows — it does not move rigidly with the field, because it is still clamped by `screenMargin`. A field that scrolls entirely out of view hides its tooltip; showing it again is a fresh warning.
 
-A warning tooltip is not put on the field's semantics, so a screen reader does not read the field as a warning while none is showing; the bubble's text is on the semantics tree only while it is on screen, and showing it is not announced. Escape closes a warning tooltip that is on screen. It stays closed while the warning holds, until the warning fires again or the field rebuilds for another reason (a rebuild of the widget above it, for example), which shows it again.
+A warning tooltip is not put on the field's semantics, so a screen reader does not read the field as a warning while none is showing; the bubble's text is on the semantics tree only while it is on screen, and showing it is not announced. Escape closes a warning tooltip that is on screen. It stays closed while the warning holds, until the warning fires again or the field rebuilds for another reason (a rebuild of the widget above it, for example), which shows it again. A warning tooltip is hidden while a route covers the field; a route that takes focus clears the warning anyway, and after one that leaves focus in the field (`showDialog(requestFocus: false)`) is popped, the warning shows again while it holds.
 
 ## Properties
 
